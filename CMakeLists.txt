@@ -24,16 +24,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #    endif()
 #endif()
 set(CMAKE_PREFIX_PATH "C:/Qt/Qt5.12.12/5.12.12/mingw73_64/lib/cmake/Qt5")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+add_subdirectory(components)
+
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets PrintSupport REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS  Widgets  PrintSupport REQUIRED)
 aux_source_directory(./ PROJECT_SOURCES)
+aux_source_directory(./components COMPONENTS_SOURCES)
 #set(PROJECT_SOURCES
 #        main.cpp
 #        mainwindow.cpp
 #        mainwindow.h
 #        mainwindow.ui
 #)
+file(GLOB HEADER "*.h")
+file(GLOB RSOURCE "*.cpp")
+file(GLOB UI "*.ui")
+include_directories(./components)
+#include_directories(./include/qmetarial/)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(QT
@@ -47,12 +57,12 @@ else()
         )
     else()
         add_executable(QT
-            ${PROJECT_SOURCES}
+                ${HEADER} ${RSOURCE} ${UI} ${COMPONENTS_SOURCES}
         )
     endif()
 endif()
-
-target_link_libraries(QT PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt5::PrintSupport)
+target_include_directories(${PROJECT_NAME} PUBLIC ../include/qmetarial/)
+target_link_libraries(QT PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt5::PrintSupport components)
 
 set_target_properties(QT PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
