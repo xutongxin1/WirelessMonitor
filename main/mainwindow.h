@@ -22,5 +22,6 @@ private:
     Ui::MainWindow *ui;
     QCustomPlot *customPlot;
     QtMaterialDrawer *m_drawer;
+    QWidget *DeviceSelect[100];
 };
 #endif // MAINWINDOW_H
