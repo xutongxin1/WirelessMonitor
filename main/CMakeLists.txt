@@ -20,7 +20,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Widgets)
 
 file(GLOB HEADER "*.h")
 file(GLOB RSOURCE "*.cpp")
-file(GLOB UI "*.ui")
+file(GLOB UI "./ui/*.ui")
 
 set(RCC_FILES main.qrc)
 
