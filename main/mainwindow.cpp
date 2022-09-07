@@ -35,13 +35,17 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout *drawerLayout = new QVBoxLayout;
     m_drawer->setDrawerLayout(drawerLayout);
 
-    QString Note = MainCfg->GetMainCfg(QString("/Device/num"));
+    DeviceSelect[0] = new stateButton();
+    drawerLayout->addWidget(DeviceSelect[0]);
+
+    QString Note = MainCfg->GetMainCfg(QString("/Device/Num"));
     if (Note != nullptr) {
-        for (int i = 0; i < Note.toInt(); i++) {
-            DeviceSelect[i] = new stateButton(i + 1, MainCfg);
+        for (int i = 1; i <= Note.toInt(); i++) {
+            DeviceSelect[i] = new stateButton(i, MainCfg);
             drawerLayout->addWidget(DeviceSelect[i]);
         }
     }
+
 
 
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
