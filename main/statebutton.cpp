@@ -24,3 +24,8 @@ stateButton::stateButton(int num, CfgClass *MainCfg, QWidget *parent) :
 stateButton::~stateButton() {
     delete ui;
 }
+
+stateButton::stateButton(QWidget *parent)  :
+        QWidget(parent), ui(new Ui::stateButton) {
+    ui->setupUi(this);
+}

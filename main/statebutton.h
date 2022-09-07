@@ -16,7 +16,9 @@ class stateButton : public QWidget {
 Q_OBJECT
 
 public:
+    explicit stateButton(QWidget *parent = nullptr);
     explicit stateButton(int num,CfgClass *MainCfg,QWidget *parent = nullptr);
+
 
     ~stateButton() override;
 
