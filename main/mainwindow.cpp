@@ -5,10 +5,9 @@
 #include "qtmaterialdrawer.h"
 #include "statebutton.h"
 
+
 MainWindow::MainWindow(QWidget *parent)
-        : QMainWindow(parent)
-        , ui(new Ui::MainWindow)
-{
+        : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 //    QVBoxLayout *layout = new QVBoxLayout;
 //    this->setLayout(layout);
@@ -26,8 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
 //    canvas->setMaximumHeight(300);
 //
 //
-    m_drawer=new QtMaterialDrawer;
-
+    m_drawer = new QtMaterialDrawer;
+    MainCfg = new CfgClass;
     m_drawer->setParent(ui->centralwidget);
     m_drawer->setClickOutsideToClose(true);
     m_drawer->setOverlayMode(true);
@@ -36,9 +35,13 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout *drawerLayout = new QVBoxLayout;
     m_drawer->setDrawerLayout(drawerLayout);
 
-    DeviceSelect[0]=new stateButton;
-    drawerLayout->addWidget(DeviceSelect[0]);
-
+    QString Note = MainCfg->GetMainCfg(QString("/Device/num"));
+    if (Note != nullptr) {
+        for (int i = 0; i < Note.toInt(); i++) {
+            DeviceSelect[i] = new stateButton(i + 1, MainCfg);
+            drawerLayout->addWidget(DeviceSelect[i]);
+        }
+    }
 
 
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
@@ -47,7 +50,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete ui;
 }
