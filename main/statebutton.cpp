@@ -6,11 +6,19 @@
 
 #include "statebutton.h"
 #include "./ui/ui_stateButton.h"
+#include <string>
 
-
-stateButton::stateButton(QWidget *parent) :
+stateButton::stateButton(int num, CfgClass *MainCfg, QWidget *parent) :
         QWidget(parent), ui(new Ui::stateButton) {
+
     ui->setupUi(this);
+    QString tmp = "/Device ";
+    tmp.append(QString::number(num));
+
+    QString Note = MainCfg->GetMainCfg(QString(tmp + "/note"));
+    QString Port = MainCfg->GetMainCfg(QString(tmp + "/port"));
+    ui->Button->setText(Note + "\n" + "端口: " + Port);
+
 }
 
 stateButton::~stateButton() {

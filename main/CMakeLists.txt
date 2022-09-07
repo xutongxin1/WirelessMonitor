@@ -24,6 +24,13 @@ file(GLOB UI "./ui/*.ui")
 
 set(RCC_FILES main.qrc)
 
+
+#if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux") #XXX平台可以是“Linux”等
+#    EXECUTE_PROCESS(COMMAND cp -f ${PROJECT_SOURCE_DIR}/config/xxxx1.config ${PROJECT_SOURCE_DIR}/config/xxxx2.config)
+#else()
+#    EXECUTE_PROCESS(COMMAND cp -f ${PROJECT_SOURCE_DIR}/main/config/*.ini ${CMAKE_CURRENT_BINARY_DIR}/config/*.config)
+#endif()
+
 add_executable(${PROJECT_NAME} ${HEADER} ${RSOURCE} ${UI} ${RCC_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC ../include/qmetarial/)
 
@@ -38,3 +45,7 @@ set_target_properties(
              MACOSX_BUNDLE_SHORT_VERSION_STRING
              ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
              MACOSX_BUNDLE TRUE)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND cp -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}
+        )
