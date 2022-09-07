@@ -4,12 +4,12 @@
 
 // You may need to build the project (run Qt uic code generator) to get "ui_stateButton.h" resolved
 
-#include "statebutton.h"
-#include "./ui/ui_stateButton.h"
+#include "SideBarButton.h"
+#include "./ui_SideBarButton.h"
 #include <string>
 
-stateButton::stateButton(int num, CfgClass *MainCfg, QWidget *parent) :
-        QWidget(parent), ui(new Ui::stateButton) {
+SideBarButton::SideBarButton(int num, CfgClass *MainCfg, QWidget *parent) :
+        QWidget(parent), ui(new Ui::SideBarButton) {
 
     ui->setupUi(this);
     QString tmp = "/Device ";
@@ -21,11 +21,11 @@ stateButton::stateButton(int num, CfgClass *MainCfg, QWidget *parent) :
 
 }
 
-stateButton::~stateButton() {
+SideBarButton::~SideBarButton() {
     delete ui;
 }
 
-stateButton::stateButton(QWidget *parent)  :
-        QWidget(parent), ui(new Ui::stateButton) {
+SideBarButton::SideBarButton(QWidget *parent)  :
+        QWidget(parent), ui(new Ui::SideBarButton) {
     ui->setupUi(this);
 }
