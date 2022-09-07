@@ -18,9 +18,10 @@ set(CMAKE_PROJECT_VERSION 1.0)
 find_package(QT NAMES Qt6 Qt5 REQUIRED PrintSupport COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Widgets)
 
-file(GLOB HEADER "*.h")
-file(GLOB RSOURCE "*.cpp")
-file(GLOB UI "./ui/*.ui")
+file(GLOB_RECURSE  HEADER "*.h")
+file(GLOB_RECURSE  RSOURCE "*.cpp")
+file(GLOB_RECURSE  UI "*.ui")
+
 
 set(RCC_FILES main.qrc)
 
@@ -33,6 +34,7 @@ set(RCC_FILES main.qrc)
 
 add_executable(${PROJECT_NAME} ${HEADER} ${RSOURCE} ${UI} ${RCC_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC ../include/qmetarial/)
+target_include_directories(${PROJECT_NAME} PUBLIC ./components/)
 
 target_link_libraries(
   ${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets

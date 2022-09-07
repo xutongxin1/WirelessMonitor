@@ -1,9 +1,9 @@
 #include "mainwindow.h"
-#include "./ui/ui_mainwindow.h"
+#include "./ui_mainwindow.h"
 #include "qcustomplot.h"
 #include "qtmaterialappbar.h"
 #include "qtmaterialdrawer.h"
-#include "statebutton.h"
+#include "SideBarButton/SideBarButton.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -35,13 +35,13 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout *drawerLayout = new QVBoxLayout;
     m_drawer->setDrawerLayout(drawerLayout);
 
-    DeviceSelect[0] = new stateButton();
+    DeviceSelect[0] = new SideBarButton();
     drawerLayout->addWidget(DeviceSelect[0]);
 
     QString Note = MainCfg->GetMainCfg(QString("/Device/Num"));
     if (Note != nullptr) {
         for (int i = 1; i <= Note.toInt(); i++) {
-            DeviceSelect[i] = new stateButton(i, MainCfg);
+            DeviceSelect[i] = new SideBarButton(i, MainCfg);
             drawerLayout->addWidget(DeviceSelect[i]);
         }
     }
