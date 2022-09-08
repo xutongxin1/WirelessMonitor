@@ -21,10 +21,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Widgets)
 file(GLOB_RECURSE  HEADER "*.h")
 file(GLOB_RECURSE  RSOURCE "*.cpp")
 file(GLOB_RECURSE  UI "*.ui")
-
-
-set(RCC_FILES main.qrc)
-
+file(GLOB_RECURSE  QRC "*.qrc")
+file(GLOB Resource "../components/resources.qrc")
 
 #if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux") #XXX平台可以是“Linux”等
 #    EXECUTE_PROCESS(COMMAND cp -f ${PROJECT_SOURCE_DIR}/config/xxxx1.config ${PROJECT_SOURCE_DIR}/config/xxxx2.config)
@@ -32,7 +30,7 @@ set(RCC_FILES main.qrc)
 #    EXECUTE_PROCESS(COMMAND cp -f ${PROJECT_SOURCE_DIR}/main/config/*.ini ${CMAKE_CURRENT_BINARY_DIR}/config/*.config)
 #endif()
 
-add_executable(${PROJECT_NAME} ${HEADER} ${RSOURCE} ${UI} ${RCC_FILES})
+add_executable(${PROJECT_NAME} ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
 target_include_directories(${PROJECT_NAME} PUBLIC ../include/qmetarial/)
 target_include_directories(${PROJECT_NAME} PUBLIC ./components/)
 

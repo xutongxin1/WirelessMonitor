@@ -104,19 +104,6 @@
         <height>1677215</height>
        </size>
       </property>
-      <widget class="QtMaterialDrawer" name="widget" native="true">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>250</y>
-         <width>151</width>
-         <height>221</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QWidget { background: rgb(102, 204, 255); }</string>
-       </property>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -133,12 +120,6 @@
    <class>QtMaterialTabs</class>
    <extends>QWidget</extends>
    <header>qtmaterialtabs.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>QtMaterialDrawer</class>
-   <extends>QWidget</extends>
-   <header location="global">qtmaterialdrawer.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
