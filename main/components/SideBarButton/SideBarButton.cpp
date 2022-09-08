@@ -28,4 +28,5 @@ SideBarButton::~SideBarButton() {
 SideBarButton::SideBarButton(QWidget *parent)  :
         QWidget(parent), ui(new Ui::SideBarButton) {
     ui->setupUi(this);
+    ui->Button->setText("Main");
 }
