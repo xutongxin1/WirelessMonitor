@@ -4,6 +4,7 @@
 #include "qtmaterialappbar.h"
 #include "qtmaterialdrawer.h"
 #include "SideBarButton/SideBarButton.h"
+#include "ChannelConfiguration/channelconfiguration.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -45,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent)
             drawerLayout->addWidget(DeviceSelect[i]);
         }
     }
+
+    QWidget *Function=new ChannelConfiguration(ui->Function);
 
 
 
