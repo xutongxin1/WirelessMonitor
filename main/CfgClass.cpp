@@ -6,6 +6,7 @@
 
 CfgClass::CfgClass() {
     configMainIni = new QSettings("./config/main.ini", QSettings::IniFormat);
+    configMainIni->setIniCodec("GBK");
 }
 
 QString CfgClass::GetMainCfg(QString key) {
@@ -15,6 +16,16 @@ QString CfgClass::GetMainCfg(QString key) {
     }
     else {
         return nullptr;
+    }
+}
+
+bool CfgClass::SaveMainCfg(QString key, QString value) {
+    if (configMainIni->isWritable()) {
+        configMainIni->setValue(key, value);
+        return true;
+    }
+    else {
+        return false;
     }
 }
 

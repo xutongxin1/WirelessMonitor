@@ -16,8 +16,20 @@ SideBarButton::SideBarButton(int num, CfgClass *MainCfg, QWidget *parent) :
     tmp.append(QString::number(num));
 
     QString Note = MainCfg->GetMainCfg(QString(tmp + "/note"));
-    QString Port = MainCfg->GetMainCfg(QString(tmp + "/port"));
-    ui->Button->setText(Note + "\n" + "端口: " + Port);
+    QString way = MainCfg->GetMainCfg(QString(tmp + "/WayToConnect"));
+    if(way=="1")
+    {
+        way="XMB无线调试器";
+    }
+    else if(way=="2")
+    {
+        way="有线串口设备";
+    }
+    else if(way=="3")
+    {
+        way="TCP连接";
+    }
+    ui->Button->setText(Note + "\n" + way);
 
 }
 

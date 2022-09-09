@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_drawer->setOverlayMode(true);
     m_drawer->setDrawerWidth(250);
 
-    QVBoxLayout *drawerLayout = new QVBoxLayout;
+    auto *drawerLayout = new QVBoxLayout;
     m_drawer->setDrawerLayout(drawerLayout);
 
     DeviceSelect[0] = new SideBarButton();
@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
         }
     }
 
-    QWidget *Function1=new ChannelConfiguration();
+    QWidget *Function1 = new ChannelConfiguration(1, MainCfg);
     ui->FunctionWindow->addWidget(Function1);
 //    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());
 
