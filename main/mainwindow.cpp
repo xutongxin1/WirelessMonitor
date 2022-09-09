@@ -5,6 +5,7 @@
 #include "qtmaterialdrawer.h"
 #include "SideBarButton/SideBarButton.h"
 #include "ChannelConfiguration/channelconfiguration.h"
+#include "qtmaterialscrollbar.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -47,9 +48,9 @@ MainWindow::MainWindow(QWidget *parent)
         }
     }
 
-    QWidget *Function=new ChannelConfiguration(ui->Function);
-
-
+    QWidget *Function1=new ChannelConfiguration();
+    ui->FunctionWindow->addWidget(Function1);
+//    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());
 
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
 //    ui->FunctionTab->addTab()

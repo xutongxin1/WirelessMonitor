@@ -121,7 +121,7 @@
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
      <item>
-      <widget class="QPushButton" name="Disconnect">
+      <widget class="QtMaterialRaisedButton" name="Connect1">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -146,7 +146,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="Connect">
+      <widget class="QtMaterialRaisedButton" name="Disconnect">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -217,6 +217,11 @@
    <class>QtMaterialCircularProgress</class>
    <extends>QProgressBar</extends>
    <header>qtmaterialcircularprogress.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QtMaterialRaisedButton</class>
+   <extends>QPushButton</extends>
+   <header>qtmaterialraisedbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
