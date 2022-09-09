@@ -11,6 +11,8 @@
 ChannelConfiguration::ChannelConfiguration(QWidget *parent) :
         QWidget(parent), ui(new Ui::ChannelConfiguration) {
     ui->setupUi(this);
+    ui->ESPButton->setChecked(true);
+    ui->Disconnect->setEnabled(false);
 }
 
 ChannelConfiguration::~ChannelConfiguration() {
