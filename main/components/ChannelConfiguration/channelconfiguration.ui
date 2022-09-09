@@ -69,7 +69,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_2">
+        <widget class="QLineEdit" name="note">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
            <horstretch>0</horstretch>
@@ -81,6 +81,9 @@
            <width>0</width>
            <height>30</height>
           </size>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
@@ -96,7 +99,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit">
+        <widget class="QLineEdit" name="IP">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -121,7 +124,7 @@
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
      <item>
-      <widget class="QtMaterialRaisedButton" name="Connect1">
+      <widget class="QtMaterialRaisedButton" name="Connect">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>

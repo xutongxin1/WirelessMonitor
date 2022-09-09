@@ -10,6 +10,7 @@ class CfgClass {
 public:
     CfgClass();
     QString GetMainCfg(QString key);
+    bool SaveMainCfg(QString key,QString value);
 private:
     QSettings *configMainIni;
 };
