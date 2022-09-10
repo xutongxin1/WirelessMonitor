@@ -6,7 +6,7 @@
 #include "SideBarButton/SideBarButton.h"
 #include "ChannelConfiguration/channelconfiguration.h"
 #include "qtmaterialscrollbar.h"
-
+#include <cstdlib>
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
 //
 //
     m_drawer = new QtMaterialDrawer;
-    MainCfg = new CfgClass;
+    Cfg = new CfgClass;
     m_drawer->setParent(ui->centralwidget);
     m_drawer->setClickOutsideToClose(true);
     m_drawer->setOverlayMode(true);
@@ -38,18 +38,18 @@ MainWindow::MainWindow(QWidget *parent)
     m_drawer->setDrawerLayout(drawerLayout);
 
     DeviceSelect[0] = new SideBarButton();
-    drawerLayout->addWidget(DeviceSelect[0]);
+    drawerLayout->addWidget(DeviceSelect[0]);//初始化数据聚合窗口
 
-    QString Note = MainCfg->GetMainCfg(QString("/Device/Num"));
-    if (Note != nullptr) {
-        for (int i = 1; i <= Note.toInt(); i++) {
-            DeviceSelect[i] = new SideBarButton(i, MainCfg);
-            drawerLayout->addWidget(DeviceSelect[i]);
-        }
+    DeviceNum=Cfg->DeviceNum;
+    for (int i = 1; i <= DeviceNum; i++) {
+        DeviceSelect[i] = new SideBarButton(i, Cfg);
+        drawerLayout->addWidget(DeviceSelect[i]);
     }
 
-    QWidget *Function1 = new ChannelConfiguration(1, MainCfg);
-    ui->FunctionWindow->addWidget(Function1);
+
+    DeviceWindowsInit();
+
+
 //    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());
 
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
@@ -60,4 +60,34 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+void MainWindow::ErrorHandle(const QString& reason) {
+    int ret = QMessageBox::warning(this, QStringLiteral("Error!"), reason, QMessageBox::Cancel | QMessageBox::Ok);
+    std::exit(0);
+}
+
+void MainWindow::DeviceWindowsInit() {
+    WindowsInfo.emplace_back();
+    for(int i=1; i <= DeviceNum; i++){
+        DevicesInfo.push_back({});
+        struct DevicesInfo tmp{.windowsNum = Cfg->GetMainCfg("/Device "+QString::number(i)+"/win").toInt()};
+        DevicesInfo.push_back(tmp);
+        for(int j=1;j<=DevicesInfo[i].windowsNum;j++)
+        {
+            switch(Cfg->GetDeviceCfg(i,"/Win"+QString::number(i)+"/type").toInt())
+            {
+                case 1:
+                    WindowsInfo.emplace_back();
+                    WindowsInfo[i].emplace_back();
+                    WindowsInfo[i].emplace_back();
+                    WindowsInfo[i][j].type=ChannelConfiguration;
+                    WindowsInfo[i][j].widget=new class ChannelConfiguration(i, Cfg);
+                    WindowsInfo[i][j].index=ui->FunctionWindow->addWidget(WindowsInfo[i][j].widget);
+            }
+        }
+
+    }
+
+
 }
