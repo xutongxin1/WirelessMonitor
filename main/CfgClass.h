@@ -4,15 +4,28 @@
 
 #ifndef QT_CFGCLASS_H
 #define QT_CFGCLASS_H
+
 #include <QSettings>
 
 class CfgClass {
 public:
     CfgClass();
-    QString GetMainCfg(QString key);
-    bool SaveMainCfg(QString key,QString value);
+
+    QString GetMainCfg(const QString &key);
+
+    bool SaveMainCfg(const QString &key, const QString &value);
+
+    QString GetDeviceCfg(int DeviceNum, const QString &key);
+
+    bool SaveDeviceCfg(int num, const QString &key, const QString &value);
+
+    int DeviceNum;
 private:
     QSettings *configMainIni;
+    std::vector<QSettings*> configDeviceIni;
+
+    static QSettings *OpenCfg(const QString &path);
+
 };
 
 
