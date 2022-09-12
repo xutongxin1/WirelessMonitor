@@ -44,29 +44,10 @@
         <height>100</height>
        </size>
       </property>
-      <widget class="QtMaterialTabs" name="FunctionTab" native="true">
-       <property name="geometry">
-        <rect>
-         <x>51</x>
-         <y>1</y>
-         <width>1028</width>
-         <height>100</height>
-        </rect>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>100</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QWidget { background: rgb(102, 204, 255); }</string>
-       </property>
-      </widget>
       <widget class="QPushButton" name="settingButton">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>9</x>
          <y>25</y>
          <width>50</width>
          <height>50</height>
@@ -98,6 +79,17 @@ border:none;</string>
        <property name="text">
         <string/>
        </property>
+      </widget>
+      <widget class="QStackedWidget" name="TabStackedWidget">
+       <property name="geometry">
+        <rect>
+         <x>65</x>
+         <y>9</y>
+         <width>1006</width>
+         <height>82</height>
+        </rect>
+       </property>
+       <widget class="QtMaterialTabs" name="MainTab"/>
       </widget>
      </widget>
     </item>

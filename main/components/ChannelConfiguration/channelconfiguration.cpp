@@ -63,6 +63,9 @@ ChannelConfiguration::~ChannelConfiguration() {
     delete ui;
 }
 
+/*!
+ * 连接按钮按下事件
+ */
 void ChannelConfiguration::onConnect() {
     if (!(ui->IP->hasAcceptableInput())) {
         QToolTip::showText(ui->IP->mapToGlobal(QPoint(100, 0)), "IP端口输入有误");
@@ -74,6 +77,9 @@ void ChannelConfiguration::onConnect() {
     ui->Disconnect->setEnabled(true);
 }
 
+/*!
+ * 断开按钮按下事件
+ */
 void ChannelConfiguration::onDisconnect() {
     ui->Connect->setEnabled(true);
     ui->Disconnect->setEnabled(false);
