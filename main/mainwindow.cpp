@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
 //    ui->FunctionTab->addTab()
-    ui->TabStackedWidget->setCurrentIndex(1);
+    DeviceExchange(1);
 
 }
 
@@ -108,8 +108,9 @@ void MainWindow::DeviceWindowsInit() {
  * 设备切换,被侧边栏切换
  * @param num 设备号
  */
-void MainWindow::DeviceExchange(int DeviceNum) {
-
+void MainWindow::DeviceExchange(int Device_Num) {
+    ui->TabStackedWidget->setCurrentIndex(DevicesInfo[Device_Num].TabIndex);
+    DeviceWindowsExchange(DeviceNum,1);
 }
 
 /*!
@@ -117,6 +118,6 @@ void MainWindow::DeviceExchange(int DeviceNum) {
  * @param DeviceNum 设备号
  * @param WinNum 窗口号
  */
-void MainWindow::DeviceWindowsExchange(int DeviceNum, int WinNum) {
-
+void MainWindow::DeviceWindowsExchange(int Device_Num, int WinNum) {
+    ui->FunctionWindow->setCurrentIndex(DevicesWindowsInfo[Device_Num][WinNum].index);
 }
