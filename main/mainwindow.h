@@ -5,6 +5,7 @@
 #include "qcustomplot.h"
 #include "qtmaterialdrawer.h"
 #include "CfgClass.h"
+#include "qtmaterialtabs.h"
 #include <string>
 using namespace std;
 
@@ -16,15 +17,17 @@ enum WindowsType
     None,
     ChannelConfiguration
 };
-struct WindowsInfo
+struct WindowsInfo//窗口配置信息结构体
 {
     QWidget *widget;
     int index;
     WindowsType type;
 };
-struct DevicesInfo
+struct DevicesInfo//设备配置信息结构体
 {
     int windowsNum;
+    int TabIndex;
+    QtMaterialTabs *TabWidget;
 };
 class MainWindow : public QMainWindow
 {
@@ -33,7 +36,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    vector<vector<WindowsInfo>> WindowsInfo;//设备下窗口信息
+    vector<vector<WindowsInfo>> DevicesWindowsInfo;//设备下窗口信息
     vector<DevicesInfo> DevicesInfo;//设备信息
     int DeviceNum;//设备数量
 
@@ -43,9 +46,11 @@ private:
     Ui::MainWindow *ui;
     QCustomPlot *customPlot;
     QtMaterialDrawer *m_drawer;
-    QWidget *DeviceSelect[100];
+    QWidget *DeviceSelect[100];//侧边栏设备按钮指针
     CfgClass *Cfg;
     void ErrorHandle(const QString& reason);
     void DeviceWindowsInit();
+    void DeviceExchange(int DeviceNum);
+    void DeviceWindowsExchange(int DeviceNum, int WinNum);
 };
 #endif // MAINWINDOW_H
