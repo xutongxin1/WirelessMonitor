@@ -9,8 +9,8 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-//    Charts test;  //图标界面测试
-//    test.show();
+    Charts test;  //图标界面测试
+    test.show();
 
     return a.exec();
 }
