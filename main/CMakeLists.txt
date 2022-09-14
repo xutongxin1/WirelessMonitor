@@ -30,6 +30,7 @@ file(GLOB Resource "../components/resources.qrc")
 #    EXECUTE_PROCESS(COMMAND cp -f ${PROJECT_SOURCE_DIR}/main/config/*.ini ${CMAKE_CURRENT_BINARY_DIR}/config/*.config)
 #endif()
 
+
 add_executable(${PROJECT_NAME} ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
 target_include_directories(${PROJECT_NAME} PUBLIC ../include/qmetarial/)
 target_include_directories(${PROJECT_NAME} PUBLIC ./components/)
@@ -47,5 +48,9 @@ set_target_properties(
              MACOSX_BUNDLE TRUE)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND cp -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/Debug
+        )#给Clion等win环境使用
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND cp -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}
-        )
+        )#QTCreator或者linux环境使用
