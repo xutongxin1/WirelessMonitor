@@ -26,6 +26,22 @@
     </rect>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>740</x>
+     <y>40</y>
+     <width>93</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>打开通道</string>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>

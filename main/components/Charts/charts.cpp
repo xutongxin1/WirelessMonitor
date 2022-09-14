@@ -211,3 +211,17 @@ void Charts::myMoveEvent(QMouseEvent *event)
     QToolTip::showText(mapToGlobal(QPoint(out_x,out_y)),strToolTip,ui->widget);
 
 }
+
+void Charts::on_pushButton_clicked(bool checked)
+{
+    if(checked == 1)
+    {
+        ui->pushButton->setText("开启通道");
+        //开启
+    }
+    else
+    {
+        ui->pushButton->setText("关闭通道");
+        //关闭
+    }
+}

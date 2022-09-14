@@ -28,6 +28,9 @@ public slots:
     void myMoveEvent(QMouseEvent *event);
     //本例中用于修改实时数据，并调用ShowLine函数
 
+private slots:
+    void on_pushButton_clicked(bool checked);
+
 private:
     Ui::Charts *ui;
     unsigned long int flag;
