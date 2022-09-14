@@ -25,7 +25,7 @@ public:
 public slots:
 
     void ReadyShowLine();
-
+    void myMoveEvent(QMouseEvent *event);
     //本例中用于修改实时数据，并调用ShowLine函数
 
 private:
