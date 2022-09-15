@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>ChannelConfiguration</class>
- <widget class="QWidget" name="ChannelConfiguration">
+ <widget class="RepeaterWidget" name="ChannelConfiguration">
   <property name="geometry">
    <rect>
     <x>0</x>

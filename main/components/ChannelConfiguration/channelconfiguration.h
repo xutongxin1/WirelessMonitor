@@ -7,17 +7,18 @@
 
 #include <QWidget>
 #include "CfgClass.h"
+#include "RepeaterWidget.h"
 
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChannelConfiguration; }
 QT_END_NAMESPACE
 
-class ChannelConfiguration : public QWidget {
+class ChannelConfiguration : public RepeaterWidget {
 Q_OBJECT
 
 public:
-    explicit ChannelConfiguration(int num, CfgClass *MainCfg, QWidget *parent = nullptr);
+    explicit ChannelConfiguration(int num, CfgClass *MainCfg, RepeaterWidget *parent = nullptr);
 
     ~ChannelConfiguration() override;
 

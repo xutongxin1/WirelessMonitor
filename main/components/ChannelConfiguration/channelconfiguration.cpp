@@ -9,8 +9,8 @@
 #include "ui_ChannelConfiguration.h"
 
 
-ChannelConfiguration::ChannelConfiguration(int num, CfgClass *MainCfg, QWidget *parent) :
-        QWidget(parent), ui(new Ui::ChannelConfiguration) {
+ChannelConfiguration::ChannelConfiguration(int num, CfgClass *MainCfg, RepeaterWidget *parent) :
+        RepeaterWidget(parent), ui(new Ui::ChannelConfiguration) {
     ui->setupUi(this);
     ui->ESPButton->setChecked(true);
     ui->Disconnect->setEnabled(false);

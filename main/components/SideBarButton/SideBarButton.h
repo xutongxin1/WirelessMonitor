@@ -7,18 +7,19 @@
 
 #include <QWidget>
 #include "CfgClass.h"
+#include "RepeaterWidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SideBarButton; }
 QT_END_NAMESPACE
 
-class SideBarButton : public QWidget {
+class SideBarButton : public RepeaterWidget {
 Q_OBJECT
 
 public:
-    explicit SideBarButton(QWidget *parent = nullptr);
-    explicit SideBarButton(int num, CfgClass *MainCfg, QWidget *parent = nullptr);
-
+    explicit SideBarButton(RepeaterWidget *parent = nullptr);
+    explicit SideBarButton(int num, CfgClass *MainCfg, RepeaterWidget *parent = nullptr);
+    QPushButton *Button;
 
     ~SideBarButton() override;
 

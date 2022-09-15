@@ -44,10 +44,11 @@ MainWindow::MainWindow(QWidget *parent)
     for (int i = 1; i <= DeviceNum; i++) {
         DeviceSelect[i] = new SideBarButton(i, Cfg);
         drawerLayout->addWidget(DeviceSelect[i]);
-//        connect(DeviceSelect[i]->Button, &QPushButton::pressed, this, [=]
-//        {
-//            MainWindow::DeviceExchange(1);
-//        });
+        connect(DeviceSelect[i]->Button, &QPushButton::pressed, this, [=]
+        {
+            MainWindow::DeviceExchange(i);
+            qDebug("尝试切换到%d屏幕",i);
+        });
     }
 
 
@@ -57,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());
 
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
-
+    DeviceExchange(1);
 }
 
 MainWindow::~MainWindow() {

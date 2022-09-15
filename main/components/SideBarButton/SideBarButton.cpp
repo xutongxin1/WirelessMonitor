@@ -8,8 +8,8 @@
 #include "./ui_SideBarButton.h"
 #include <string>
 
-SideBarButton::SideBarButton(int num, CfgClass *MainCfg, QWidget *parent) :
-        QWidget(parent), ui(new Ui::SideBarButton) {
+SideBarButton::SideBarButton(int num, CfgClass *MainCfg, RepeaterWidget *parent) :
+        RepeaterWidget(parent), ui(new Ui::SideBarButton) {
 
     ui->setupUi(this);
     QString tmp = "/Device ";
@@ -30,15 +30,16 @@ SideBarButton::SideBarButton(int num, CfgClass *MainCfg, QWidget *parent) :
         way="TCP连接";
     }
     ui->Button->setText(Note + "\n" + way);
-
+    Button=ui->Button;
 }
 
 SideBarButton::~SideBarButton() {
     delete ui;
 }
 
-SideBarButton::SideBarButton(QWidget *parent)  :
-        QWidget(parent), ui(new Ui::SideBarButton) {
+SideBarButton::SideBarButton(RepeaterWidget *parent)  :
+        RepeaterWidget(parent), ui(new Ui::SideBarButton) {
     ui->setupUi(this);
     ui->Button->setText("Main");
+    Button=ui->Button;
 }

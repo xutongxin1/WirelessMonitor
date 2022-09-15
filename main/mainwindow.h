@@ -20,7 +20,7 @@ enum WindowsType
 };
 struct WindowsInfo//窗口配置信息结构体
 {
-    QWidget *widget;
+    RepeaterWidget *widget;
     int index;
     WindowsType type;
 };
