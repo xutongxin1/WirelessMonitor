@@ -44,6 +44,10 @@ MainWindow::MainWindow(QWidget *parent)
     for (int i = 1; i <= DeviceNum; i++) {
         DeviceSelect[i] = new SideBarButton(i, Cfg);
         drawerLayout->addWidget(DeviceSelect[i]);
+//        connect(DeviceSelect[i]->Button, &QPushButton::pressed, this, [=]
+//        {
+//            MainWindow::DeviceExchange(1);
+//        });
     }
 
 
@@ -53,8 +57,6 @@ MainWindow::MainWindow(QWidget *parent)
 //    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());
 
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
-//    ui->FunctionTab->addTab()
-    DeviceExchange(1);
 
 }
 
@@ -119,5 +121,9 @@ void MainWindow::DeviceExchange(int Device_Num) {
  * @param WinNum 窗口号
  */
 void MainWindow::DeviceWindowsExchange(int Device_Num, int WinNum) {
+//    if(DevicesWindowsInfo[Device_Num][WinNum].index==0)
+//    {
+//        ErrorHandle("尝试打开不存在的窗口");
+//    }
     ui->FunctionWindow->setCurrentIndex(DevicesWindowsInfo[Device_Num][WinNum].index);
 }

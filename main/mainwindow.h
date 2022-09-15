@@ -6,6 +6,7 @@
 #include "qtmaterialdrawer.h"
 #include "CfgClass.h"
 #include "qtmaterialtabs.h"
+#include "SideBarButton/SideBarButton.h"
 #include <string>
 using namespace std;
 
@@ -46,7 +47,7 @@ private:
     Ui::MainWindow *ui;
     QCustomPlot *customPlot;
     QtMaterialDrawer *m_drawer;
-    QWidget *DeviceSelect[100];//侧边栏设备按钮指针
+    SideBarButton *DeviceSelect[100];//侧边栏设备按钮指针
     CfgClass *Cfg;
     void ErrorHandle(const QString& reason);
     void DeviceWindowsInit();
