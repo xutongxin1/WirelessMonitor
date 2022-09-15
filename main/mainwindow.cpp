@@ -47,7 +47,6 @@ MainWindow::MainWindow(QWidget *parent)
         connect(DeviceSelect[i]->Button, &QPushButton::pressed, this, [=]
         {
             MainWindow::DeviceExchange(i);
-            qDebug("尝试切换到%d屏幕",i);
         });
     }
 
@@ -102,6 +101,13 @@ void MainWindow::DeviceWindowsInit() {
             }
         }
 
+        //tab栏绑定
+        connect(NewTab,&QtMaterialTabs::currentChanged,this,[=](int num)
+        {
+            //这里的num从0开始，所以要+1
+            DeviceWindowsExchange(i,num+1);
+        });
+
     }
 
 
@@ -126,5 +132,6 @@ void MainWindow::DeviceWindowsExchange(int Device_Num, int WinNum) {
 //    {
 //        ErrorHandle("尝试打开不存在的窗口");
 //    }
+    qDebug("尝试切换到%d设备%d窗口",Device_Num,WinNum);
     ui->FunctionWindow->setCurrentIndex(DevicesWindowsInfo[Device_Num][WinNum].index);
 }
