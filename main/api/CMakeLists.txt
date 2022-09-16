@@ -1,6 +1,12 @@
-file(GLOB_RECURSE  HEADER "*.h")
-file(GLOB_RECURSE  RSOURCE "*.cpp")
-file(GLOB_RECURSE  UI "*.ui")
-file(GLOB_RECURSE  QRC "*.qrc")
-target_sources(${PROJECT_NAME} PUBLIC ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
-target_include_directories(${PROJECT_NAME} PUBLIC ./RepeaterWidget)
+add_subdirectory(RepeaterWidget)
+add_subdirectory(qextserialport)
+
+
+IF (WIN32)
+    MESSAGE(STATUS "Now is windows")
+
+
+ELSEIF (UNIX)
+    MESSAGE(STATUS "Now is UNIX-like OS's.")
+
+ENDIF ()

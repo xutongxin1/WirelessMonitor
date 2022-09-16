@@ -1,0 +1,6 @@
+file(GLOB_RECURSE  HEADER "*.h")
+file(GLOB_RECURSE  RSOURCE "*.cpp")
+file(GLOB_RECURSE  UI "*.ui")
+file(GLOB_RECURSE  QRC "*.qrc")
+target_sources(${PROJECT_NAME} PUBLIC ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
+target_include_directories(${PROJECT_NAME} PUBLIC ./)

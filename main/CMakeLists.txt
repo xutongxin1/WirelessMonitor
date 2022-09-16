@@ -21,11 +21,11 @@ set(CMAKE_PROJECT_VERSION 1.0)
 find_package(QT NAMES Qt6 Qt5 REQUIRED PrintSupport COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Widgets)
 
-file(GLOB_RECURSE  HEADER "*.h")
-file(GLOB_RECURSE  RSOURCE "*.cpp")
-file(GLOB_RECURSE  UI "*.ui")
-file(GLOB_RECURSE  QRC "*.qrc")
-file(GLOB Resource "../components/resources.qrc")
+file(GLOB HEADER "*.h")
+file(GLOB RSOURCE "*.cpp")
+file(GLOB UI "*.ui")
+file(GLOB QRC "*.qrc")
+file(GLOB_RECURSE Resource "../components/resources.qrc")
 
 #if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux") #XXX平台可以是“Linux”等
 #    EXECUTE_PROCESS(COMMAND cp -f ${PROJECT_SOURCE_DIR}/config/xxxx1.config ${PROJECT_SOURCE_DIR}/config/xxxx2.config)
@@ -36,8 +36,10 @@ file(GLOB Resource "../components/resources.qrc")
 
 add_executable(${PROJECT_NAME} ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
 add_subdirectory(api)
+add_subdirectory(components)
+target_include_directories(${PROJECT_NAME} PUBLIC ./components)
 target_include_directories(${PROJECT_NAME} PUBLIC ../include/qmetarial/)
-target_include_directories(${PROJECT_NAME} PUBLIC ./components/)
+
 
 target_link_libraries(
   ${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
