@@ -15,6 +15,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_PROJECT_VERSION 1.0)
+
+
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED PrintSupport COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Widgets)
 
@@ -32,6 +35,7 @@ file(GLOB Resource "../components/resources.qrc")
 
 
 add_executable(${PROJECT_NAME} ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
+add_subdirectory(api)
 target_include_directories(${PROJECT_NAME} PUBLIC ../include/qmetarial/)
 target_include_directories(${PROJECT_NAME} PUBLIC ./components/)
 
