@@ -18,8 +18,8 @@ set(CMAKE_PROJECT_VERSION 1.0)
 
 
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED PrintSupport COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Widgets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED PrintSupport COMPONENTS Network Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Network Widgets)
 
 file(GLOB HEADER "*.h")
 file(GLOB RSOURCE "*.cpp")
@@ -43,7 +43,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ../include/qmetarial/)
 
 target_link_libraries(
   ${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-                          Qt${QT_VERSION_MAJOR}::Core Qt5::PrintSupport components)
+                          Qt${QT_VERSION_MAJOR}::Core Qt5::PrintSupport Qt5::Network components)
 
 set_target_properties(
   ${PROJECT_NAME}

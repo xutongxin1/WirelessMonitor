@@ -6,6 +6,7 @@
 #include "SideBarButton/SideBarButton.h"
 #include "ChannelConfiguration/channelconfiguration.h"
 #include "qtmaterialscrollbar.h"
+#include "ComTool/comtool.h"
 #include <cstdlib>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -53,11 +54,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     DeviceWindowsInit();
 
+    ComTool *tmp=new ComTool();
 
 //    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());
 
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
-    DeviceExchange(1);
+    //DeviceExchange(1);
+    ui->FunctionWindow->setCurrentIndex(ui->FunctionWindow->addWidget(tmp));
 }
 
 MainWindow::~MainWindow() {
