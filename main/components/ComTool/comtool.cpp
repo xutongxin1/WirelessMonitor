@@ -4,7 +4,7 @@
 
 // You may need to build the project (run Qt uic code generator) to get "ui_ComTool.h" resolved
 
-#include "ComTool.h"
+#include "comtool.h"
 #include "ui_comtool.h"
 #include "ComTool/depend/quihelper.h"
 #include "ComTool/depend/quihelperdata.h"
@@ -421,22 +421,21 @@ void ComTool::saveData() {
 
 void ComTool::on_btnOpen_clicked() {
     if (ui->btnOpen->text() == "打开串口") {
-        com = new QextSerialPort(ui->cboxPortName->currentText(), QextSerialPort::Polling);
+        com = new QSerialPort(ui->cboxPortName->currentText());
         comOk = com->open(QIODevice::ReadWrite);
 
         if (comOk) {
             //清空缓冲区
             com->flush();
             //设置波特率
-            com->setBaudRate((BaudRateType) ui->cboxBaudRate->currentText().toInt());
+            com->setBaudRate((QSerialPort::BaudRate) ui->cboxBaudRate->currentText().toInt());
             //设置数据位
-            com->setDataBits((DataBitsType) ui->cboxDataBit->currentText().toInt());
+            com->setDataBits((QSerialPort::DataBits) ui->cboxDataBit->currentText().toInt());
             //设置校验位
-            com->setParity((ParityType) ui->cboxParity->currentIndex());
+            com->setParity((QSerialPort::Parity) ui->cboxParity->currentIndex());
             //设置停止位
-            com->setStopBits((StopBitsType) ui->cboxStopBit->currentIndex());
-            com->setFlowControl(FLOW_OFF);
-            com->setTimeout(10);
+            com->setStopBits((QSerialPort::StopBits) ui->cboxStopBit->currentIndex());
+            com->setFlowControl(QSerialPort::NoFlowControl);
 
             changeEnable(true);
             ui->btnOpen->setText("关闭串口");

@@ -7,7 +7,8 @@
 
 #include <QTcpSocket>
 #include "RepeaterWidget.h"
-#include "api/qextserialport/qextserialport.h"
+#include <QtSerialPort/QtSerialPort>
+#include <QtSerialPort/QSerialPortInfo>
 
 
 QT_BEGIN_NAMESPACE
@@ -25,7 +26,7 @@ public:
 private:
     Ui::comtool *ui;
     bool comOk;                 //串口是否打开
-    QextSerialPort *com;        //串口通信对象
+    QSerialPort *com;        //串口通信对象
     QTimer *timerRead;          //定时读取串口数据
     QTimer *timerSend;          //定时发送串口数据
     QTimer *timerSave;          //定时保存串口数据
