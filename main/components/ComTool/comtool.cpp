@@ -10,6 +10,15 @@
 #include "ComTool/depend/quihelperdata.h"
 #include "ComTool/depend/appconfig.h"
 
+/*
+ * TODO:波特率扩大可选范围
+ * TODO:shell语法高亮，使用正则表达式https://c.runoob.com/front-end/
+ * TODO:以回车分隔
+ * TODO:配置文件统一化
+ * TODO:TCP功能分离
+ */
+
+
 
 ComTool::ComTool(QWidget *parent) :
         RepeaterWidget(parent), ui(new Ui::comtool) {

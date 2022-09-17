@@ -1,5 +1,4 @@
 add_subdirectory(RepeaterWidget)
-add_subdirectory(qextserialport)
 
 
 IF (WIN32)
