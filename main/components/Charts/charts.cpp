@@ -2,6 +2,9 @@
 #include "ui_charts.h"
 #include <string.h>
 
+//打开通道不能移动和放缩，默认和关闭可以
+QTimer *timer;
+
 Charts::Charts(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Charts)
@@ -12,8 +15,8 @@ Charts::Charts(QWidget *parent) :
     memset(Buff,'\0',sizeof (Buff));
     CurrentData=0;
     flag=0;
-    QTimer *timer = new QTimer(this);
-    //timer->start(200);//每200ms重绘一次折线图
+
+    timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(ReadyShowLine()));
 
     ui->widget->resize(600, 600);
@@ -216,12 +219,16 @@ void Charts::on_pushButton_clicked(bool checked)
 {
     if(checked == 1)
     {
-        ui->pushButton->setText("开启通道");
-        //开启
+        //开启，不可以放缩和移动
+        ui->pushButton->setText("关闭通道");
+        timer->start(200);//每200ms重绘一次折线图
+        ui->widget->setInteractions(QCP::iNone);
     }
     else
     {
-        ui->pushButton->setText("关闭通道");
-        //关闭
+        //关闭，可以放缩和移动
+        ui->pushButton->setText("开启通道");
+        timer->stop();
+        ui->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
     }
 }
