@@ -32,6 +32,8 @@ public slots:
 private slots:
     void on_pushButton_clicked(bool checked);
 
+    void on_pushButton_2_clicked();
+
 private:
     Ui::Charts *ui;
     unsigned long int flag;

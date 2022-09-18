@@ -158,5 +158,19 @@ void Charts::on_pushButton_clicked(bool checked)
 
 void Charts::lChartsApi()
 {
+    //搜索有多少变量需要画图，然后加图层
     ui->widget->addGraph();
+}
+
+void Charts::on_pushButton_2_clicked()
+{
+    //点击鼠标然后删除
+    for (int i = 0; i < ui->widget->graphCount(); ++i)
+    {
+        QCPGraph * graph = ui->widget->graph(i);
+        if (graph ->selected()) {
+            ui->widget->removeGraph(i);//销毁
+        }
+    }
+    ui->widget->replot();//重绘图形
 }
