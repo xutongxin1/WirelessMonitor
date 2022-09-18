@@ -16,7 +16,9 @@ QT_END_NAMESPACE
 enum WindowsType
 {
     None,
-    ChannelConfiguration
+    ChannelConfiguration,
+    XCOM,
+
 };
 struct WindowsInfo//窗口配置信息结构体
 {

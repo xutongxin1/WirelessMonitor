@@ -54,13 +54,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     DeviceWindowsInit();
 
-    ComTool *tmp=new ComTool();
+//    ComTool *tmp=new ComTool();
 
 //    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());
 
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
-    //DeviceExchange(1);
-    ui->FunctionWindow->setCurrentIndex(ui->FunctionWindow->addWidget(tmp));
+    DeviceExchange(1);
+//    ui->FunctionWindow->setCurrentIndex(ui->FunctionWindow->addWidget(tmp));
 }
 
 MainWindow::~MainWindow() {
@@ -91,16 +91,26 @@ void MainWindow::DeviceWindowsInit() {
                 "/Device " + QString::number(i) + "/win").toInt(), .TabIndex =ui->TabStackedWidget->addWidget(
                 NewTab), .TabWidget=NewTab};
         DevicesInfo.push_back(tmp);
+        DevicesWindowsInfo.emplace_back();//创建行
         for (int j = 1; j <= DevicesInfo[i].windowsNum; j++) {
-            switch (Cfg->GetDeviceCfg(i, "/Win" + QString::number(i) + "/type").toInt()) {
+            int WinType=Cfg->GetDeviceCfg(i, "/Win" + QString::number(j) + "/type").toInt();
+            if(WinType==0)continue;
+            DevicesWindowsInfo[i].emplace_back();//0位置空占位
+            DevicesWindowsInfo[i].emplace_back();
+            switch (WinType) {
                 case 1:
-                    DevicesWindowsInfo.emplace_back();
-                    DevicesWindowsInfo[i].emplace_back();//0位置空占位
-                    DevicesWindowsInfo[i].emplace_back();
                     DevicesWindowsInfo[i][j].type = ChannelConfiguration;//结构体初始化
                     DevicesWindowsInfo[i][j].widget = new class ChannelConfiguration(i, Cfg);
                     DevicesWindowsInfo[i][j].index = ui->FunctionWindow->addWidget(DevicesWindowsInfo[i][j].widget);
                     DevicesInfo[i].TabWidget->addTab("通道配置");//添加tab栏
+                    break;
+                case 2:
+                    DevicesWindowsInfo[i][j].type = XCOM;//结构体初始化
+                    DevicesWindowsInfo[i][j].widget =new ComTool();
+                    DevicesWindowsInfo[i][j].index = ui->FunctionWindow->addWidget(DevicesWindowsInfo[i][j].widget);
+                    DevicesInfo[i].TabWidget->addTab("本地串口监视器");//添加tab栏
+                    break;
+
             }
         }
 
