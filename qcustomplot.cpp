@@ -228,7 +228,7 @@ double QCPVector2D::distanceToStraightLine(const QCPVector2D &base, const QCPVec
 }
 
 /*!
-  Scales this vector by the given \a factor, i.e. the x and y components are multiplied by \a
+  Scales this vector by the given \a factor, i.e. the x and y qmetarial are multiplied by \a
   factor.
 */
 QCPVector2D &QCPVector2D::operator*=(double factor)
@@ -239,7 +239,7 @@ QCPVector2D &QCPVector2D::operator*=(double factor)
 }
 
 /*!
-  Scales this vector by the given \a divisor, i.e. the x and y components are divided by \a
+  Scales this vector by the given \a divisor, i.e. the x and y qmetarial are divided by \a
   divisor.
 */
 QCPVector2D &QCPVector2D::operator/=(double divisor)
@@ -15440,7 +15440,7 @@ bool QCustomPlot::saveBmp(const QString &fileName, int width, int height, double
   Returns a minimum size hint that corresponds to the minimum size of the top level layout
   (\ref plotLayout). To prevent QCustomPlot from being collapsed to size/width zero, set a minimum
   size (setMinimumSize) either on the whole QCustomPlot or on any layout elements inside the plot.
-  This is especially important, when placed in a QLayout where other components try to take in as
+  This is especially important, when placed in a QLayout where other qmetarial try to take in as
   much space as possible (e.g. QMdiArea).
 */
 QSize QCustomPlot::minimumSizeHint() const
@@ -16499,7 +16499,7 @@ void QCustomPlot::toPainter(QCPPainter *painter, int width, int height)
   Alternatively, load one of the preset color gradients shown in the image below, with \ref
   loadPreset, or by directly specifying the preset in the constructor.
   
-  Apart from red, green and blue components, the gradient also interpolates the alpha values of the
+  Apart from red, green and blue qmetarial, the gradient also interpolates the alpha values of the
   configured color stops. This allows to display some portions of the data range as transparent in
   the plot.
   
@@ -16684,7 +16684,7 @@ void QCPColorGradient::setPeriodic(bool enabled)
   
   Use the overloaded method to additionally provide alpha map data.
 
-  The QRgb values that are placed in \a scanLine have their r, g, and b components premultiplied
+  The QRgb values that are placed in \a scanLine have their r, g, and b qmetarial premultiplied
   with alpha (see QImage::Format_ARGB32_Premultiplied).
 */
 void QCPColorGradient::colorize(const double *data, const QCPRange &range, QRgb *scanLine, int n, int dataIndexFactor, bool logarithmic)
@@ -16740,7 +16740,7 @@ void QCPColorGradient::colorize(const double *data, const QCPRange &range, QRgb 
   Additionally to the other overload of \ref colorize, this method takes the array \a alpha, which
   has the same size and structure as \a data and encodes the alpha information per data point.
 
-  The QRgb values that are placed in \a scanLine have their r, g and b components premultiplied
+  The QRgb values that are placed in \a scanLine have their r, g and b qmetarial premultiplied
   with alpha (see QImage::Format_ARGB32_Premultiplied).
 */
 void QCPColorGradient::colorize(const double *data, const unsigned char *alpha, const QCPRange &range, QRgb *scanLine, int n, int dataIndexFactor, bool logarithmic)
@@ -16813,7 +16813,7 @@ void QCPColorGradient::colorize(const double *data, const unsigned char *alpha, 
   If an entire array of data values shall be converted, rather use \ref colorize, for better
   performance.
 
-  The returned QRgb has its r, g and b components premultiplied with alpha (see
+  The returned QRgb has its r, g and b qmetarial premultiplied with alpha (see
   QImage::Format_ARGB32_Premultiplied).
 */
 QRgb QCPColorGradient::color(double position, const QCPRange &range, bool logarithmic)
