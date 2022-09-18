@@ -21,6 +21,7 @@ public:
     unsigned char CurrentData;
 
     void ShowLine(QCustomPlot *customPlot);//显示折线图
+    void lChartsApi();//对外的Api接口
 
 public slots:
 
