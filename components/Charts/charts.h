@@ -32,13 +32,17 @@ public slots:
     //本例中用于修改实时数据，并调用ShowLine函数
 
 private slots:
-    void on_pushButton_clicked(bool checked);
 
     void on_pushButton_2_clicked();
+
+    void on_pushButton_clicked();
 
 private:
     Ui::Charts *ui;
     int flag;
+    double timer_count=0.0;
+    bool checked=0;
+    QTimer *timerChart;
 };
 
 #endif // CHARTS_H

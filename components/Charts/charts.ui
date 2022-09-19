@@ -36,10 +36,10 @@
     </rect>
    </property>
    <property name="text">
-    <string>打开通道</string>
+    <string>开启通道</string>
    </property>
    <property name="checkable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_2">

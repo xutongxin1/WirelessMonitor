@@ -1,10 +1,10 @@
 #include "charts.h"
 #include "ui_charts.h"
 #include <string.h>
+#include <QDebug>
 
 //打开通道不能移动和放缩，默认和关闭可以
-QTimer *timer;
-double timer_count=0.0;
+
 
 Charts::Charts(QWidget *parent) :
     RepeaterWidget(parent),
@@ -17,8 +17,9 @@ Charts::Charts(QWidget *parent) :
     CurrentData=0;
     flag=0;
 
-    timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),this,SLOT(ReadyShowLine()));
+    timerChart = new QTimer(this);
+    timerChart->setInterval(200);
+    connect(timerChart,SIGNAL(timeout()),this,SLOT(ReadyShowLine()));
 
 // Allow user to drag axis ranges with mouse, zoom with mouse wheel and select graphs by clicking:
     lChartsApi();
@@ -87,6 +88,8 @@ void Charts::ReadyShowLine()
 
 {
 
+    qDebug()<<"收到\n"<<endl;
+
     timer_count+=0.2;
 
     CurrentData=CurrentData+1;
@@ -138,23 +141,6 @@ void Charts::myMoveEvent(QMouseEvent *event)
 
 }
 
-void Charts::on_pushButton_clicked(bool checked)
-{
-    if(checked == 1)
-    {
-        //开启，不可以放缩和移动
-        ui->pushButton->setText("关闭通道");
-        timer->start(200);//每200ms重绘一次折线图
-        ui->widget->setInteractions(QCP::iNone);
-    }
-    else
-    {
-        //关闭，可以放缩和移动
-        ui->pushButton->setText("开启通道");
-        timer->stop();
-        ui->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-    }
-}
 
 void Charts::lChartsApi()
 {
@@ -173,4 +159,24 @@ void Charts::on_pushButton_2_clicked()
         }
     }
     ui->widget->replot();//重绘图形
+}
+
+void Charts::on_pushButton_clicked()
+{
+    if(checked == 0)
+    {
+        //开启，不可以放缩和移动
+        ui->pushButton->setText("关闭通道");
+        timerChart->start();//每200ms重绘一次折线图
+        ui->widget->setInteractions(QCP::iNone);
+        checked = 1;
+    }
+    else
+    {
+        //关闭，可以放缩和移动
+        ui->pushButton->setText("开启通道");
+        timerChart->stop();
+        ui->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+        checked = 0;
+    }
 }
