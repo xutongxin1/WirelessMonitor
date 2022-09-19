@@ -12,6 +12,15 @@ RepeaterWidget::RepeaterWidget(QWidget *parent): QWidget(parent) {
 
 }
 
+void RepeaterWidget::GetConstructConfig() {
+
+}
+
 RepeaterWidget::~RepeaterWidget() {
 
 }
+
+void RepeaterWidget::SaveConstructConfig() {
+
+}
+

@@ -14,5 +14,5 @@
 #define TIMEMS qPrintable(QTime::currentTime().toString("HH:mm:ss zzz"))
 #define STRDATETIME qPrintable(QDateTime::currentDateTime().toString("yyyy-MM-dd-HH-mm-ss"))
 
-#include "appconfig.h"
+#include "appconfig.h.bak"
 #include "appdata.h"

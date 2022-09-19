@@ -1,4 +1,4 @@
-﻿#include "appconfig.h"
+﻿#include "appconfig.h.bak"
 #include "quihelper.h"
 
 QString AppConfig::ConfigFile = "config.ini";

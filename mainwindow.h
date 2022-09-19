@@ -42,7 +42,7 @@ public:
     ~MainWindow();
     vector<vector<WindowsInfo>> DevicesWindowsInfo;//设备下窗口信息
     vector<DevicesInfo> DevicesInfo;//设备信息
-    int DeviceNum;//设备数量
+    int DeviceCount;//设备数量
 
 
 

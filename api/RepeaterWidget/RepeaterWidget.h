@@ -17,6 +17,8 @@ public:
     explicit RepeaterWidget(QWidget *parent = nullptr);
     ~RepeaterWidget();
     virtual void GetObjectFromUI(QPushButtonMap &result);
+    virtual void GetConstructConfig();
+    virtual void SaveConstructConfig();
 };
 
 

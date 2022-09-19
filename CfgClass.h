@@ -19,10 +19,12 @@ public:
 
     bool SaveDeviceCfg(int num, const QString &key, const QString &value);
 
+    std::vector<QSettings*> configDeviceIni;
+
     int DeviceNum;
 private:
     QSettings *configMainIni;
-    std::vector<QSettings*> configDeviceIni;
+
 
     static QSettings *OpenCfg(const QString &path);
 

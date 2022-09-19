@@ -8,7 +8,6 @@
 #include "ui_comtool.h"
 #include "ComTool/depend/quihelper.h"
 #include "ComTool/depend/quihelperdata.h"
-#include "ComTool/depend/appconfig.h"
 
 /*
  * TODO:波特率扩大可选范围
@@ -20,11 +19,30 @@
 
 
 
-ComTool::ComTool(QWidget *parent) :
+QString ComTool::PortName = "COM1";
+int ComTool::BaudRate = 9600;
+int ComTool::DataBit = 8;
+QString ComTool::Parity = QString::fromUtf8("无");
+double ComTool::StopBit = 1;
+
+bool ComTool::HexSend = false;
+bool ComTool::HexReceive = false;
+bool ComTool::Debug = false;
+bool ComTool::AutoClear = false;
+
+bool ComTool::AutoSend = false;
+int ComTool::SendInterval = 1000;
+bool ComTool::AutoSave = false;
+int ComTool::SaveInterval = 5000;
+
+ComTool::ComTool(int DeviceNum, int winNum, QSettings *cfg, QWidget *parent) :
         RepeaterWidget(parent), ui(new Ui::comtool) {
+    this->cfg = cfg;
+    this->ConfigFilePath = "./config/Device" + QString::number(DeviceNum) + ".ini";
+
+    this->GroupName = "Win" + QString::number(winNum);
     QUIHelper::initAll();
-    AppConfig::ConfigFile = QString("%1/%2.ini").arg(QUIHelper::appPath()).arg(QUIHelper::appName());
-    AppConfig::readConfig();
+    ComTool::GetConstructConfig();
 
     AppData::Intervals << "1" << "10" << "20" << "50" << "100" << "200" << "300" << "500" << "1000" << "1500" << "2000"
                        << "3000" << "5000" << "10000";
@@ -101,7 +119,7 @@ void ComTool::initConfig() {
     comList << "ttymxc1" << "ttymxc2" << "ttymxc3" << "ttymxc4";
     comList << "ttySAC1" << "ttySAC2" << "ttySAC3" << "ttySAC4";
     ui->cboxPortName->addItems(comList);
-    ui->cboxPortName->setCurrentIndex(ui->cboxPortName->findText(AppConfig::PortName));
+    ui->cboxPortName->setCurrentIndex(ui->cboxPortName->findText(ComTool::PortName));
     connect(ui->cboxPortName, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
 
     QStringList baudList;
@@ -110,14 +128,14 @@ void ComTool::initConfig() {
              << "56000" << "57600" << "76800" << "115200" << "128000" << "256000";
 
     ui->cboxBaudRate->addItems(baudList);
-    ui->cboxBaudRate->setCurrentIndex(ui->cboxBaudRate->findText(QString::number(AppConfig::BaudRate)));
+    ui->cboxBaudRate->setCurrentIndex(ui->cboxBaudRate->findText(QString::number(ComTool::BaudRate)));
     connect(ui->cboxBaudRate, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
 
     QStringList dataBitsList;
     dataBitsList << "5" << "6" << "7" << "8";
 
     ui->cboxDataBit->addItems(dataBitsList);
-    ui->cboxDataBit->setCurrentIndex(ui->cboxDataBit->findText(QString::number(AppConfig::DataBit)));
+    ui->cboxDataBit->setCurrentIndex(ui->cboxDataBit->findText(QString::number(ComTool::DataBit)));
     connect(ui->cboxDataBit, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
 
     QStringList parityList;
@@ -128,7 +146,7 @@ void ComTool::initConfig() {
     parityList << "空格";
 
     ui->cboxParity->addItems(parityList);
-    ui->cboxParity->setCurrentIndex(ui->cboxParity->findText(AppConfig::Parity));
+    ui->cboxParity->setCurrentIndex(ui->cboxParity->findText(ComTool::Parity));
     connect(ui->cboxParity, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
 
     QStringList stopBitsList;
@@ -139,25 +157,25 @@ void ComTool::initConfig() {
     stopBitsList << "2";
 
     ui->cboxStopBit->addItems(stopBitsList);
-    ui->cboxStopBit->setCurrentIndex(ui->cboxStopBit->findText(QString::number(AppConfig::StopBit)));
+    ui->cboxStopBit->setCurrentIndex(ui->cboxStopBit->findText(QString::number(ComTool::StopBit)));
     connect(ui->cboxStopBit, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
 
-    ui->ckHexSend->setChecked(AppConfig::HexSend);
+    ui->ckHexSend->setChecked(ComTool::HexSend);
     connect(ui->ckHexSend, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
 
-    ui->ckHexReceive->setChecked(AppConfig::HexReceive);
+    ui->ckHexReceive->setChecked(ComTool::HexReceive);
     connect(ui->ckHexReceive, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
 
-    ui->ckDebug->setChecked(AppConfig::Debug);
+    ui->ckDebug->setChecked(ComTool::Debug);
     connect(ui->ckDebug, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
 
-    ui->ckAutoClear->setChecked(AppConfig::AutoClear);
+    ui->ckAutoClear->setChecked(ComTool::AutoClear);
     connect(ui->ckAutoClear, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
 
-    ui->ckAutoSend->setChecked(AppConfig::AutoSend);
+    ui->ckAutoSend->setChecked(ComTool::AutoSend);
     connect(ui->ckAutoSend, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
 
-    ui->ckAutoSave->setChecked(AppConfig::AutoSave);
+    ui->ckAutoSave->setChecked(ComTool::AutoSave);
     connect(ui->ckAutoSave, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
 
     QStringList sendInterval;
@@ -172,86 +190,86 @@ void ComTool::initConfig() {
     ui->cboxSendInterval->addItems(sendInterval);
     ui->cboxSaveInterval->addItems(saveInterval);
 
-    ui->cboxSendInterval->setCurrentIndex(ui->cboxSendInterval->findText(QString::number(AppConfig::SendInterval)));
+    ui->cboxSendInterval->setCurrentIndex(ui->cboxSendInterval->findText(QString::number(ComTool::SendInterval)));
     connect(ui->cboxSendInterval, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-    ui->cboxSaveInterval->setCurrentIndex(ui->cboxSaveInterval->findText(QString::number(AppConfig::SaveInterval)));
+    ui->cboxSaveInterval->setCurrentIndex(ui->cboxSaveInterval->findText(QString::number(ComTool::SaveInterval)));
     connect(ui->cboxSaveInterval, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
 
-    timerSend->setInterval(AppConfig::SendInterval);
-    timerSave->setInterval(AppConfig::SaveInterval);
+    timerSend->setInterval(ComTool::SendInterval);
+    timerSave->setInterval(ComTool::SaveInterval);
 
-    if (AppConfig::AutoSend) {
+    if (ComTool::AutoSend) {
         timerSend->start();
     }
 
-    if (AppConfig::AutoSave) {
+    if (ComTool::AutoSave) {
         timerSave->start();
     }
+//
+//    //串口转网络部分
+//    ui->cboxMode->setCurrentIndex(ui->cboxMode->findText(ComTool::Mode));
+//    connect(ui->cboxMode, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
+//
+//    ui->txtServerIP->setText(ComTool::ServerIP);
+//    connect(ui->txtServerIP, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+//
+//    ui->txtServerPort->setText(QString::number(ComTool::ServerPort));
+//    connect(ui->txtServerPort, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+//
+//    ui->txtListenPort->setText(QString::number(ComTool::ListenPort));
+//    connect(ui->txtListenPort, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
 
-    //串口转网络部分
-    ui->cboxMode->setCurrentIndex(ui->cboxMode->findText(AppConfig::Mode));
-    connect(ui->cboxMode, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-
-    ui->txtServerIP->setText(AppConfig::ServerIP);
-    connect(ui->txtServerIP, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-
-    ui->txtServerPort->setText(QString::number(AppConfig::ServerPort));
-    connect(ui->txtServerPort, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-
-    ui->txtListenPort->setText(QString::number(AppConfig::ListenPort));
-    connect(ui->txtListenPort, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-
-    QStringList values;
-    values << "0" << "10" << "50";
-
-    for (int i = 100; i < 1000; i = i + 100) {
-        values << QString("%1").arg(i);
-    }
-
-    ui->cboxSleepTime->addItems(values);
-
-    ui->cboxSleepTime->setCurrentIndex(ui->cboxSleepTime->findText(QString::number(AppConfig::SleepTime)));
-    connect(ui->cboxSleepTime, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-
-    ui->ckAutoConnect->setChecked(AppConfig::AutoConnect);
-    connect(ui->ckAutoConnect, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
+//    QStringList values;
+//    values << "0" << "10" << "50";
+//
+//    for (int i = 100; i < 1000; i = i + 100) {
+//        values << QString("%1").arg(i);
+//    }
+//
+//    ui->cboxSleepTime->addItems(values);
+//
+//    ui->cboxSleepTime->setCurrentIndex(ui->cboxSleepTime->findText(QString::number(ComTool::SleepTime)));
+//    connect(ui->cboxSleepTime, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
+//
+//    ui->ckAutoConnect->setChecked(ComTool::AutoConnect);
+//    connect(ui->ckAutoConnect, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
 }
 
 void ComTool::saveConfig() {
-    AppConfig::PortName = ui->cboxPortName->currentText();
-    AppConfig::BaudRate = ui->cboxBaudRate->currentText().toInt();
-    AppConfig::DataBit = ui->cboxDataBit->currentText().toInt();
-    AppConfig::Parity = ui->cboxParity->currentText();
-    AppConfig::StopBit = ui->cboxStopBit->currentText().toDouble();
+    ComTool::PortName = ui->cboxPortName->currentText();
+    ComTool::BaudRate = ui->cboxBaudRate->currentText().toInt();
+    ComTool::DataBit = ui->cboxDataBit->currentText().toInt();
+    ComTool::Parity = ui->cboxParity->currentText();
+    ComTool::StopBit = ui->cboxStopBit->currentText().toDouble();
 
-    AppConfig::HexSend = ui->ckHexSend->isChecked();
-    AppConfig::HexReceive = ui->ckHexReceive->isChecked();
-    AppConfig::Debug = ui->ckDebug->isChecked();
-    AppConfig::AutoClear = ui->ckAutoClear->isChecked();
+    ComTool::HexSend = ui->ckHexSend->isChecked();
+    ComTool::HexReceive = ui->ckHexReceive->isChecked();
+    ComTool::Debug = ui->ckDebug->isChecked();
+    ComTool::AutoClear = ui->ckAutoClear->isChecked();
 
-    AppConfig::AutoSend = ui->ckAutoSend->isChecked();
-    AppConfig::AutoSave = ui->ckAutoSave->isChecked();
+    ComTool::AutoSend = ui->ckAutoSend->isChecked();
+    ComTool::AutoSave = ui->ckAutoSave->isChecked();
 
     int sendInterval = ui->cboxSendInterval->currentText().toInt();
-    if (sendInterval != AppConfig::SendInterval) {
-        AppConfig::SendInterval = sendInterval;
-        timerSend->setInterval(AppConfig::SendInterval);
+    if (sendInterval != ComTool::SendInterval) {
+        ComTool::SendInterval = sendInterval;
+        timerSend->setInterval(ComTool::SendInterval);
     }
 
     int saveInterval = ui->cboxSaveInterval->currentText().toInt();
-    if (saveInterval != AppConfig::SaveInterval) {
-        AppConfig::SaveInterval = saveInterval;
-        timerSave->setInterval(AppConfig::SaveInterval);
+    if (saveInterval != ComTool::SaveInterval) {
+        ComTool::SaveInterval = saveInterval;
+        timerSave->setInterval(ComTool::SaveInterval);
     }
 
-    AppConfig::Mode = ui->cboxMode->currentText();
-    AppConfig::ServerIP = ui->txtServerIP->text().trimmed();
-    AppConfig::ServerPort = ui->txtServerPort->text().toInt();
-    AppConfig::ListenPort = ui->txtListenPort->text().toInt();
-    AppConfig::SleepTime = ui->cboxSleepTime->currentText().toInt();
-    AppConfig::AutoConnect = ui->ckAutoConnect->isChecked();
+//    ComTool::Mode = ui->cboxMode->currentText();
+//    ComTool::ServerIP = ui->txtServerIP->text().trimmed();
+//    ComTool::ServerPort = ui->txtServerPort->text().toInt();
+//    ComTool::ListenPort = ui->txtListenPort->text().toInt();
+//    ComTool::SleepTime = ui->cboxSleepTime->currentText().toInt();
+//    ComTool::AutoConnect = ui->ckAutoConnect->isChecked();
 
-    AppConfig::writeConfig();
+    ComTool::SaveConstructConfig();
 }
 
 void ComTool::changeEnable(bool b) {
@@ -517,27 +535,27 @@ void ComTool::on_btnClear_clicked() {
 }
 
 void ComTool::on_btnStart_clicked() {
-    if (ui->btnStart->text() == "启动") {
-        if (AppConfig::ServerIP == "" || AppConfig::ServerPort == 0) {
-            append(6, "IP地址和远程端口不能为空");
-            return;
-        }
-
-        socket->connectToHost(AppConfig::ServerIP, AppConfig::ServerPort);
-        if (socket->waitForConnected(100)) {
-            ui->btnStart->setText("停止");
-            append(6, "连接服务器成功");
-            tcpOk = true;
-        }
-    }
-    else {
-        socket->disconnectFromHost();
-        if (socket->state() == QAbstractSocket::UnconnectedState || socket->waitForDisconnected(100)) {
-            ui->btnStart->setText("启动");
-            append(6, "断开服务器成功");
-            tcpOk = false;
-        }
-    }
+//    if (ui->btnStart->text() == "启动") {
+//        if (ComTool::ServerIP == "" || ComTool::ServerPort == 0) {
+//            append(6, "IP地址和远程端口不能为空");
+//            return;
+//        }
+//
+//        socket->connectToHost(ComTool::ServerIP, ComTool::ServerPort);
+//        if (socket->waitForConnected(100)) {
+//            ui->btnStart->setText("停止");
+//            append(6, "连接服务器成功");
+//            tcpOk = true;
+//        }
+//    }
+//    else {
+//        socket->disconnectFromHost();
+//        if (socket->state() == QAbstractSocket::UnconnectedState || socket->waitForDisconnected(100)) {
+//            ui->btnStart->setText("启动");
+//            append(6, "断开服务器成功");
+//            tcpOk = false;
+//        }
+//    }
 }
 
 void ComTool::on_ckAutoSend_stateChanged(int arg1) {
@@ -563,39 +581,39 @@ void ComTool::on_ckAutoSave_stateChanged(int arg1) {
 }
 
 void ComTool::connectNet() {
-    if (!tcpOk && AppConfig::AutoConnect && ui->btnStart->text() == "启动") {
-        if (AppConfig::ServerIP != "" && AppConfig::ServerPort != 0) {
-            socket->connectToHost(AppConfig::ServerIP, AppConfig::ServerPort);
-            if (socket->waitForConnected(100)) {
-                ui->btnStart->setText("停止");
-                append(6, "连接服务器成功");
-                tcpOk = true;
-            }
-        }
-    }
+//    if (!tcpOk && ComTool::AutoConnect && ui->btnStart->text() == "启动") {
+//        if (ComTool::ServerIP != "" && ComTool::ServerPort != 0) {
+//            socket->connectToHost(ComTool::ServerIP, ComTool::ServerPort);
+//            if (socket->waitForConnected(100)) {
+//                ui->btnStart->setText("停止");
+//                append(6, "连接服务器成功");
+//                tcpOk = true;
+//            }
+//        }
+//    }
 }
 
 void ComTool::readDataNet() {
-    if (socket->bytesAvailable() > 0) {
-        QUIHelper::sleep(AppConfig::SleepTime);
-        QByteArray data = socket->readAll();
-
-        QString buffer;
-        if (ui->ckHexReceive->isChecked()) {
-            buffer = QUIHelperData::byteArrayToHexStr(data);
-        }
-        else {
-            buffer = QUIHelperData::byteArrayToAsciiStr(data);
-        }
-
-        append(5, buffer);
-
-        //将收到的网络数据转发给串口
-        if (comOk) {
-            com->write(data);
-            append(0, buffer);
-        }
-    }
+//    if (socket->bytesAvailable() > 0) {
+//        QUIHelper::sleep(ComTool::SleepTime);
+//        QByteArray data = socket->readAll();
+//
+//        QString buffer;
+//        if (ui->ckHexReceive->isChecked()) {
+//            buffer = QUIHelperData::byteArrayToHexStr(data);
+//        }
+//        else {
+//            buffer = QUIHelperData::byteArrayToAsciiStr(data);
+//        }
+//
+//        append(5, buffer);
+//
+//        //将收到的网络数据转发给串口
+//        if (comOk) {
+//            com->write(data);
+//            append(0, buffer);
+//        }
+//    }
 }
 
 void ComTool::readErrorNet() {
@@ -603,4 +621,49 @@ void ComTool::readErrorNet() {
     append(6, QString("连接服务器失败,%1").arg(socket->errorString()));
     socket->disconnectFromHost();
     tcpOk = false;
+}
+
+void ComTool::GetConstructConfig() {
+    cfg->beginGroup(GroupName);
+    ComTool::PortName = cfg->value("PortName", ComTool::PortName).toString();
+    ComTool::BaudRate = cfg->value("BaudRate", ComTool::BaudRate).toInt();
+    ComTool::DataBit = cfg->value("DataBit", ComTool::DataBit).toInt();
+    ComTool::Parity = cfg->value("Parity", ComTool::Parity).toString();
+    ComTool::StopBit = cfg->value("StopBit", ComTool::StopBit).toInt();
+
+    ComTool::HexSend = cfg->value("HexSend", ComTool::HexSend).toBool();
+    ComTool::HexReceive = cfg->value("HexReceive", ComTool::HexReceive).toBool();
+    ComTool::Debug = cfg->value("Debug", ComTool::Debug).toBool();
+    ComTool::AutoClear = cfg->value("AutoClear", ComTool::AutoClear).toBool();
+
+    ComTool::AutoSend = cfg->value("AutoSend", ComTool::AutoSend).toBool();
+    ComTool::SendInterval = cfg->value("SendInterval", ComTool::SendInterval).toInt();
+    ComTool::AutoSave = cfg->value("AutoSave", ComTool::AutoSave).toBool();
+    ComTool::SaveInterval = cfg->value("SaveInterval", ComTool::SaveInterval).toInt();
+    cfg->endGroup();
+
+    if (!QUIHelper::checkIniFile(ConfigFilePath)) {
+        SaveConstructConfig();
+        return;
+    }
+}
+
+void ComTool::SaveConstructConfig() {
+    cfg->beginGroup(GroupName);
+    cfg->setValue("PortName", ComTool::PortName);
+    cfg->setValue("BaudRate", ComTool::BaudRate);
+    cfg->setValue("DataBit", ComTool::DataBit);
+    cfg->setValue("Parity", ComTool::Parity);
+    cfg->setValue("StopBit", ComTool::StopBit);
+
+    cfg->setValue("HexSend", ComTool::HexSend);
+    cfg->setValue("HexReceive", ComTool::HexReceive);
+    cfg->setValue("Debug", ComTool::Debug);
+    cfg->setValue("AutoClear", ComTool::AutoClear);
+
+    cfg->setValue("AutoSend", ComTool::AutoSend);
+    cfg->setValue("SendInterval", ComTool::SendInterval);
+    cfg->setValue("AutoSave", ComTool::AutoSave);
+    cfg->setValue("SaveInterval", ComTool::SaveInterval);
+    cfg->endGroup();
 }
