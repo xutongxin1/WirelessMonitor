@@ -114,10 +114,10 @@ void MainWindow::DeviceWindowsInit() {
                     DevicesInfo[DeviceNum].TabWidget->addTab("本地串口监视器");//添加tab栏
                     break;
                 case 3:
-                    DevicesWindowsInfo[i][j].type = MainChart;//结构体初始化
-                    DevicesWindowsInfo[i][j].widget =new Charts();
-                    DevicesWindowsInfo[i][j].index = ui->FunctionWindow->addWidget(DevicesWindowsInfo[i][j].widget);
-                    DevicesInfo[i].TabWidget->addTab("数据波形图");//添加tab栏
+                    DevicesWindowsInfo[DeviceNum][WinNum].type = MainChart;//结构体初始化
+                    DevicesWindowsInfo[DeviceNum][WinNum].widget =new Charts();
+                    DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(DevicesWindowsInfo[DeviceNum][WinNum].widget);
+                    DevicesInfo[DeviceNum].TabWidget->addTab("数据波形图");//添加tab栏
                     break;
             }
         }
