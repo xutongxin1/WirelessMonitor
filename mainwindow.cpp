@@ -8,6 +8,7 @@
 #include "qtmaterialscrollbar.h"
 #include "ComTool/comtool.h"
 #include <cstdlib>
+#include "Charts/charts.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -110,10 +111,17 @@ void MainWindow::DeviceWindowsInit() {
                     DevicesWindowsInfo[i][j].index = ui->FunctionWindow->addWidget(DevicesWindowsInfo[i][j].widget);
                     DevicesInfo[i].TabWidget->addTab("本地串口监视器");//添加tab栏
                     break;
-
+                case 3:
+                    DevicesWindowsInfo[i][j].type = MainChart;//结构体初始化
+                    DevicesWindowsInfo[i][j].widget =new Charts();
+                    DevicesWindowsInfo[i][j].index = ui->FunctionWindow->addWidget(DevicesWindowsInfo[i][j].widget);
+                    DevicesInfo[i].TabWidget->addTab("数据波形图");//添加tab栏
+                    break;
             }
         }
 
+        Charts test;  //图标界面测试
+        test.show();
         //tab栏绑定
         connect(NewTab,&QtMaterialTabs::currentChanged,this,[=](int num)
         {

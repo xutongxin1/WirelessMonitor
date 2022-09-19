@@ -18,6 +18,7 @@ enum WindowsType
     None,
     ChannelConfiguration,
     XCOM,
+    MainChart,
 
 };
 struct WindowsInfo//窗口配置信息结构体

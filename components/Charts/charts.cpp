@@ -7,7 +7,7 @@ QTimer *timer;
 double timer_count=0.0;
 
 Charts::Charts(QWidget *parent) :
-    QWidget(parent),
+    RepeaterWidget(parent),
     ui(new Ui::Charts)
 {
     ui->setupUi(this);

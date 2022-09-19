@@ -3,11 +3,13 @@
 
 #include <QWidget>
 #include "qcustomplot.h"
+#include "RepeaterWidget.h"
+
 namespace Ui {
 class Charts;
 }
 
-class Charts : public QWidget
+class Charts : public RepeaterWidget
 {
     Q_OBJECT
 
@@ -36,7 +38,7 @@ private slots:
 
 private:
     Ui::Charts *ui;
-    unsigned long int flag;
+    int flag;
 };
 
 #endif // CHARTS_H
