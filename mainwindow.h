@@ -54,7 +54,7 @@ private:
     CfgClass *Cfg;
     void ErrorHandle(const QString& reason);
     void DeviceWindowsInit();
-    void DeviceExchange(int Device_Num);
-    void DeviceWindowsExchange(int Device_Num, int WinNum);
+    void DeviceExchange(int DeviceNum);
+    void DeviceWindowsExchange(int DeviceNum, int WinNum);
 };
 #endif // MAINWINDOW_H

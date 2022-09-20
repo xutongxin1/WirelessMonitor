@@ -41,11 +41,13 @@ public:
 
     int currentIndex() const;
 
+
+
 signals:
     void currentChanged(int);
 
 protected:
-    void setTabActive(int index, bool active = true);
+    void setTabActive(int index, bool active = true);//不触发信号的方法?
     void updateTabs();
 
     const QScopedPointer<QtMaterialTabsPrivate> d_ptr;

@@ -119,6 +119,7 @@ void MainWindow::DeviceWindowsInit() {
                     DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(DevicesWindowsInfo[DeviceNum][WinNum].widget);
                     DevicesInfo[DeviceNum].TabWidget->addTab("数据波形图");//添加tab栏
                     break;
+                default: break;
             }
         }
 
@@ -149,11 +150,13 @@ void MainWindow::DeviceExchange(int DeviceNum) {
  * @param DeviceNum 设备号
  * @param WinNum 窗口号
  */
-void MainWindow::DeviceWindowsExchange(int Device_Num, int WinNum) {
+void MainWindow::DeviceWindowsExchange(int DeviceNum, int WinNum) {
 //    if(DevicesWindowsInfo[Device_Num][WinNum].index==0)
 //    {
 //        ErrorHandle("尝试打开不存在的窗口");
 //    }
-    qDebug("尝试切换到%d设备%d窗口", Device_Num, WinNum);
-    ui->FunctionWindow->setCurrentIndex(DevicesWindowsInfo[Device_Num][WinNum].index);
+    qDebug("尝试切换到%d设备%d窗口", DeviceNum, WinNum);
+//    DevicesInfo[DeviceNum].TabWidget->setTabActive(WinNum);
+    ui->FunctionWindow->setCurrentIndex(DevicesWindowsInfo[DeviceNum][WinNum].index);
+
 }

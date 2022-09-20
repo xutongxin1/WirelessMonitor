@@ -10,10 +10,8 @@
 #include "ComTool/depend/quihelperdata.h"
 
 /*
- * TODO:波特率扩大可选范围
  * TODO:shell语法高亮，使用正则表达式https://c.runoob.com/front-end/
  * TODO:以回车分隔
- * TODO:配置文件统一化
  * TODO:TCP功能分离
  */
 
@@ -123,13 +121,21 @@ void ComTool::initConfig() {
     connect(ui->cboxPortName, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
 
     QStringList baudList;
-    baudList << "50" << "75" << "100" << "134" << "150" << "200" << "300" << "600" << "1200"
+    baudList << QString::number(ComTool::BaudRate) << "600" << "1200"
              << "1800" << "2400" << "4800" << "9600" << "14400" << "19200" << "38400"
              << "56000" << "57600" << "76800" << "115200" << "128000" << "256000";
 
     ui->cboxBaudRate->addItems(baudList);
     ui->cboxBaudRate->setCurrentIndex(ui->cboxBaudRate->findText(QString::number(ComTool::BaudRate)));
-    connect(ui->cboxBaudRate, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
+//    connect(ui->cboxBaudRate, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
+//    void (QComboBox::*fp)(int) =&QComboBox::activated;
+    connect(ui->cboxBaudRate->lineEdit(), &QLineEdit::editingFinished, this, [=] {
+
+        ComTool::BaudRate = ui->cboxBaudRate->lineEdit()->text().toInt();
+        saveConfig();
+
+
+    });
 
     QStringList dataBitsList;
     dataBitsList << "5" << "6" << "7" << "8";
@@ -455,7 +461,7 @@ void ComTool::on_btnOpen_clicked() {
             //清空缓冲区
             com->flush();
             //设置波特率
-            com->setBaudRate((QSerialPort::BaudRate) ui->cboxBaudRate->currentText().toInt());
+            com->setBaudRate(ui->cboxBaudRate->currentText().toInt());
             //设置数据位
             com->setDataBits((QSerialPort::DataBits) ui->cboxDataBit->currentText().toInt());
             //设置校验位
