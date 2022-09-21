@@ -41,12 +41,12 @@ public:
     static bool AutoSave;               //自动保存
     static int SaveInterval;            //自动保存间隔
 
-//    static QString Mode;                //转换模式
-//    static QString ServerIP;            //服务器IP
-//    static int ServerPort;              //服务器端口
-//    static int ListenPort;              //监听端口
-//    static int SleepTime;               //延时时间
-//    static bool AutoConnect;            //自动重连
+    static QString Mode;                //转换模式
+    static QString ServerIP;            //服务器IP
+    static int ServerPort;              //服务器端口
+    static int ListenPort;              //监听端口
+    static int SleepTime;               //延时时间
+    static bool AutoConnect;            //自动重连
 
     QString GroupName;
     QString ConfigFilePath;

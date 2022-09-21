@@ -12,7 +12,7 @@
 /*
  * TODO:shell语法高亮，使用正则表达式https://c.runoob.com/front-end/
  * TODO:以回车分隔
- * TODO:TCP功能分离
+ * TODO:ui修改
  */
 
 
@@ -32,6 +32,13 @@ bool ComTool::AutoSend = false;
 int ComTool::SendInterval = 1000;
 bool ComTool::AutoSave = false;
 int ComTool::SaveInterval = 5000;
+
+QString ComTool::Mode = "Tcp_Client";
+QString ComTool::ServerIP = "127.0.0.1";
+int ComTool::ServerPort = 6000;
+int ComTool::ListenPort = 6000;
+int ComTool::SleepTime = 100;
+bool ComTool::AutoConnect = false;
 
 ComTool::ComTool(int DeviceNum, int winNum, QSettings *cfg, QWidget *parent) :
         RepeaterWidget(parent), ui(new Ui::comtool) {
@@ -211,34 +218,34 @@ void ComTool::initConfig() {
     if (ComTool::AutoSave) {
         timerSave->start();
     }
-//
-//    //串口转网络部分
-//    ui->cboxMode->setCurrentIndex(ui->cboxMode->findText(ComTool::Mode));
-//    connect(ui->cboxMode, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-//
-//    ui->txtServerIP->setText(ComTool::ServerIP);
-//    connect(ui->txtServerIP, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-//
-//    ui->txtServerPort->setText(QString::number(ComTool::ServerPort));
-//    connect(ui->txtServerPort, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-//
-//    ui->txtListenPort->setText(QString::number(ComTool::ListenPort));
-//    connect(ui->txtListenPort, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
 
-//    QStringList values;
-//    values << "0" << "10" << "50";
-//
-//    for (int i = 100; i < 1000; i = i + 100) {
-//        values << QString("%1").arg(i);
-//    }
-//
-//    ui->cboxSleepTime->addItems(values);
-//
-//    ui->cboxSleepTime->setCurrentIndex(ui->cboxSleepTime->findText(QString::number(ComTool::SleepTime)));
-//    connect(ui->cboxSleepTime, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-//
-//    ui->ckAutoConnect->setChecked(ComTool::AutoConnect);
-//    connect(ui->ckAutoConnect, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
+    //串口转网络部分
+    ui->cboxMode->setCurrentIndex(ui->cboxMode->findText(ComTool::Mode));
+    connect(ui->cboxMode, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
+
+    ui->txtServerIP->setText(ComTool::ServerIP);
+    connect(ui->txtServerIP, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+
+    ui->txtServerPort->setText(QString::number(ComTool::ServerPort));
+    connect(ui->txtServerPort, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+
+    ui->txtListenPort->setText(QString::number(ComTool::ListenPort));
+    connect(ui->txtListenPort, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+
+    QStringList values;
+    values << "0" << "10" << "50";
+
+    for (int i = 100; i < 1000; i = i + 100) {
+        values << QString("%1").arg(i);
+    }
+
+    ui->cboxSleepTime->addItems(values);
+
+    ui->cboxSleepTime->setCurrentIndex(ui->cboxSleepTime->findText(QString::number(ComTool::SleepTime)));
+    connect(ui->cboxSleepTime, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
+
+    ui->ckAutoConnect->setChecked(ComTool::AutoConnect);
+    connect(ui->ckAutoConnect, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
 }
 
 void ComTool::saveConfig() {
@@ -308,10 +315,10 @@ void ComTool::append(int type, const QString &data, bool clear) {
         return;
     }
 
-    //过滤回车换行符
+//    //过滤回车换行符
     QString strData = data;
-    strData = strData.replace("\r", "");
-    strData = strData.replace("\n", "");
+//    strData = strData.replace("\r", "");
+//    strData = strData.replace("\n", "");
 
     //不同类型不同颜色显示
     QString strType;
@@ -321,7 +328,7 @@ void ComTool::append(int type, const QString &data, bool clear) {
     }
     else if (type == 1) {
         strType = "串口接收 <<";
-        ui->txtMain->setTextColor(QColor("red"));
+        ui->txtMain->setTextColor(QColor("black"));
     }
     else if (type == 2) {
         strType = "处理延时 >>";
@@ -541,27 +548,27 @@ void ComTool::on_btnClear_clicked() {
 }
 
 void ComTool::on_btnStart_clicked() {
-//    if (ui->btnStart->text() == "启动") {
-//        if (ComTool::ServerIP == "" || ComTool::ServerPort == 0) {
-//            append(6, "IP地址和远程端口不能为空");
-//            return;
-//        }
-//
-//        socket->connectToHost(ComTool::ServerIP, ComTool::ServerPort);
-//        if (socket->waitForConnected(100)) {
-//            ui->btnStart->setText("停止");
-//            append(6, "连接服务器成功");
-//            tcpOk = true;
-//        }
-//    }
-//    else {
-//        socket->disconnectFromHost();
-//        if (socket->state() == QAbstractSocket::UnconnectedState || socket->waitForDisconnected(100)) {
-//            ui->btnStart->setText("启动");
-//            append(6, "断开服务器成功");
-//            tcpOk = false;
-//        }
-//    }
+    if (ui->btnStart->text() == "启动") {
+        if (ComTool::ServerIP == "" || ComTool::ServerPort == 0) {
+            append(6, "IP地址和远程端口不能为空");
+            return;
+        }
+
+        socket->connectToHost(ComTool::ServerIP, ComTool::ServerPort);
+        if (socket->waitForConnected(100)) {
+            ui->btnStart->setText("停止");
+            append(6, "连接服务器成功");
+            tcpOk = true;
+        }
+    }
+    else {
+        socket->disconnectFromHost();
+        if (socket->state() == QAbstractSocket::UnconnectedState || socket->waitForDisconnected(100)) {
+            ui->btnStart->setText("启动");
+            append(6, "断开服务器成功");
+            tcpOk = false;
+        }
+    }
 }
 
 void ComTool::on_ckAutoSend_stateChanged(int arg1) {
@@ -587,39 +594,39 @@ void ComTool::on_ckAutoSave_stateChanged(int arg1) {
 }
 
 void ComTool::connectNet() {
-//    if (!tcpOk && ComTool::AutoConnect && ui->btnStart->text() == "启动") {
-//        if (ComTool::ServerIP != "" && ComTool::ServerPort != 0) {
-//            socket->connectToHost(ComTool::ServerIP, ComTool::ServerPort);
-//            if (socket->waitForConnected(100)) {
-//                ui->btnStart->setText("停止");
-//                append(6, "连接服务器成功");
-//                tcpOk = true;
-//            }
-//        }
-//    }
+    if (!tcpOk && ComTool::AutoConnect && ui->btnStart->text() == "启动") {
+        if (ComTool::ServerIP != "" && ComTool::ServerPort != 0) {
+            socket->connectToHost(ComTool::ServerIP, ComTool::ServerPort);
+            if (socket->waitForConnected(100)) {
+                ui->btnStart->setText("停止");
+                append(6, "连接服务器成功");
+                tcpOk = true;
+            }
+        }
+    }
 }
 
 void ComTool::readDataNet() {
-//    if (socket->bytesAvailable() > 0) {
-//        QUIHelper::sleep(ComTool::SleepTime);
-//        QByteArray data = socket->readAll();
-//
-//        QString buffer;
-//        if (ui->ckHexReceive->isChecked()) {
-//            buffer = QUIHelperData::byteArrayToHexStr(data);
-//        }
-//        else {
-//            buffer = QUIHelperData::byteArrayToAsciiStr(data);
-//        }
-//
-//        append(5, buffer);
-//
-//        //将收到的网络数据转发给串口
-//        if (comOk) {
-//            com->write(data);
-//            append(0, buffer);
-//        }
-//    }
+    if (socket->bytesAvailable() > 0) {
+        QUIHelper::sleep(ComTool::SleepTime);
+        QByteArray data = socket->readAll();
+
+        QString buffer;
+        if (ui->ckHexReceive->isChecked()) {
+            buffer = QUIHelperData::byteArrayToHexStr(data);
+        }
+        else {
+            buffer = QUIHelperData::byteArrayToAsciiStr(data);
+        }
+
+        append(5, buffer);
+
+        //将收到的网络数据转发给串口
+        if (comOk) {
+            com->write(data);
+            append(0, buffer);
+        }
+    }
 }
 
 void ComTool::readErrorNet() {
@@ -648,6 +655,15 @@ void ComTool::GetConstructConfig() {
     ComTool::SaveInterval = cfg->value("SaveInterval", ComTool::SaveInterval).toInt();
     cfg->endGroup();
 
+    cfg->beginGroup("NetConfig");
+    ComTool::Mode = cfg->value("Mode", ComTool::Mode).toString();
+    ComTool::ServerIP = cfg->value("ServerIP", ComTool::ServerIP).toString();
+    ComTool::ServerPort = cfg->value("ServerPort", ComTool::ServerPort).toInt();
+    ComTool::ListenPort = cfg->value("ListenPort", ComTool::ListenPort).toInt();
+    ComTool::SleepTime = cfg->value("SleepTime", ComTool::SleepTime).toInt();
+    ComTool::AutoConnect = cfg->value("AutoConnect", ComTool::AutoConnect).toBool();
+    cfg->endGroup();
+
     if (!QUIHelper::checkIniFile(ConfigFilePath)) {
         SaveConstructConfig();
         return;
@@ -671,5 +687,14 @@ void ComTool::SaveConstructConfig() {
     cfg->setValue("SendInterval", ComTool::SendInterval);
     cfg->setValue("AutoSave", ComTool::AutoSave);
     cfg->setValue("SaveInterval", ComTool::SaveInterval);
+    cfg->endGroup();
+
+    cfg->beginGroup("NetConfig");
+    cfg->setValue("Mode", ComTool::Mode);
+    cfg->setValue("ServerIP", ComTool::ServerIP);
+    cfg->setValue("ServerPort", ComTool::ServerPort);
+    cfg->setValue("ListenPort", ComTool::ListenPort);
+    cfg->setValue("SleepTime", ComTool::SleepTime);
+    cfg->setValue("AutoConnect", ComTool::AutoConnect);
     cfg->endGroup();
 }
