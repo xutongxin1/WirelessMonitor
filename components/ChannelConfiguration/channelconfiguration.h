@@ -26,6 +26,7 @@ private:
     Ui::ChannelConfiguration *ui;
     void onConnect();
     void onDisconnect();
+    void reflashUi(bool isXMB);
 };
 
 

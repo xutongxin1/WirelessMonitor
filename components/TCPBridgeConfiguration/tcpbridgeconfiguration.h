@@ -5,7 +5,7 @@
 #ifndef MAIN_TCPBRIDGECONFIGURATION_H
 #define MAIN_TCPBRIDGECONFIGURATION_H
 
-#include <RepeaterWidget>
+#include "RepeaterWidget.h"
 
 
 QT_BEGIN_NAMESPACE

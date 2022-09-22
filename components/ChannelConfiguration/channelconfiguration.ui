@@ -29,18 +29,79 @@
      <item>
       <widget class="QtMaterialRadioButton" name="COMButton">
        <property name="text">
-        <string>连接有线串口设备（未完成）</string>
+        <string>连接有线串口设备或TCP设备</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_5">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>功能配置</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QtMaterialRadioButton" name="TCPButton">
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
+      <widget class="QComboBox" name="FuncitonComboBox">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>30</height>
+        </size>
        </property>
-       <property name="text">
-        <string>连接TCP客户端（未完成）</string>
-       </property>
+       <item>
+        <property name="text">
+         <string>请选择调试器功能</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1.DAP调试模式</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2.串口采集与模拟模式</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>3.ADC采集模式（包含直接转接模拟模式）</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>4.DAC模拟模式</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>5.PWM采集模式（包含直接转接模拟模式）</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>6.PWM模拟模式</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>7.I2C模式</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>8.SPI模式</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>9.CAN模式</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>
@@ -164,32 +225,6 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_5">
-     <item>
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>功能配置</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboBox">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>30</height>
-        </size>
-       </property>
-       <item>
-        <property name="text">
-         <string>请选择调试器功能</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
     <widget class="QtMaterialCircularProgress" name="progressBar">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -211,6 +246,12 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>RepeaterWidget</class>
+   <extends>QWidget</extends>
+   <header>repeaterwidget.h</header>
+   <container>1</container>
+  </customwidget>
   <customwidget>
    <class>QtMaterialRadioButton</class>
    <extends>QRadioButton</extends>

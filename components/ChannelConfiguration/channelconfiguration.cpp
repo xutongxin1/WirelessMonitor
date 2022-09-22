@@ -25,16 +25,13 @@ ChannelConfiguration::ChannelConfiguration(int num, CfgClass *MainCfg, RepeaterW
     connect(ui->ESPButton, &QAbstractButton::toggled, this, [=] {
         if (ui->ESPButton->isChecked()) {
             MainCfg->SaveMainCfg(cfgText + "WayToConnect", "1");
+            reflashUi(true);
         }
     });
     connect(ui->COMButton, &QAbstractButton::toggled, this, [=] {
         if (ui->COMButton->isChecked()) {
             MainCfg->SaveMainCfg(cfgText + "WayToConnect", "2");
-        }
-    });
-    connect(ui->TCPButton, &QAbstractButton::toggled, this, [=] {
-        if (ui->TCPButton->isChecked()) {
-            MainCfg->SaveMainCfg(cfgText + "WayToConnect", "3");
+            reflashUi(false);
         }
     });
 
@@ -83,4 +80,15 @@ void ChannelConfiguration::onConnect() {
 void ChannelConfiguration::onDisconnect() {
     ui->Connect->setEnabled(true);
     ui->Disconnect->setEnabled(false);
+}
+
+void ChannelConfiguration::reflashUi(bool isXMB)
+{
+    ui->label_3->setVisible(isXMB);
+    ui->FuncitonComboBox->setVisible(isXMB);
+    ui->label_2->setVisible(isXMB);
+    ui->IP->setVisible(isXMB);
+    ui->Connect->setVisible(isXMB);
+    ui->Disconnect->setVisible(isXMB);
+
 }

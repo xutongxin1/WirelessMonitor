@@ -11,6 +11,11 @@
 TCPBridgeConfiguration::TCPBridgeConfiguration(QWidget *parent) :
         RepeaterWidget(parent), ui(new Ui::TCPBridgeConfiguration) {
     ui->setupUi(this);
+
+
+
+
+    
 }
 
 TCPBridgeConfiguration::~TCPBridgeConfiguration() {

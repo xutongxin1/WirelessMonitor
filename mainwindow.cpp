@@ -9,6 +9,7 @@
 #include "ComTool/comtool.h"
 #include <cstdlib>
 #include "Charts/charts.h"
+#include "TCPBridgeConfiguration/tcpbridgeconfiguration.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -54,14 +55,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     DeviceWindowsInit();
 
-//    ComTool *tmp=new ComTool();
+    TCPBridgeConfiguration *tmp=new TCPBridgeConfiguration();
 
 //    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());
 
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
     DeviceExchange(1);
     DeviceWindowsExchange(1, 2);
-//    ui->FunctionWindow->setCurrentIndex(ui->FunctionWindow->addWidget(tmp));
+    ui->FunctionWindow->setCurrentIndex(ui->FunctionWindow->addWidget(tmp));
 }
 
 MainWindow::~MainWindow() {
