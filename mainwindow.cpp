@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     DeviceWindowsInit();
 
-    TCPBridgeConfiguration *tmp=new TCPBridgeConfiguration();
+    TCPBridgeConfiguration *tmp=new TCPBridgeConfiguration(1,4,Cfg->configDeviceIni[1]);
 
 //    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());
 

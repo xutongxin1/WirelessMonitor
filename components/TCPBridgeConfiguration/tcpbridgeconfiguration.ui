@@ -33,7 +33,10 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox">
+        <widget class="QComboBox" name="mode1">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <item>
           <property name="text">
            <string>关闭</string>
@@ -86,7 +89,7 @@
      <item>
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>二通道（IO34）</string>
+        <string>二通道（IO25）</string>
        </property>
       </widget>
      </item>
@@ -100,7 +103,10 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_2">
+        <widget class="QComboBox" name="mode2">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <item>
           <property name="text">
            <string>关闭</string>
@@ -153,7 +159,7 @@
      <item>
       <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>三通道（IO34）</string>
+        <string>三通道（IO26）</string>
        </property>
       </widget>
      </item>
@@ -167,7 +173,10 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_3">
+        <widget class="QComboBox" name="mode3">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <item>
           <property name="text">
            <string>关闭</string>
@@ -221,7 +230,7 @@
       <enum>QLayout::SetFixedSize</enum>
      </property>
      <item>
-      <widget class="QtMaterialCheckBox" name="checkBox">
+      <widget class="QtMaterialCheckBox" name="transmit">
        <property name="text">
         <string>转发模式（限定单输入单输出）</string>
        </property>

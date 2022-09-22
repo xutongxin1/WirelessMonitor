@@ -8,6 +8,7 @@
 
 #include <QFrame>
 #include <QtWidgets/QPushButton>
+#include <QSettings>
 
 typedef std::map<std::string, QPushButton> QPushButtonMap;
 
@@ -19,6 +20,10 @@ public:
     virtual void GetObjectFromUI(QPushButtonMap &result);
     virtual void GetConstructConfig();
     virtual void SaveConstructConfig();
+
+    QString GroupName;
+    QString ConfigFilePath;
+    QSettings *cfg;
 };
 
 

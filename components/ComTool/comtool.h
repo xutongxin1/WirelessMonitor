@@ -50,6 +50,7 @@ public:
 
     QString GroupName;
     QString ConfigFilePath;
+    QSettings *cfg;
 
 
 private:
@@ -74,7 +75,7 @@ private:
 
     void SaveConstructConfig();
 
-    QSettings *cfg;
+
 
 private slots:
 
