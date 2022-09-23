@@ -13,14 +13,6 @@ using namespace std;
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
-enum WindowsType
-{
-    None,
-    ChannelConfiguration,
-    XCOM,
-    MainChart,
-
-};
 struct WindowsInfo//窗口配置信息结构体
 {
     RepeaterWidget *widget;

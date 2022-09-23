@@ -11,7 +11,18 @@
 #include <QSettings>
 
 typedef std::map<std::string, QPushButton> QPushButtonMap;
+enum WindowsType
+{
+    None,
+    ChannelConfiguration,
+    XCOM,
+    MainChart,
 
+};
+struct RequestNewWidget {
+    WindowsType widgetType;
+    int DeviceNum;
+};
 class RepeaterWidget : public QWidget {
 public:
 //    QPushButtonMap Button;
@@ -21,9 +32,14 @@ public:
     virtual void GetConstructConfig();
     virtual void SaveConstructConfig();
 
+
     QString GroupName;
     QString ConfigFilePath;
     QSettings *cfg;
+
+    bool isRequestNewWidget=false;
+    RequestNewWidget NewWidget;
+
 };
 
 
