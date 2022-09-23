@@ -24,3 +24,12 @@ void RepeaterWidget::SaveConstructConfig() {
 
 }
 
+Ui::Charts *RepeaterWidget::GetChartUi()
+{
+
+}
+
+QHash<QString,Datanode> RepeaterWidget::GetChartDataMap()
+{
+
+}

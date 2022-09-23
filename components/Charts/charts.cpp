@@ -5,12 +5,13 @@
 
 //打开通道不能移动和放缩，默认和关闭可以
 
+//graph.setPen,setName。每个曲线都会独占一个graph
 
 Charts::Charts(QWidget *parent) :
     RepeaterWidget(parent),
-    ui(new Ui::Charts)
+    uiChart(new Ui::Charts)
 {
-    ui->setupUi(this);
+    uiChart->setupUi(this);
 
     //先清空缓冲区
     memset(Buff,'\0',sizeof (Buff));
@@ -24,27 +25,28 @@ Charts::Charts(QWidget *parent) :
 // Allow user to drag axis ranges with mouse, zoom with mouse wheel and select graphs by clicking:
     lChartsApi();
     //chart配置
-    ui->widget->xAxis->setLabel("Time");
-    ui->widget->yAxis->setLabel("ADC");
-    ui->widget->xAxis->setRange(0,100);
-    ui->widget->yAxis->setRange(0,100);
+    uiChart->widget->xAxis->setLabel("Time");
+    uiChart->widget->yAxis->setLabel("ADC");
+    uiChart->widget->xAxis->setRange(0,100);
+    uiChart->widget->yAxis->setRange(0,100);
+    uiChart->widget->legend->setVisible(true);
 
-    ui->widget->xAxis2->setVisible(true);
-    ui->widget->xAxis2->setTickLabels(false);
-    ui->widget->yAxis2->setVisible(true);
-    ui->widget->yAxis2->setTickLabels(false);
-    connect(ui->widget->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->widget->xAxis2, SLOT(setRange(QCPRange)));
-    connect(ui->widget->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->widget->yAxis2, SLOT(setRange(QCPRange)));
+    uiChart->widget->xAxis2->setVisible(true);
+    uiChart->widget->xAxis2->setTickLabels(false);
+    uiChart->widget->yAxis2->setVisible(true);
+    uiChart->widget->yAxis2->setTickLabels(false);
+    connect(uiChart->widget->xAxis, SIGNAL(rangeChanged(QCPRange)), uiChart->widget->xAxis2, SLOT(setRange(QCPRange)));
+    connect(uiChart->widget->yAxis, SIGNAL(rangeChanged(QCPRange)), uiChart->widget->yAxis2, SLOT(setRange(QCPRange)));
 
-    ui->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-    connect(ui->widget,SIGNAL(mouseMove(QMouseEvent *)),this,SLOT(myMoveEvent(QMouseEvent *)));
+    uiChart->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    connect(uiChart->widget,SIGNAL(mouseMove(QMouseEvent *)),this,SLOT(myMoveEvent(QMouseEvent *)));
 
 
 }
 
 Charts::~Charts()
 {
-    delete ui;
+    delete uiChart;
 }
 
 void Charts::ShowLine(QCustomPlot *customPlot)
@@ -87,16 +89,13 @@ void Charts::ShowLine(QCustomPlot *customPlot)
 void Charts::ReadyShowLine()
 
 {
-
-    qDebug()<<"收到\n"<<endl;
-
     timer_count+=0.2;
 
     CurrentData=CurrentData+1;
 
     if(CurrentData>=80) CurrentData=0;//产生锯齿波，最大值是75
 
-    ShowLine(ui->widget);
+    ShowLine(uiChart->widget);
 
 }
 
@@ -109,22 +108,22 @@ void Charts::myMoveEvent(QMouseEvent *event)
     qDebug()<<"event->pos()"<<event->pos();
 
     //鼠标坐标转化为CustomPlot内部坐标
-    float x_val = ui->widget->xAxis->pixelToCoord(x_pos);
-    float y_val = ui->widget->yAxis->pixelToCoord(y_pos);
+    float x_val = uiChart->widget->xAxis->pixelToCoord(x_pos);
+    float y_val = uiChart->widget->yAxis->pixelToCoord(y_pos);
     float line_y_val=0;
     //获得x轴坐标位置对应的曲线上y的值
-    for (int i = 0; i < ui->widget->graphCount(); ++i)
+    for (int i = 0; i < uiChart->widget->graphCount(); ++i)
     {
-        QCPGraph * graph = ui->widget->graph(i);
+        QCPGraph * graph = uiChart->widget->graph(i);
         if (graph ->selected()) {
-            line_y_val= ui->widget->graph(i)->data()->at(x_val)->value;
+            line_y_val= uiChart->widget->graph(i)->data()->at(x_val)->value;
         }
     }
 
     //曲线的上点坐标位置，用来显示QToolTip提示框
-    float out_x = ui->widget->xAxis->coordToPixel(x_val);
-    float out_y = ui->widget->yAxis->coordToPixel(y_val);
-//    float out_value = ui->widget->yAxis->coordToPixel(line_y_val);
+    float out_x = uiChart->widget->xAxis->coordToPixel(x_val);
+    float out_y = uiChart->widget->yAxis->coordToPixel(y_val);
+//    float out_value = uiChart->widget->yAxis->coordToPixel(line_y_val);
 
     QString str,strToolTip;
     str = QString::number(x_val,10,3);
@@ -137,7 +136,7 @@ void Charts::myMoveEvent(QMouseEvent *event)
     strToolTip += str;
     strToolTip += "\n";
 
-    QToolTip::showText(mapToGlobal(QPoint(out_x,out_y)),strToolTip,ui->widget);
+    QToolTip::showText(mapToGlobal(QPoint(out_x,out_y)),strToolTip,uiChart->widget);
 
 }
 
@@ -145,20 +144,20 @@ void Charts::myMoveEvent(QMouseEvent *event)
 void Charts::lChartsApi()
 {
     //搜索有多少变量需要画图，然后加图层
-    ui->widget->addGraph();
+    uiChart->widget->addGraph();
 }
 
 void Charts::on_pushButton_2_clicked()
 {
     //点击鼠标然后删除
-    for (int i = 0; i < ui->widget->graphCount(); ++i)
+    for (int i = 0; i < uiChart->widget->graphCount(); ++i)
     {
-        QCPGraph * graph = ui->widget->graph(i);
+        QCPGraph * graph = uiChart->widget->graph(i);
         if (graph ->selected()) {
-            ui->widget->removeGraph(i);//销毁
+            uiChart->widget->removeGraph(i);//销毁
         }
     }
-    ui->widget->replot();//重绘图形
+    uiChart->widget->replot();//重绘图形
 }
 
 void Charts::on_pushButton_clicked()
@@ -166,17 +165,63 @@ void Charts::on_pushButton_clicked()
     if(checked == 0)
     {
         //开启，不可以放缩和移动
-        ui->pushButton->setText("关闭通道");
+        uiChart->pushButton->setText("关闭通道");
         timerChart->start();//每200ms重绘一次折线图
-        ui->widget->setInteractions(QCP::iNone);
+        uiChart->widget->setInteractions(QCP::iNone);
         checked = 1;
     }
     else
     {
         //关闭，可以放缩和移动
-        ui->pushButton->setText("开启通道");
+        uiChart->pushButton->setText("开启通道");
         timerChart->stop();
-        ui->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+        uiChart->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
         checked = 0;
     }
+}
+
+void Charts::on_pushButton_add_clicked()
+{
+    //获取下拉栏目前的内容，搜索有没有对应的变量名
+    QString Data_Search = uiChart->comboBox->currentText();
+    if(DataMap.contains(Data_Search))   //存在返回true
+    {
+        if(DataMap.value(Data_Search).flag == 0)//如果没有画图，开始画图
+        {
+            uiChart->widget->addGraph();
+        }
+    }
+
+}
+
+//Add属于自动识别，因此不用ui界面互动
+bool AddDate(QString addname, double *addDate, RepeaterWidget Chart)
+{
+    if(Chart.GetChartDataMap().contains(addname))   //存在返回true
+    {
+        //加入错误,返回0
+        return 0;
+    }
+    else
+    {
+        Datanode temp;
+        temp.DataBuff = addDate;
+        temp.flag = 0;
+        Chart.GetChartDataMap().insert(addname,temp);//插入数据
+        Chart.GetChartUi()->comboBox->addItem(addname);//combox插入项
+        return 1;
+    }
+}
+
+void Charts::on_pushButton_yincang_clicked()
+{
+    //点击鼠标然后删除
+    for (int i = 0; i < uiChart->widget->graphCount(); ++i)
+    {
+        QCPGraph * graph = uiChart->widget->graph(i);
+        if (graph ->selected()) {
+            uiChart->widget->removeGraph(i);//销毁
+        }
+    }
+    uiChart->widget->replot();//重绘图形
 }

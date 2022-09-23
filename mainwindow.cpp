@@ -11,6 +11,8 @@
 #include "Charts/charts.h"
 #include "TCPBridgeConfiguration/tcpbridgeconfiguration.h"
 
+int record_DeviceNum , record_WinNum ;
+
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -115,8 +117,11 @@ void MainWindow::DeviceWindowsInit() {
                     DevicesInfo[DeviceNum].TabWidget->addTab("本地串口监视器");//添加tab栏
                     break;
                 case 3:
+                    //记录下相应的变量，方便提取类的成员变量charts
+                    record_DeviceNum = DeviceNum;
+                    record_WinNum = WinNum;
                     DevicesWindowsInfo[DeviceNum][WinNum].type = MainChart;//结构体初始化
-                    DevicesWindowsInfo[DeviceNum][WinNum].widget =new Charts();
+                    DevicesWindowsInfo[DeviceNum][WinNum].widget = new Charts();
                     DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(DevicesWindowsInfo[DeviceNum][WinNum].widget);
                     DevicesInfo[DeviceNum].TabWidget->addTab("数据波形图");//添加tab栏
                     break;

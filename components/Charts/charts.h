@@ -9,9 +9,14 @@ namespace Ui {
 class Charts;
 }
 
+
+
+bool AddDate(QHash<QString,Datanode> DataMap, QString addname, double *addDate, RepeaterWidget Chart);
+
 class Charts : public RepeaterWidget
 {
     Q_OBJECT
+friend bool AddDate(QHash<QString,Datanode> DataMap, QString addname, double *addDate, RepeaterWidget Chart);
 
 public:
     explicit Charts(QWidget *parent = nullptr);
@@ -25,6 +30,9 @@ public:
     void ShowLine(QCustomPlot *customPlot);//显示折线图
     void lChartsApi();//对外的Api接口
 
+    Ui::Charts *GetChartUi(){return uiChart;}
+    QHash<QString,Datanode> GetChartDataMap(){return DataMap;}
+
 public slots:
 
     void ReadyShowLine();
@@ -37,12 +45,17 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_pushButton_add_clicked();
+    void on_pushButton_yincang_clicked();
+
 private:
-    Ui::Charts *ui;
+    Ui::Charts *uiChart;
+    QHash<QString,Datanode> DataMap;
     int flag;
     double timer_count=0.0;
     bool checked=0;
     QTimer *timerChart;
+
 };
 
 #endif // CHARTS_H

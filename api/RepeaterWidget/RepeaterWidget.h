@@ -10,6 +10,15 @@
 #include <QtWidgets/QPushButton>
 #include <QSettings>
 
+typedef struct DataNode{
+    double *DataBuff;
+    bool flag;//判断是否画图
+}Datanode;
+
+namespace Ui {
+class Charts;
+}
+
 typedef std::map<std::string, QPushButton> QPushButtonMap;
 enum WindowsType
 {
@@ -31,6 +40,8 @@ public:
     virtual void GetObjectFromUI(QPushButtonMap &result);
     virtual void GetConstructConfig();
     virtual void SaveConstructConfig();
+    virtual Ui::Charts *GetChartUi();
+    virtual QHash<QString,Datanode> GetChartDataMap();
 
 
     QString GroupName;
