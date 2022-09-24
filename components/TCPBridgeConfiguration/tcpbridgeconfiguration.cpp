@@ -35,7 +35,7 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
         TCPBridgeConfiguration::mode3 = IOMode(ui->mode3->currentIndex());
         ChangeMode();
     });
-
+    ChangeMode();
 
 }
 
@@ -80,7 +80,7 @@ void TCPBridgeConfiguration::ChangeMode() {
         isSingle = 0;
         hasSingle++;
     }
-    else if (hasSingle != 0) {
+    else if (isSingle != 0) {
         ui->mode1->setItemData(3, -1, Qt::UserRole - 1);
         ui->mode3->setItemData(3, -1, Qt::UserRole - 1);
     }
@@ -92,12 +92,12 @@ void TCPBridgeConfiguration::ChangeMode() {
         isSingle = 0;
         hasSingle++;
     }
-    else if (hasSingle != 0) {
+    else if (isSingle != 0) {
         ui->mode1->setItemData(3, -1, Qt::UserRole - 1);
         ui->mode2->setItemData(3, -1, Qt::UserRole - 1);
     }
 
-
+    isSingle=-1;
     if (TCPBridgeConfiguration::mode1 == SingleOutput) {
         ui->mode2->setItemData(4, 0, Qt::UserRole - 1);
         ui->mode3->setItemData(4, 0, Qt::UserRole - 1);
@@ -116,7 +116,7 @@ void TCPBridgeConfiguration::ChangeMode() {
         isSingle = 0;
         hasSingle++;
     }
-    else if (hasSingle != 0) {
+    else if (isSingle != 0) {
         ui->mode3->setItemData(4, -1, Qt::UserRole - 1);
         ui->mode1->setItemData(4, -1, Qt::UserRole - 1);
     }
@@ -128,9 +128,16 @@ void TCPBridgeConfiguration::ChangeMode() {
         isSingle = 0;
         hasSingle++;
     }
-    else if (hasSingle != 0) {
+    else if (isSingle != 0) {
         ui->mode2->setItemData(4, -1, Qt::UserRole - 1);
         ui->mode1->setItemData(4, -1, Qt::UserRole - 1);
+    }
+
+    if(hasSingle!=-1)
+    {
+        if(ui->mode1->currentIndex()==1||ui->mode1->currentIndex()==2)ui->mode1->setCurrentIndex(0);
+        if(ui->mode2->currentIndex()==1||ui->mode2->currentIndex()==2)ui->mode2->setCurrentIndex(0);
+        if(ui->mode3->currentIndex()==1||ui->mode3->currentIndex()==2)ui->mode3->setCurrentIndex(0);
     }
     switch (hasSingle) {
         case 1:

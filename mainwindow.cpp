@@ -137,6 +137,12 @@ void MainWindow::DeviceWindowsInit() {
             DeviceWindowsExchange(DeviceNum, num + 1);
         });
 
+        connect(NewWindowCreateTimer, &QTimer::timeout, this, [=] {
+
+
+        });
+
+
     }
 
 
@@ -164,5 +170,9 @@ void MainWindow::DeviceWindowsExchange(int DeviceNum, int WinNum) {
     qDebug("尝试切换到%d设备%d窗口", DeviceNum, WinNum);
 //    DevicesInfo[DeviceNum].TabWidget->setTabActive(WinNum);
     ui->FunctionWindow->setCurrentIndex(DevicesWindowsInfo[DeviceNum][WinNum].index);
+}
+
+void MainWindow::NewWindowCreate() {
 
 }
+

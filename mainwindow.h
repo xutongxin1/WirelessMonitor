@@ -13,6 +13,8 @@ using namespace std;
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+
+
 struct WindowsInfo//窗口配置信息结构体
 {
     RepeaterWidget *widget;
@@ -38,15 +40,23 @@ public:
 
 
 
+
 private:
     Ui::MainWindow *ui;
     QCustomPlot *customPlot;
     QtMaterialDrawer *m_drawer;
     SideBarButton *DeviceSelect[100];//侧边栏设备按钮指针
     CfgClass *Cfg;
+    QTimer *NewWindowCreateTimer = new QTimer(this);
+
     void ErrorHandle(const QString& reason);
     void DeviceWindowsInit();
     void DeviceExchange(int DeviceNum);
     void DeviceWindowsExchange(int DeviceNum, int WinNum);
+    void NewWindowCreate();
+
+
+
+
 };
 #endif // MAINWINDOW_H

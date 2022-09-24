@@ -40,7 +40,6 @@ private:
     IOMode mode3=Closed;
 
     void ChangeMode();
-    void ChangeEachMode();
 };
 
 
