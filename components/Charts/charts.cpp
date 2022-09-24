@@ -4,7 +4,26 @@
 #include <QDebug>
 
 //打开通道不能移动和放缩，默认和关闭可以
-
+/*颜色笔可选颜色，默认为红
+        black,
+        white,
+        darkGray,
+        gray,
+        lightGray,
+        red,
+        green,
+        blue,
+        cyan,
+        magenta,
+        yellow,
+        darkRed,
+        darkGreen,
+        darkBlue,
+        darkCyan,
+        darkMagenta,
+        darkYellow,
+        transparent
+*/
 //graph.setPen,setName。每个曲线都会独占一个graph
 
 Charts::Charts(QWidget *parent) :
@@ -13,19 +32,19 @@ Charts::Charts(QWidget *parent) :
 {
     uiChart->setupUi(this);
 
-    //先清空缓冲区
+    /*先清空缓冲区
     memset(Buff,'\0',sizeof (Buff));
     CurrentData=0;
-    flag=0;
+    flag=0;*/
+
 
     timerChart = new QTimer(this);
     timerChart->setInterval(200);
     connect(timerChart,SIGNAL(timeout()),this,SLOT(ReadyShowLine()));
 
 // Allow user to drag axis ranges with mouse, zoom with mouse wheel and select graphs by clicking:
-    lChartsApi();
     //chart配置
-    uiChart->widget->xAxis->setLabel("Time");
+    uiChart->widget->xAxis->setLabel("Time/秒");
     uiChart->widget->yAxis->setLabel("ADC");
     uiChart->widget->xAxis->setRange(0,100);
     uiChart->widget->yAxis->setRange(0,100);
@@ -52,42 +71,38 @@ Charts::~Charts()
 void Charts::ShowLine(QCustomPlot *customPlot)
 
 {
-
+    /*如果你想图形更加精细，可以多定义些点
     QVector<double> Xvalue(100);
     QVector<double> Yvalue(100);
-
-
-    //无论如何，折线图一次能展示的区域总是有限的,这里一次最多绘制100个点
-
-    //如果你想图形更加精细，可以多定义些点
-
            Buff[flag]=CurrentData;//将新数据存入缓冲区
-
            for(int i=0;i<=flag;i++){
-
                Xvalue[i]=i*0.2;
-
                Yvalue[i]=Buff[i];
-
               }
+     */
 
-
-
-           //分别赋值X轴，Y轴值，产生多少个实时值，就赋值多少个点。XY坐标轴跟着平移
-
-               flag++;
-               customPlot->graph(0)->setPen(QPen(Qt::red));
-               customPlot->graph(0)->setData(Xvalue,Yvalue);
-               customPlot->graph(0)->rescaleAxes(true); //自动调成范围，只能放大。想要缩小把true去掉
-
-
-
-       customPlot->replot();//重绘图形
+     //查找那些变量需要显示并且显示出来
+     for(int i=0;i < ( DataPairs.size() );i++)
+     {
+         //记录每个变量的画图次数
+        int tempCount = DataPairs.at(i).second.count;
+        if( (DataPairs.at(i).second.flag) == 1 )
+        {
+            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).second.DataBuff[tempCount]) );
+            customPlot->graph(i)->rescaleAxes(true); //自动调成范围，只能放大。想要缩小把true去掉
+            DataPairs[i].second.count++;
+        }
+        else if( (DataPairs.at(i).second.flag) == 0 )
+        {
+            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).second.DataBuff[tempCount]) );
+            DataPairs[i].second.count++;
+        }
+     }
+     customPlot->replot();//重绘图形
 
 }
 
 void Charts::ReadyShowLine()
-
 {
     timer_count+=0.2;
 
@@ -141,12 +156,6 @@ void Charts::myMoveEvent(QMouseEvent *event)
 }
 
 
-void Charts::lChartsApi()
-{
-    //搜索有多少变量需要画图，然后加图层
-    uiChart->widget->addGraph();
-}
-
 void Charts::on_pushButton_2_clicked()
 {
     //点击鼠标然后删除
@@ -165,6 +174,7 @@ void Charts::on_pushButton_clicked()
     if(checked == 0)
     {
         //开启，不可以放缩和移动
+        qDebug()<<"开始画图"<<endl;
         uiChart->pushButton->setText("关闭通道");
         timerChart->start();//每200ms重绘一次折线图
         uiChart->widget->setInteractions(QCP::iNone);
@@ -180,37 +190,83 @@ void Charts::on_pushButton_clicked()
     }
 }
 
+
 void Charts::on_pushButton_add_clicked()
 {
+
     //获取下拉栏目前的内容，搜索有没有对应的变量名
     QString Data_Search = uiChart->comboBox->currentText();
-    if(DataMap.contains(Data_Search))   //存在返回true
+    for(int i=0;i < ( DataPairs.size() );i++)
     {
-        if(DataMap.value(Data_Search).flag == 0)//如果没有画图，开始画图
+        if( (DataPairs.at(i).first) == Data_Search)//存在返回true
         {
-            uiChart->widget->addGraph();
+            if( (DataPairs.at(i).second.flag) == 0)//如果没有画图，开始画图
+            {
+               //可以画图，但是要打开通道才能画图
+               DataPairs[i].second.flag = 1;
+            }
+            else//已经画图了就显示出来
+            {
+                uiChart->widget->graph(i)->setVisible(true);//显示
+            }
         }
-    }
 
+    }
+    uiChart->widget->replot();//重绘图形
 }
 
-//Add属于自动识别，因此不用ui界面互动
-bool AddDate(QString addname, double *addDate, RepeaterWidget Chart)
+/*****
+ * Add是给外界的接口作用是增加可以绘图的变量，因此不用ui界面互动。
+ * 如果识别到就先提前加图层准备画图
+*****/
+bool Charts::AddDate(QString addname, const QVector<double> &addDate)
 {
-    if(Chart.GetChartDataMap().contains(addname))   //存在返回true
-    {
-        //加入错误,返回0
-        return 0;
-    }
-    else
+    if( ( DataPairs.size() ) == 0 )//如果是空链表
     {
         Datanode temp;
-        temp.DataBuff = addDate;
-        temp.flag = 0;
-        Chart.GetChartDataMap().insert(addname,temp);//插入数据
-        Chart.GetChartUi()->comboBox->addItem(addname);//combox插入项
+        QPair<QString,DataNode>temp1("test",temp);
+
+        for(int i=0;i<addDate.size();i++)
+        {
+            temp.DataBuff[i]=addDate.at(i);
+        }
+        temp.num = 0;
+        DataPairs.append(temp1);//插入数据
+        qDebug()<<addDate.at(50)<<endl;
+        qDebug()<<temp1.second.DataBuff[50]<<endl;
+        qDebug()<<DataPairs.size()<<endl;
+        uiChart->comboBox->addItem(addname);//combox插入项
+        uiChart->widget->addGraph();//加图层准备画图
         return 1;
     }
+    else{   //有数据
+    for(int i=0;i < ( DataPairs.size() );i++)
+    {
+        if( (DataPairs.at(i).first) == addname)//存在返回true
+        {
+            //加入错误,返回0
+            qDebug()<<"出错点1"<<endl;
+            return 0;
+        }
+        else//如果识别到就先提前加图层准备画图
+        {
+            Datanode temp;
+            for(int i=0;i<addDate.size();i++)
+            {
+                temp.DataBuff[i]=addDate[i];
+            }
+            temp.flag = 0;
+            temp.num = i;
+            QPair<QString,DataNode>temp1(addname,temp);
+            DataPairs.append(temp1);//插入数据
+            uiChart->comboBox->addItem(addname);//combox插入项
+            uiChart->widget->addGraph();//加图层准备画图
+            return 1;
+        }
+    }}
+    qDebug()<<(DataPairs.size())<<endl;
+    qDebug()<<"出错点2"<<endl;
+    return 0;
 }
 
 void Charts::on_pushButton_yincang_clicked()
@@ -220,7 +276,7 @@ void Charts::on_pushButton_yincang_clicked()
     {
         QCPGraph * graph = uiChart->widget->graph(i);
         if (graph ->selected()) {
-            uiChart->widget->removeGraph(i);//销毁
+            uiChart->widget->graph(i)->setVisible(false);//隐藏
         }
     }
     uiChart->widget->replot();//重绘图形

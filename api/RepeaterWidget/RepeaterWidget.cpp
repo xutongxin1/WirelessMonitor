@@ -29,7 +29,7 @@ Ui::Charts *RepeaterWidget::GetChartUi()
 
 }
 
-QHash<QString,Datanode> RepeaterWidget::GetChartDataMap()
+QList<QPair<QString,Datanode>> RepeaterWidget::GetChartDataPair()
 {
 
 }

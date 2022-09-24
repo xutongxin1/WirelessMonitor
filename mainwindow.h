@@ -8,6 +8,7 @@
 #include "qtmaterialtabs.h"
 #include "SideBarButton/SideBarButton.h"
 #include <string>
+#include "Charts/charts.h"
 using namespace std;
 
 QT_BEGIN_NAMESPACE
@@ -49,6 +50,8 @@ private:
     CfgClass *Cfg;
     QTimer *NewWindowCreateTimer = new QTimer(this);
 
+
+
     void ErrorHandle(const QString& reason);
     void DeviceWindowsInit();
     void DeviceExchange(int DeviceNum);
@@ -57,6 +60,10 @@ private:
 
 
 
+
+
+
+    Charts *test1;
 
 };
 #endif // MAINWINDOW_H

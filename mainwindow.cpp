@@ -8,10 +8,9 @@
 #include "qtmaterialscrollbar.h"
 #include "ComTool/comtool.h"
 #include <cstdlib>
-#include "Charts/charts.h"
 #include "TCPBridgeConfiguration/tcpbridgeconfiguration.h"
 
-int record_DeviceNum , record_WinNum ;
+int record_DeviceNum =0 , record_WinNum =0 ;
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -56,7 +55,17 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     DeviceWindowsInit();
-
+    //lulu_test
+    QVector<double> a;
+    for(int i=0;i<100;i++)
+    {
+        a.append(i*30.0);
+    }
+    qDebug()<<a[50]<<endl;
+//    this->test1->AddDate("test",a);
+//    bool res = AddDate("test",a,DevicesWindowsInfo[record_DeviceNum][record_WinNum].widget);
+//    if(res == false) qDebug()<<"false"<<endl;
+//    else qDebug()<<"ok"<<endl;
     TCPBridgeConfiguration *tmp=new TCPBridgeConfiguration(1,4,Cfg->configDeviceIni[1]);
 
 //    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());
@@ -120,8 +129,9 @@ void MainWindow::DeviceWindowsInit() {
                     //记录下相应的变量，方便提取类的成员变量charts
                     record_DeviceNum = DeviceNum;
                     record_WinNum = WinNum;
+                    test1 = new Charts();
                     DevicesWindowsInfo[DeviceNum][WinNum].type = MainChart;//结构体初始化
-                    DevicesWindowsInfo[DeviceNum][WinNum].widget = new Charts();
+                    DevicesWindowsInfo[DeviceNum][WinNum].widget = test1;
                     DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(DevicesWindowsInfo[DeviceNum][WinNum].widget);
                     DevicesInfo[DeviceNum].TabWidget->addTab("数据波形图");//添加tab栏
                     break;
@@ -141,7 +151,6 @@ void MainWindow::DeviceWindowsInit() {
 
 
         });
-
 
     }
 
@@ -173,6 +182,5 @@ void MainWindow::DeviceWindowsExchange(int DeviceNum, int WinNum) {
 }
 
 void MainWindow::NewWindowCreate() {
-
 }
 
