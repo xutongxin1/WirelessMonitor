@@ -93,7 +93,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="cboxBaudRate">
+           <widget class="QComboBox" name="cboxBaudRate1">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -113,7 +113,7 @@
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QComboBox" name="cboxStopBit">
+           <widget class="QComboBox" name="cboxStopBit1">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -130,7 +130,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QComboBox" name="cboxDataBit">
+           <widget class="QComboBox" name="cboxDataBit1">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -147,7 +147,7 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QComboBox" name="cboxParity">
+           <widget class="QComboBox" name="cboxParity1">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -242,7 +242,7 @@
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QComboBox" name="cboxStopBit_2">
+           <widget class="QComboBox" name="cboxStopBit2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -273,7 +273,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="cboxBaudRate_2">
+           <widget class="QComboBox" name="cboxBaudRate2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -286,7 +286,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QComboBox" name="cboxDataBit_2">
+           <widget class="QComboBox" name="cboxDataBit2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -296,7 +296,7 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QComboBox" name="cboxParity_2">
+           <widget class="QComboBox" name="cboxParity2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -391,7 +391,7 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QComboBox" name="cboxParity_3">
+           <widget class="QComboBox" name="cboxParity3">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -401,7 +401,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="cboxBaudRate_3">
+           <widget class="QComboBox" name="cboxBaudRate3">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -445,7 +445,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QComboBox" name="cboxDataBit_3">
+           <widget class="QComboBox" name="cboxDataBit3">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>

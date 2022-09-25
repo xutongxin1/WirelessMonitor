@@ -35,7 +35,12 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
         TCPBridgeConfiguration::mode3 = IOMode(ui->mode3->currentIndex());
         ChangeMode();
     });
-    ChangeMode();
+    ChangeMode();//初始化模式选择器
+
+    QStringList baudList;
+    baudList << QString::number(ComTool::BaudRate) << "600" << "1200"
+             << "1800" << "2400" << "4800" << "9600" << "14400" << "19200" << "38400"
+             << "56000" << "57600" << "76800" << "115200" << "128000" << "256000";
 
 }
 
