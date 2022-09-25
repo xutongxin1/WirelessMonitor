@@ -59,10 +59,12 @@ MainWindow::MainWindow(QWidget *parent)
     QVector<double> a;
     for(int i=0;i<100;i++)
     {
+        //a[i]=i*30.0;
         a.append(i*30.0);
     }
     qDebug()<<a[50]<<endl;
-//    this->test1->AddDate("test",a);
+    test1->test(a);
+    test1->AddDate("test",a);
 //    bool res = AddDate("test",a,DevicesWindowsInfo[record_DeviceNum][record_WinNum].widget);
 //    if(res == false) qDebug()<<"false"<<endl;
 //    else qDebug()<<"ok"<<endl;
@@ -129,7 +131,7 @@ void MainWindow::DeviceWindowsInit() {
                     //记录下相应的变量，方便提取类的成员变量charts
                     record_DeviceNum = DeviceNum;
                     record_WinNum = WinNum;
-                    test1 = new Charts();
+
                     DevicesWindowsInfo[DeviceNum][WinNum].type = MainChart;//结构体初始化
                     DevicesWindowsInfo[DeviceNum][WinNum].widget = test1;
                     DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(DevicesWindowsInfo[DeviceNum][WinNum].widget);

@@ -24,7 +24,7 @@ void RepeaterWidget::SaveConstructConfig() {
 
 }
 
-Ui::Charts *RepeaterWidget::GetChartUi()
+/*Ui::Charts *RepeaterWidget::GetChartUi()
 {
 
 }
@@ -32,4 +32,4 @@ Ui::Charts *RepeaterWidget::GetChartUi()
 QList<QPair<QString,Datanode>> RepeaterWidget::GetChartDataPair()
 {
 
-}
+}*/

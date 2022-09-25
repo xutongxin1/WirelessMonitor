@@ -11,6 +11,7 @@
 #include <QSettings>
 
 typedef struct DataNode{
+    QString name;
     double *DataBuff;
     int flag = 0;//判断是否画图不加数据,0——不画图，1——显示图，2——隐藏图但是会有数据
     int num;//在graph里对应的名次，需要实时更新
@@ -42,8 +43,8 @@ public:
     virtual void GetObjectFromUI(QPushButtonMap &result);
     virtual void GetConstructConfig();
     virtual void SaveConstructConfig();
-    virtual Ui::Charts *GetChartUi();
-    virtual QList<QPair<QString,Datanode>> GetChartDataPair();
+//    virtual Ui::Charts *GetChartUi();
+//    virtual QList<Datanode> GetChartDataPair();
 
 
     QString GroupName;

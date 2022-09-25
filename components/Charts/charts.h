@@ -26,9 +26,9 @@ public:
     void ShowLine(QCustomPlot *customPlot);//显示折线图
 
     Ui::Charts *GetChartUi(){return uiChart;}
-    QList<QPair<QString,Datanode>> GetChartDataPair(){return DataPairs;}
+    QList<Datanode> GetChartDataPair(){return DataPairs;}
     bool AddDate(QString addname, const QVector<double> &addDate);
-
+    void test(const QVector<double> &addDate);
 public slots:
 
     void ReadyShowLine();
@@ -46,7 +46,7 @@ private slots:
 
 private:
     Ui::Charts *uiChart;
-    QList<QPair<QString,Datanode>> DataPairs;
+    QList<Datanode> DataPairs;
     int flag;
     double timer_count=0.0;
     bool checked=0;

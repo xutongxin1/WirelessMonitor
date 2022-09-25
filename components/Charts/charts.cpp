@@ -32,12 +32,6 @@ Charts::Charts(QWidget *parent) :
 {
     uiChart->setupUi(this);
 
-    /*先清空缓冲区
-    memset(Buff,'\0',sizeof (Buff));
-    CurrentData=0;
-    flag=0;*/
-
-
     timerChart = new QTimer(this);
     timerChart->setInterval(200);
     connect(timerChart,SIGNAL(timeout()),this,SLOT(ReadyShowLine()));
@@ -85,17 +79,22 @@ void Charts::ShowLine(QCustomPlot *customPlot)
      for(int i=0;i < ( DataPairs.size() );i++)
      {
          //记录每个变量的画图次数
-        int tempCount = DataPairs.at(i).second.count;
-        if( (DataPairs.at(i).second.flag) == 1 )
+        int tempCount = DataPairs.at(i).count;
+        if( (DataPairs.at(i).flag) == 1 )
         {
-            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).second.DataBuff[tempCount]) );
+            customPlot->graph(i)->setPen(QPen(Qt::red));
+            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff[tempCount]) );
+            customPlot->graph(i)->setVisible(true);
             customPlot->graph(i)->rescaleAxes(true); //自动调成范围，只能放大。想要缩小把true去掉
-            DataPairs[i].second.count++;
+            DataPairs[i].count++;
+            qDebug()<<"red1"<<i<<endl;
         }
-        else if( (DataPairs.at(i).second.flag) == 0 )
+        else if( (DataPairs.at(i).flag) == 2 )
         {
-            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).second.DataBuff[tempCount]) );
-            DataPairs[i].second.count++;
+            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff[tempCount]) );
+            customPlot->graph(i)->setVisible(false);
+            DataPairs[i].count++;
+            qDebug()<<"red2"<<i<<endl;
         }
      }
      customPlot->replot();//重绘图形
@@ -105,10 +104,6 @@ void Charts::ShowLine(QCustomPlot *customPlot)
 void Charts::ReadyShowLine()
 {
     timer_count+=0.2;
-
-    CurrentData=CurrentData+1;
-
-    if(CurrentData>=80) CurrentData=0;//产生锯齿波，最大值是75
 
     ShowLine(uiChart->widget);
 
@@ -198,17 +193,12 @@ void Charts::on_pushButton_add_clicked()
     QString Data_Search = uiChart->comboBox->currentText();
     for(int i=0;i < ( DataPairs.size() );i++)
     {
-        if( (DataPairs.at(i).first) == Data_Search)//存在返回true
+        if( (DataPairs.at(i).name) == Data_Search)//存在返回true
         {
-            if( (DataPairs.at(i).second.flag) == 0)//如果没有画图，开始画图
-            {
-               //可以画图，但是要打开通道才能画图
-               DataPairs[i].second.flag = 1;
-            }
-            else//已经画图了就显示出来
-            {
-                uiChart->widget->graph(i)->setVisible(true);//显示
-            }
+
+               DataPairs[i].flag = 1;
+               uiChart->widget->graph(i)->setVisible(true);//显示
+
         }
 
     }
@@ -221,28 +211,28 @@ void Charts::on_pushButton_add_clicked()
 *****/
 bool Charts::AddDate(QString addname, const QVector<double> &addDate)
 {
+    int size = addDate.size();
     if( ( DataPairs.size() ) == 0 )//如果是空链表
     {
         Datanode temp;
-        QPair<QString,DataNode>temp1("test",temp);
-
+        temp.name = addname;
+        temp.DataBuff = new double[size];
+        temp.flag = 0;
         for(int i=0;i<addDate.size();i++)
         {
             temp.DataBuff[i]=addDate.at(i);
         }
         temp.num = 0;
-        DataPairs.append(temp1);//插入数据
-        qDebug()<<addDate.at(50)<<endl;
-        qDebug()<<temp1.second.DataBuff[50]<<endl;
-        qDebug()<<DataPairs.size()<<endl;
+        DataPairs.append(temp);//插入数据
         uiChart->comboBox->addItem(addname);//combox插入项
         uiChart->widget->addGraph();//加图层准备画图
+        qDebug()<<"emptyadd"<<endl;
         return 1;
     }
     else{   //有数据
     for(int i=0;i < ( DataPairs.size() );i++)
     {
-        if( (DataPairs.at(i).first) == addname)//存在返回true
+        if( (DataPairs.at(i).name) == addname)//存在返回true
         {
             //加入错误,返回0
             qDebug()<<"出错点1"<<endl;
@@ -257,8 +247,8 @@ bool Charts::AddDate(QString addname, const QVector<double> &addDate)
             }
             temp.flag = 0;
             temp.num = i;
-            QPair<QString,DataNode>temp1(addname,temp);
-            DataPairs.append(temp1);//插入数据
+            temp.name = addname;
+            DataPairs.append(temp);//插入数据
             uiChart->comboBox->addItem(addname);//combox插入项
             uiChart->widget->addGraph();//加图层准备画图
             return 1;
@@ -271,13 +261,27 @@ bool Charts::AddDate(QString addname, const QVector<double> &addDate)
 
 void Charts::on_pushButton_yincang_clicked()
 {
-    //点击鼠标然后删除
+    //点击鼠标然后隐藏
     for (int i = 0; i < uiChart->widget->graphCount(); ++i)
     {
         QCPGraph * graph = uiChart->widget->graph(i);
         if (graph ->selected()) {
+            DataPairs[i].flag = 2;
             uiChart->widget->graph(i)->setVisible(false);//隐藏
         }
     }
     uiChart->widget->replot();//重绘图形
+}
+
+void Charts::test(const QVector<double> &addDate)
+{
+    double *temp;
+    int size = addDate.size();
+    temp = new double[size];
+
+    for(int i=0;i<addDate.size();i++)
+    {
+        temp[i]=addDate.at(i);
+    }
+    qDebug()<<temp[3]<<endl;
 }
