@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>TCPBridgeConfiguration</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1,1">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,4">
      <item>
@@ -49,17 +49,7 @@
          </item>
          <item>
           <property name="text">
-           <string>发送信号</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>独占接收</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>独占输出</string>
           </property>
          </item>
         </widget>
@@ -93,7 +83,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="cboxBaudRate1">
+           <widget class="QComboBox" name="BaudRate1">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -130,7 +120,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QComboBox" name="cboxDataBit1">
+           <widget class="QComboBox" name="DataBit1">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -193,22 +183,12 @@
          </item>
          <item>
           <property name="text">
-           <string>接收信号</string>
+           <string>跟随通道一发送信号</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>发送信号</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>独占接收</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>独占输出</string>
+           <string>跟随通道三接收信号</string>
           </property>
          </item>
         </widget>
@@ -234,20 +214,17 @@
           <property name="bottomMargin">
            <number>6</number>
           </property>
-          <item row="1" column="0">
-           <widget class="QLabel" name="labDataBit_2">
+          <item row="3" column="0">
+           <widget class="QLabel" name="labStopBit_2">
             <property name="text">
-             <string>数据位</string>
+             <string>停止位</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
-           <widget class="QComboBox" name="cboxStopBit2">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>1</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string/>
             </property>
            </widget>
           </item>
@@ -258,50 +235,38 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="labBaudRate_2">
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_9">
             <property name="text">
-             <string>波特率</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="labStopBit_2">
-            <property name="text">
-             <string>停止位</string>
+             <string/>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="cboxBaudRate2">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>1</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="editable">
-             <bool>true</bool>
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string/>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="cboxDataBit2">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>1</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+          <item row="1" column="0">
+           <widget class="QLabel" name="labDataBit_2">
+            <property name="text">
+             <string>数据位</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QComboBox" name="cboxParity2">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>1</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+          <item row="3" column="1">
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="labBaudRate_2">
+            <property name="text">
+             <string>波特率</string>
             </property>
            </widget>
           </item>
@@ -342,22 +307,12 @@
          </item>
          <item>
           <property name="text">
-           <string>接收信号</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>发送信号</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>独占接收</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>独占输出</string>
+           <string>独占发送</string>
           </property>
          </item>
         </widget>

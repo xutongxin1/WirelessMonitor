@@ -30,7 +30,9 @@ public:
         Input,
         Output,
         SingleInput,
-        SingleOutput
+        SingleOutput,
+        Follow1Output,
+        Follow3Input
     };
 
 private:

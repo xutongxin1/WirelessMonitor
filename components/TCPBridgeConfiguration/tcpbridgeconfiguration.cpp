@@ -16,31 +16,85 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
     this->cfg = cfg;
     this->ConfigFilePath = "Win" + QString::number(winNum);
     TCPBridgeConfiguration::GetConstructConfig();
-    ui->mode1->setCurrentIndex(mode1);
-    ui->mode2->setCurrentIndex(mode2);
-    ui->mode3->setCurrentIndex(mode3);
+    switch (mode1) {
+        case Input:
+            ui->mode1->setCurrentIndex(1);
+            break;
+        case SingleInput:
+            ui->mode1->setCurrentIndex(2);
+            break;
+        default:
+            ui->mode1->setCurrentIndex(0);
+    }
+    switch (mode2) {
+        case Follow1Output:
+            ui->mode2->setCurrentIndex(1);
+            break;
+        case Follow3Input:
+            ui->mode2->setCurrentIndex(2);
+            break;
+        default:
+            ui->mode2->setCurrentIndex(0);
+    }
+    switch (mode3) {
+        case Output:
+            ui->mode3->setCurrentIndex(1);
+            break;
+        case SingleOutput:
+            ui->mode3->setCurrentIndex(2);
+            break;
+        default:
+            ui->mode3->setCurrentIndex(0);
+    }
 
     void (QComboBox::*fp)(int) =&QComboBox::currentIndexChanged;
     connect(ui->mode1, fp, this, [&](int num) {
-        TCPBridgeConfiguration::mode1 = IOMode(ui->mode1->currentIndex());
+        switch (ui->mode1->currentIndex()) {
+            case 1:
+                TCPBridgeConfiguration::mode1 = Input;
+                break;
+            case 2:
+                TCPBridgeConfiguration::mode1 = SingleInput;
+                break;
+            default:
+                TCPBridgeConfiguration::mode1 = Closed;
+        }
         ChangeMode();
     });
 
     connect(ui->mode2, fp, this, [&](int num) {
-        TCPBridgeConfiguration::mode2 = IOMode(ui->mode2->currentIndex());
+        switch (ui->mode2->currentIndex()) {
+            case 1:
+                TCPBridgeConfiguration::mode2 = Follow1Output;
+                break;
+            case 2:
+                TCPBridgeConfiguration::mode2 = Follow3Input;
+                break;
+            default:
+                TCPBridgeConfiguration::mode2 = Closed;
+        }
         ChangeMode();
     });
 
     connect(ui->mode3, fp, this, [&](int num) {
-        TCPBridgeConfiguration::mode3 = IOMode(ui->mode3->currentIndex());
+        switch (ui->mode3->currentIndex()) {
+            case 1:
+                TCPBridgeConfiguration::mode3 = Output;
+                break;
+            case 2:
+                TCPBridgeConfiguration::mode3 = SingleOutput;
+                break;
+            default:
+                TCPBridgeConfiguration::mode3 = Closed;
+        }
         ChangeMode();
     });
     ChangeMode();//初始化模式选择器
 
-    QStringList baudList;
-    baudList << QString::number(ComTool::BaudRate) << "600" << "1200"
-             << "1800" << "2400" << "4800" << "9600" << "14400" << "19200" << "38400"
-             << "56000" << "57600" << "76800" << "115200" << "128000" << "256000";
+//    QStringList baudList;
+//    baudList << QString::number(ComTool::BaudRate) << "600" << "1200"
+//             << "1800" << "2400" << "4800" << "9600" << "14400" << "19200" << "38400"
+//             << "56000" << "57600" << "76800" << "115200" << "128000" << "256000";
 
 }
 
@@ -65,110 +119,69 @@ TCPBridgeConfiguration::~TCPBridgeConfiguration() {
 }
 
 void TCPBridgeConfiguration::ChangeMode() {
-    int hasSingle = -1;
-    int isSingle = -1;
-    if (TCPBridgeConfiguration::mode1 == SingleInput) {
-        isSingle = 0;
-        ui->mode2->setItemData(3, 0, Qt::UserRole - 1);
-        ui->mode3->setItemData(3, 0, Qt::UserRole - 1);
-        hasSingle++;
+
+    //独占模式处理
+    if (mode1 == SingleInput || mode3 == SingleOutput) {
+        ui->mode2->setItemData(1, 0, Qt::UserRole - 1);
+        ui->mode2->setItemData(2, 0, Qt::UserRole - 1);
+        mode2 = Closed;
+        ui->mode2->setCurrentIndex(0);
+
+        ui->mode1->setItemData(1, 0, Qt::UserRole - 1);
+        ui->mode3->setItemData(1, 0, Qt::UserRole - 1);
+        if(mode1==Input)
+        {
+            mode1 = Closed;
+            ui->mode1->setCurrentIndex(0);
+        }
+        if(mode3==Output)
+        {
+            mode3 = Closed;
+            ui->mode3->setCurrentIndex(0);
+        }
+
     }
     else {
-        ui->mode2->setItemData(3, -1, Qt::UserRole - 1);
-        ui->mode3->setItemData(3, -1, Qt::UserRole - 1);
+        ui->mode2->setItemData(1, -1, Qt::UserRole - 1);
+        ui->mode2->setItemData(2, -1, Qt::UserRole - 1);
+
+        ui->mode1->setItemData(1, -1, Qt::UserRole - 1);
+        ui->mode3->setItemData(1, -1, Qt::UserRole - 1);
     }
 
-
-    if (TCPBridgeConfiguration::mode2 == SingleInput) {
-        ui->mode1->setItemData(3, 0, Qt::UserRole - 1);
-        ui->mode3->setItemData(3, 0, Qt::UserRole - 1);
-        isSingle = 0;
-        hasSingle++;
-    }
-    else if (isSingle != 0) {
-        ui->mode1->setItemData(3, -1, Qt::UserRole - 1);
-        ui->mode3->setItemData(3, -1, Qt::UserRole - 1);
-    }
-
-
-    if (TCPBridgeConfiguration::mode3 == SingleInput) {
-        ui->mode1->setItemData(3, 0, Qt::UserRole - 1);
-        ui->mode2->setItemData(3, 0, Qt::UserRole - 1);
-        isSingle = 0;
-        hasSingle++;
-    }
-    else if (isSingle != 0) {
-        ui->mode1->setItemData(3, -1, Qt::UserRole - 1);
-        ui->mode2->setItemData(3, -1, Qt::UserRole - 1);
-    }
-
-    isSingle=-1;
-    if (TCPBridgeConfiguration::mode1 == SingleOutput) {
-        ui->mode2->setItemData(4, 0, Qt::UserRole - 1);
-        ui->mode3->setItemData(4, 0, Qt::UserRole - 1);
-        isSingle = 0;
-        hasSingle++;
-    }
-    else {
-        ui->mode2->setItemData(4, -1, Qt::UserRole - 1);
-        ui->mode3->setItemData(4, -1, Qt::UserRole - 1);
-    }
-
-
-    if (TCPBridgeConfiguration::mode2 == SingleOutput) {
-        ui->mode3->setItemData(4, 0, Qt::UserRole - 1);
-        ui->mode1->setItemData(4, 0, Qt::UserRole - 1);
-        isSingle = 0;
-        hasSingle++;
-    }
-    else if (isSingle != 0) {
-        ui->mode3->setItemData(4, -1, Qt::UserRole - 1);
-        ui->mode1->setItemData(4, -1, Qt::UserRole - 1);
-    }
-
-
-    if (TCPBridgeConfiguration::mode3 == SingleOutput) {
-        ui->mode2->setItemData(4, 0, Qt::UserRole - 1);
-        ui->mode1->setItemData(4, 0, Qt::UserRole - 1);
-        isSingle = 0;
-        hasSingle++;
-    }
-    else if (isSingle != 0) {
-        ui->mode2->setItemData(4, -1, Qt::UserRole - 1);
-        ui->mode1->setItemData(4, -1, Qt::UserRole - 1);
-    }
-
-    if(hasSingle!=-1)
+    if (mode1 == SingleInput && mode3 == SingleOutput)//转发模式逻辑
     {
-        if(ui->mode1->currentIndex()==1||ui->mode1->currentIndex()==2)ui->mode1->setCurrentIndex(0);
-        if(ui->mode2->currentIndex()==1||ui->mode2->currentIndex()==2)ui->mode2->setCurrentIndex(0);
-        if(ui->mode3->currentIndex()==1||ui->mode3->currentIndex()==2)ui->mode3->setCurrentIndex(0);
+        ui->transmit->setEnabled(true);
     }
-    switch (hasSingle) {
-        case 1:
-            ui->transmit->setEnabled(true);
-            hasSingle = 0;
-            break;
-        case 0:
-            hasSingle = 0;
-        case -1:
-            ui->transmit->setEnabled(false);
-            ui->transmit->setChecked(false);
-            break;
-        default:
-            break;
+    else {
+        ui->transmit->setEnabled(false);
+        ui->transmit->setChecked(false);
+    }
+
+    //中间模式的逻辑
+    if (mode1 == Input) {
+        ui->mode2->setItemData(1, -1, Qt::UserRole - 1);
+    }
+    else {
+        ui->mode2->setItemData(1, 0, Qt::UserRole - 1);
+        if (mode2 == Follow1Output) {
+            mode2 = Closed;
+            ui->mode2->setCurrentIndex(0);
+        }
+    }
+    if (mode3 == Output) {
+        ui->mode2->setItemData(2, -1, Qt::UserRole - 1);
+    }
+    else {
+        ui->mode2->setItemData(2, 0, Qt::UserRole - 1);
+        if (mode2 == Follow3Input) {
+            mode2 = Closed;
+            ui->mode2->setCurrentIndex(0);
+        }
     }
 
 
-    ui->mode1->setItemData(1, hasSingle, Qt::UserRole - 1);
-    ui->mode1->setItemData(2, hasSingle, Qt::UserRole - 1);
-    ui->mode2->setItemData(1, hasSingle, Qt::UserRole - 1);
-    ui->mode2->setItemData(2, hasSingle, Qt::UserRole - 1);
-    ui->mode3->setItemData(1, hasSingle, Qt::UserRole - 1);
-    ui->mode3->setItemData(2, hasSingle, Qt::UserRole - 1);
-//    ui->mode1->setView(new QListView);
-//    ui->mode2->setView(new QListView);
-//    ui->mode3->setView(new QListView);
     SaveConstructConfig();
 }
+
 
