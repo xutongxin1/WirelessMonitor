@@ -134,7 +134,7 @@ void ComTool::initConfig() {
 
     ui->cboxBaudRate->addItems(baudList);
     ui->cboxBaudRate->setCurrentIndex(ui->cboxBaudRate->findText(QString::number(ComTool::BaudRate)));
-//    connect(ui->cboxBaudRate, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
+    connect(ui->cboxBaudRate, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
 //    void (QComboBox::*fp)(int) =&QComboBox::activated;
     connect(ui->cboxBaudRate->lineEdit(), &QLineEdit::editingFinished, this, [=] {
 
