@@ -8,6 +8,7 @@
 #include "tcpbridgeconfiguration.h"
 #include "ui_TCPBridgeConfiguration.h"
 #include <QLineEdit>
+#include <QJsonObject>
 
 TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSettings *cfg, QWidget *parent) :
         RepeaterWidget(parent), ui(new Ui::TCPBridgeConfiguration) {
@@ -83,11 +84,11 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
 //    });
 
     connect(ui->BaudRate1, fp, this, [&](int num) {
-        BaudRate1=ui->BaudRate1->currentText().toInt();
+        BaudRate1 = ui->BaudRate1->currentText().toInt();
         ChangeMode();
     });
     connect(ui->BaudRate3, fp, this, [&](int num) {
-        BaudRate3=ui->BaudRate3->currentText().toInt();
+        BaudRate3 = ui->BaudRate3->currentText().toInt();
         ChangeMode();
     });
 
@@ -97,11 +98,11 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
     ui->DataBit1->addItems(dataBitsList);
     ui->DataBit3->addItems(dataBitsList);
     connect(ui->DataBit1, fp, this, [&](int num) {
-        DataBit1=ui->DataBit1->currentText().toInt();
+        DataBit1 = ui->DataBit1->currentText().toInt();
         ChangeMode();
     });
     connect(ui->DataBit3, fp, this, [&](int num) {
-        DataBit3=ui->DataBit3->currentText().toInt();
+        DataBit3 = ui->DataBit3->currentText().toInt();
         ChangeMode();
     });
 
@@ -110,11 +111,11 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
     ui->Parity1->addItems(parityList);
     ui->Parity3->addItems(parityList);
     connect(ui->Parity1, fp, this, [&](int num) {
-        Parity1=ui->Parity1->currentText();
+        Parity1 = ui->Parity1->currentText();
         ChangeMode();
     });
     connect(ui->Parity3, fp, this, [&](int num) {
-        Parity3=ui->Parity3->currentText();
+        Parity3 = ui->Parity3->currentText();
         ChangeMode();
     });
 
@@ -128,13 +129,15 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
     ui->StopBit1->addItems(stopBitsList);
     ui->StopBit3->addItems(stopBitsList);
     connect(ui->StopBit1, fp, this, [&](int num) {
-        StopBit1=ui->StopBit1->currentText().toInt();
+        StopBit1 = ui->StopBit1->currentText().toInt();
         ChangeMode();
     });
     connect(ui->StopBit3, fp, this, [&](int num) {
-        StopBit3=ui->StopBit3->currentText().toInt();
+        StopBit3 = ui->StopBit3->currentText().toInt();
         ChangeMode();
     });
+
+//    connect(ui->)
 
     ReflashBox();
 }
@@ -230,6 +233,7 @@ void TCPBridgeConfiguration::ChangeMode() {
     ui->Parity3->setEnabled(m);
     ui->DataBit3->setEnabled(m);
     ui->StopBit3->setEnabled(m);
+
 
     //独占模式对相互的波特率选项影响
     if (mode1 == SingleInput && mode3 == SingleOutput) {
@@ -360,6 +364,20 @@ void TCPBridgeConfiguration::ReflashBox() {
     ui->Parity3->setCurrentIndex(ui->Parity3->findText(TCPBridgeConfiguration::Parity3));
     ui->DataBit1->setCurrentIndex(ui->DataBit1->findText(QString::number(TCPBridgeConfiguration::DataBit1)));
     ui->DataBit3->setCurrentIndex(ui->DataBit3->findText(QString::number(TCPBridgeConfiguration::DataBit3)));
+}
+
+void TCPBridgeConfiguration::BeginTCP() {
+    QJsonObject c1;
+    if (mode1 == Closed) { c1.insert("mode", "Closed"); }
+    else {
+        if (mode1 == Input) { c1.insert("mode", "Input"); }
+        else { c1.insert("mode", "SingleOutput"); }
+        c1.insert("band", QString::number(BaudRate1));
+        c1.insert("stop", QString::number(StopBit1));
+        c1.insert("parity", Parity1);
+        c1.insert("data", QString::number(DataBit1));
+    }
+
 }
 
 

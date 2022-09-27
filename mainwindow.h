@@ -8,7 +8,9 @@
 #include "qtmaterialtabs.h"
 #include "SideBarButton/SideBarButton.h"
 #include <string>
+#include <QTcpSocket>
 #include "Charts/charts.h"
+#include "structH.h"
 using namespace std;
 
 QT_BEGIN_NAMESPACE
@@ -16,18 +18,7 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 
-struct WindowsInfo//窗口配置信息结构体
-{
-    RepeaterWidget *widget;
-    int index;
-    WindowsType type;
-};
-struct DevicesInfo//设备配置信息结构体
-{
-    int windowsNum;
-    int TabIndex;
-    QtMaterialTabs *TabWidget;
-};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -49,7 +40,7 @@ private:
     SideBarButton *DeviceSelect[100];//侧边栏设备按钮指针
     CfgClass *Cfg;
     QTimer *NewWindowCreateTimer = new QTimer(this);
-
+    ToNewWidget parentInfo;
 
 
     void ErrorHandle(const QString& reason);

@@ -58,6 +58,7 @@ private:
 
     void ChangeMode();
     void ReflashBox();
+    void BeginTCP();
 };
 
 
