@@ -3,6 +3,7 @@
 #include <string.h>
 #include <QDebug>
 
+
 //打开通道不能移动和放缩，默认和关闭可以
 /*颜色笔可选颜色，默认为红
         black,
@@ -151,19 +152,6 @@ void Charts::myMoveEvent(QMouseEvent *event)
 }
 
 
-void Charts::on_pushButton_2_clicked()
-{
-    //点击鼠标然后删除
-    for (int i = 0; i < uiChart->widget->graphCount(); ++i)
-    {
-        QCPGraph * graph = uiChart->widget->graph(i);
-        if (graph ->selected()) {
-            uiChart->widget->removeGraph(i);//销毁
-        }
-    }
-    uiChart->widget->replot();//重绘图形
-}
-
 void Charts::on_pushButton_clicked()
 {
     if(checked == 0)
@@ -218,15 +206,16 @@ bool Charts::AddDate(QString addname, const QVector<double> &addDate)
         temp.name = addname;
         temp.DataBuff = new double[size];
         temp.flag = 0;
-        for(int i=0;i<addDate.size();i++)
-        {
-            temp.DataBuff[i]=addDate.at(i);
-        }
+//        for(int i=0;i<addDate.size();i++)
+//        {
+//            temp.DataBuff[i]=addDate.at(i);
+//        }
         temp.num = 0;
         DataPairs.append(temp);//插入数据
         uiChart->comboBox->addItem(addname);//combox插入项
         uiChart->widget->addGraph();//加图层准备画图
         qDebug()<<"emptyadd"<<endl;
+        emit monitor(addDate);
         return 1;
     }
     else{   //有数据
@@ -241,10 +230,10 @@ bool Charts::AddDate(QString addname, const QVector<double> &addDate)
         else//如果识别到就先提前加图层准备画图
         {
             Datanode temp;
-            for(int i=0;i<addDate.size();i++)
-            {
-                temp.DataBuff[i]=addDate[i];
-            }
+//            for(int i=0;i<addDate.size();i++)
+//            {
+//                temp.DataBuff[i]=addDate[i];
+//            }
             temp.flag = 0;
             temp.num = i;
             temp.name = addname;

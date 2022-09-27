@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include "TCPBridgeConfiguration/tcpbridgeconfiguration.h"
 
+
 int record_DeviceNum =0 , record_WinNum =0 ;
 
 MainWindow::MainWindow(QWidget *parent)

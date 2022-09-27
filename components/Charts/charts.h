@@ -5,6 +5,8 @@
 #include "qcustomplot.h"
 #include "RepeaterWidget.h"
 
+
+
 namespace Ui {
 class Charts;
 }
@@ -12,8 +14,11 @@ class Charts;
 class Charts : public RepeaterWidget
 {
     Q_OBJECT
-friend bool AddDate(QString addname, const QVector<double> &addDate, Charts *Chart);
+//friend bool AddDate(QString addname, const QVector<double> &addDate, Charts *Chart);
 friend class MainWindow;
+friend class ChartThread;
+signals:
+    void monitor(const QVector<double> &addDate);
 public:
     explicit Charts(QWidget *parent = nullptr);
     ~Charts();
@@ -25,9 +30,9 @@ public:
 
     void ShowLine(QCustomPlot *customPlot);//显示折线图
 
-    Ui::Charts *GetChartUi(){return uiChart;}
-    QList<Datanode> GetChartDataPair(){return DataPairs;}
-    bool AddDate(QString addname, const QVector<double> &addDate);
+//    Ui::Charts *GetChartUi(){return uiChart;}
+//    QList<Datanode> GetChartDataPair(){return DataPairs;}
+
     void test(const QVector<double> &addDate);
 public slots:
 
@@ -37,12 +42,11 @@ public slots:
 
 private slots:
 
-    void on_pushButton_2_clicked();
-
     void on_pushButton_clicked();
 
     void on_pushButton_add_clicked();
     void on_pushButton_yincang_clicked();
+//    void keep_monitor();
 
 private:
     Ui::Charts *uiChart;
@@ -52,7 +56,7 @@ private:
     bool checked=0;
     QTimer *timerChart;
 
-
+    bool AddDate(QString addname, const QVector<double> &addDate);
 
 };
 
