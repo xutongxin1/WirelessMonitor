@@ -26,7 +26,7 @@ struct DevicesInfo//设备配置信息结构体
 struct ToNewWidget
 {
     std::vector<std::vector<WindowsInfo>> *DevicesWindowsInfo;//设备下窗口信息
-    std::vector<DevicesInfo> *DevicesInfo;//设备信息
+    std::vector<DevicesInfo> *DevicesSelfInfo;//设备信息
 };
 
 #endif //MAIN_STRUCTH_H

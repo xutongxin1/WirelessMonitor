@@ -11,6 +11,7 @@
 #include <QTcpSocket>
 #include "Charts/charts.h"
 #include "structH.h"
+
 using namespace std;
 
 QT_BEGIN_NAMESPACE
@@ -18,14 +19,14 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 
-
-class MainWindow : public QMainWindow
-{
-    Q_OBJECT
+class MainWindow : public QMainWindow {
+Q_OBJECT
 
 public:
     MainWindow(QWidget *parent = nullptr);
+
     ~MainWindow();
+
     vector<vector<WindowsInfo>> DevicesWindowsInfo;//设备下窗口信息
     vector<DevicesInfo> DevicesInfo;//设备信息
     int DeviceCount;//设备数量
@@ -43,18 +44,17 @@ private:
     ToNewWidget parentInfo;
 
 
-    void ErrorHandle(const QString& reason);
+    void ErrorHandle(const QString &reason);
+
     void DeviceWindowsInit();
+
     void DeviceExchange(int DeviceNum);
+
     void DeviceWindowsExchange(int DeviceNum, int WinNum);
+
     void NewWindowCreate();
 
 
-
-
-
-
-
-
 };
+
 #endif // MAINWINDOW_H

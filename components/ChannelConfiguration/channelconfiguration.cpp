@@ -9,15 +9,20 @@
 #include "ui_ChannelConfiguration.h"
 
 
-ChannelConfiguration::ChannelConfiguration(int num, CfgClass *MainCfg, RepeaterWidget *parent) :
+ChannelConfiguration::ChannelConfiguration(int DeviceNum, CfgClass *MainCfg, ToNewWidget *parentInfo,
+                                           RepeaterWidget *parent)
+        :
         RepeaterWidget(parent), ui(new Ui::ChannelConfiguration) {
     ui->setupUi(this);
     ui->ESPButton->setChecked(true);
     ui->Disconnect->setEnabled(false);
     ui->progressBar->hide();
+    this->parentInfo = parentInfo;
+    this->DeviceNum = DeviceNum;
+    this->TCPHandler = (*(parentInfo->DevicesSelfInfo))[DeviceNum].TCPHandler;//结构体这样用
 
 
-    QString cfgText = "/Device " + QString::number(num) + "/";
+    QString cfgText = "/Device " + QString::number(DeviceNum) + "/";
     ui->note->setText(MainCfg->GetMainCfg(cfgText + "note"));
 
     ui->IP->setText(MainCfg->GetMainCfg(cfgText + "IP"));
@@ -70,8 +75,41 @@ void ChannelConfiguration::onConnect() {
         ui->IP->setStyleSheet("QLineEdit{border:1px solid red }");
         return;
     }
-    ui->Connect->setEnabled(false);
-    ui->Disconnect->setEnabled(true);
+
+    //连接逻辑
+    QStringList list = ui->IP->text().split(":");
+    ip = list[0];
+    port = list[1].toInt();
+
+    //第一次连接
+    ConnectStep=1;
+    TCPHandler->connectToHost(ip, port);
+//    bool connected = TCPHandler->waitForConnected();
+    connect(TCPHandler,&QTcpSocket::connected,this,[&]{
+        switch(ConnectStep)
+        {
+            case 1:
+                SendModePackage();
+                break;
+            case 2:
+                break;
+            default:
+                break;
+        }
+    });
+}
+
+void ChannelConfiguration::SendModePackage() {
+    TCPHandler->write("COM\r\n");
+    char *buffer;
+    connect(TCPHandler,&QTcpSocket::readyRead,this,[=](){
+        TCPHandler->read(buffer,1024);
+        if(strlen(buffer)==6 &&strncmp(buffer," OK!\r\n",6)==0)
+        {
+            ConnectStep=2;
+        }
+    });
+
 }
 
 /*!
@@ -82,8 +120,7 @@ void ChannelConfiguration::onDisconnect() {
     ui->Disconnect->setEnabled(false);
 }
 
-void ChannelConfiguration::reflashUi(bool isXMB)
-{
+void ChannelConfiguration::reflashUi(bool isXMB) {
     ui->label_3->setVisible(isXMB);
     ui->FuncitonComboBox->setVisible(isXMB);
     ui->label_2->setVisible(isXMB);
