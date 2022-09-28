@@ -45,10 +45,10 @@ private:
     int DataBit1 = 8;                 //数据位1
     QString Parity1 = QString::fromUtf8("无");              //校验位1
     double StopBit1 = 1;              //停止位1
-    int BaudRate2 = 115200;                //波特率2
-    int DataBit2 = 8;                 //数据位2
-    QString Parity2 = QString::fromUtf8("无");              //校验位2
-    double StopBit2 = 1;              //停止位2
+//    int BaudRate2 = 115200;                //波特率2
+//    int DataBit2 = 8;                 //数据位2
+//    QString Parity2 = QString::fromUtf8("无");              //校验位2
+//    double StopBit2 = 1;              //停止位2
     int BaudRate3 = 115200;                //波特率3
     int DataBit3 = 8;                 //数据位3
     QString Parity3 = QString::fromUtf8("无");              //校验位3
@@ -57,6 +57,8 @@ private:
 
 
     void ChangeMode();
+    void ReflashBox();
+    void BeginTCP();
 };
 
 

@@ -10,6 +10,7 @@
 #include "CfgClass.h"
 #include <QtSerialPort/QtSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
+#include "structH.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -20,7 +21,7 @@ class ComTool : public RepeaterWidget {
 Q_OBJECT
 
 public:
-    explicit ComTool(int DeviceNum, int winNum, QSettings *cfg, QWidget *parent = nullptr);
+    explicit ComTool(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInfo, QWidget *parent = nullptr);
 
     ~ComTool() override;
 
@@ -74,7 +75,6 @@ private:
     void GetConstructConfig();
 
     void SaveConstructConfig();
-
 
 
 private slots:

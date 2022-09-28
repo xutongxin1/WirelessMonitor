@@ -40,7 +40,7 @@ int ComTool::ListenPort = 6000;
 int ComTool::SleepTime = 100;
 bool ComTool::AutoConnect = false;
 
-ComTool::ComTool(int DeviceNum, int winNum, QSettings *cfg, QWidget *parent) :
+ComTool::ComTool(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInfo, QWidget *parent) :
         RepeaterWidget(parent), ui(new Ui::comtool) {
     this->cfg = cfg;
     this->ConfigFilePath = "./config/Device" + QString::number(DeviceNum) + ".ini";
@@ -134,7 +134,7 @@ void ComTool::initConfig() {
 
     ui->cboxBaudRate->addItems(baudList);
     ui->cboxBaudRate->setCurrentIndex(ui->cboxBaudRate->findText(QString::number(ComTool::BaudRate)));
-//    connect(ui->cboxBaudRate, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
+    connect(ui->cboxBaudRate, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
 //    void (QComboBox::*fp)(int) =&QComboBox::activated;
     connect(ui->cboxBaudRate->lineEdit(), &QLineEdit::editingFinished, this, [=] {
 

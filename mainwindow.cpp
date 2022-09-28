@@ -10,8 +10,7 @@
 #include <cstdlib>
 #include "TCPBridgeConfiguration/tcpbridgeconfiguration.h"
 
-
-int record_DeviceNum =0 , record_WinNum =0 ;
+int record_DeviceNum = 0, record_WinNum = 0;
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -58,18 +57,17 @@ MainWindow::MainWindow(QWidget *parent)
     DeviceWindowsInit();
     //lulu_test
     QVector<double> a;
-    for(int i=0;i<100;i++)
-    {
+    for (int i = 0; i < 100; i++) {
         //a[i]=i*30.0;
-        a.append(i*30.0);
+        a.append(i * 30.0);
     }
-    qDebug()<<a[50]<<endl;
+    qDebug() << a[50] << endl;
     test1->test(a);
-    test1->AddDate("test",a);
+    test1->AddDate("test", a);
 //    bool res = AddDate("test",a,DevicesWindowsInfo[record_DeviceNum][record_WinNum].widget);
 //    if(res == false) qDebug()<<"false"<<endl;
 //    else qDebug()<<"ok"<<endl;
-    TCPBridgeConfiguration *tmp=new TCPBridgeConfiguration(1,4,Cfg->configDeviceIni[1]);
+    TCPBridgeConfiguration *tmp = new TCPBridgeConfiguration(1, 4, Cfg->configDeviceIni[1]);
 
 //    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());
 
@@ -96,6 +94,9 @@ void MainWindow::ErrorHandle(const QString &reason) {
  * 窗口结构体初始化
  */
 void MainWindow::DeviceWindowsInit() {
+    parentInfo.DevicesInfo = &DevicesInfo;
+    parentInfo.DevicesWindowsInfo = &DevicesWindowsInfo;
+
     DevicesWindowsInfo.emplace_back();//空占位
 
     DevicesInfo.emplace_back();//Main窗口
@@ -123,7 +124,9 @@ void MainWindow::DeviceWindowsInit() {
                     break;
                 case 2:
                     DevicesWindowsInfo[DeviceNum][WinNum].type = XCOM;//结构体初始化
-                    DevicesWindowsInfo[DeviceNum][WinNum].widget = new ComTool(DeviceNum,WinNum, Cfg->configDeviceIni[DeviceNum]);
+                    DevicesWindowsInfo[DeviceNum][WinNum].widget = new ComTool(DeviceNum, WinNum,
+                                                                               Cfg->configDeviceIni[DeviceNum],
+                                                                               &parentInfo);
                     DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(
                             DevicesWindowsInfo[DeviceNum][WinNum].widget);
                     DevicesInfo[DeviceNum].TabWidget->addTab("本地串口监视器");//添加tab栏
@@ -135,10 +138,12 @@ void MainWindow::DeviceWindowsInit() {
 
                     DevicesWindowsInfo[DeviceNum][WinNum].type = MainChart;//结构体初始化
                     DevicesWindowsInfo[DeviceNum][WinNum].widget = test1;
-                    DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(DevicesWindowsInfo[DeviceNum][WinNum].widget);
+                    DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(
+                            DevicesWindowsInfo[DeviceNum][WinNum].widget);
                     DevicesInfo[DeviceNum].TabWidget->addTab("数据波形图");//添加tab栏
                     break;
-                default: break;
+                default:
+                    break;
             }
         }
 
@@ -154,6 +159,7 @@ void MainWindow::DeviceWindowsInit() {
 
 
         });
+
 
     }
 
@@ -186,4 +192,5 @@ void MainWindow::DeviceWindowsExchange(int DeviceNum, int WinNum) {
 
 void MainWindow::NewWindowCreate() {
 }
+
 
