@@ -8,6 +8,9 @@ class ReadThread : public QThread
 public:
     ReadThread();
 
+    virtual ~ReadThread()
+    { }
+
     void run();
 };
 

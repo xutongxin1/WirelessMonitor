@@ -19,7 +19,7 @@ ChannelConfiguration::ChannelConfiguration(int DeviceNum, CfgClass *MainCfg, ToN
     ui->progressBar->hide();
     this->parentInfo = parentInfo;
     this->DeviceNum = DeviceNum;
-    this->TCPHandler = (*(parentInfo->DevicesSelfInfo))[DeviceNum].TCPHandler;//结构体这样用
+    this->TCPHandler = (*(parentInfo->DevicesInfo))[DeviceNum].TCPHandler;//结构体这样用
 
 
     QString cfgText = "/Device " + QString::number(DeviceNum) + "/";
@@ -80,23 +80,10 @@ void ChannelConfiguration::onConnect() {
     QStringList list = ui->IP->text().split(":");
     ip = list[0];
     port = list[1].toInt();
+    TCPHandler->connectToHost(ip,port,QAbstractSocket::ReadWrite,QAbstractSocket::AnyIPProtocol);
 
-    //第一次连接
-    ConnectStep=1;
-    TCPHandler->connectToHost(ip, port);
-//    bool connected = TCPHandler->waitForConnected();
-    connect(TCPHandler,&QTcpSocket::connected,this,[&]{
-        switch(ConnectStep)
-        {
-            case 1:
-                SendModePackage();
-                break;
-            case 2:
-                break;
-            default:
-                break;
-        }
-    });
+
+
 }
 
 void ChannelConfiguration::SendModePackage() {
@@ -107,9 +94,10 @@ void ChannelConfiguration::SendModePackage() {
         if(strlen(buffer)==6 &&strncmp(buffer," OK!\r\n",6)==0)
         {
             ConnectStep=2;
+            TCPHandler->disconnect(SIGNAL(readyRead()));
+
         }
     });
-
 }
 
 /*!
@@ -127,5 +115,8 @@ void ChannelConfiguration::reflashUi(bool isXMB) {
     ui->IP->setVisible(isXMB);
     ui->Connect->setVisible(isXMB);
     ui->Disconnect->setVisible(isXMB);
+}
+
+void ChannelConfiguration::SecondConnect() {
 
 }

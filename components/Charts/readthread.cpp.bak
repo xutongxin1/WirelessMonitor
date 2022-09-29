@@ -1,4 +1,4 @@
-#include "readthread.h"
+#include "readthread.h.bak"
 
 ReadThread::ReadThread()
 {

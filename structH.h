@@ -8,6 +8,7 @@
 #include <QTcpSocket>
 #include "RepeaterWidget.h"
 #include "qtmaterialtabs.h"
+#include "TCPHandle.h"
 
 class RepeaterWidget;
 struct WindowsInfo//窗口配置信息结构体
@@ -21,12 +22,12 @@ struct DevicesInfo//设备配置信息结构体
     int windowsNum;
     int TabIndex;
     QtMaterialTabs *TabWidget;
-    QTcpSocket* TCPHandler;
+    TCPHandle* TCPHandler;
 };
 struct ToNewWidget
 {
     std::vector<std::vector<WindowsInfo>> *DevicesWindowsInfo;//设备下窗口信息
-    std::vector<DevicesInfo> *DevicesSelfInfo;//设备信息
+    std::vector<DevicesInfo> *DevicesInfo;//设备信息
 };
 
 #endif //MAIN_STRUCTH_H

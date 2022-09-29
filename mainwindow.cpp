@@ -114,7 +114,7 @@ void MainWindow::DeviceWindowsInit() {
             if (WinType == 0)continue;
             DevicesWindowsInfo[DeviceNum].emplace_back();//0位置空占位
             DevicesWindowsInfo[DeviceNum].emplace_back();
-            DevicesInfo[DeviceNum].TCPHandler = new QTcpSocket();//都创建一个socket对象吧，防止空指针
+            DevicesInfo[DeviceNum].TCPHandler = new TCPHandle;//都创建一个socket对象吧，防止空指针
             switch (WinType) {
                 case 1:
                     DevicesWindowsInfo[DeviceNum][WinNum].type = ChannelConfiguration;//结构体初始化

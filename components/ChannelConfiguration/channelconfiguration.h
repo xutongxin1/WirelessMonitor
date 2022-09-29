@@ -29,7 +29,7 @@ private:
 
     ToNewWidget *parentInfo;
 
-    QTcpSocket* TCPHandler;
+    TCPHandle* TCPHandler;
 
     int DeviceNum;
 
@@ -44,6 +44,8 @@ private:
     void reflashUi(bool isXMB);
 
     void SendModePackage();
+
+    void SecondConnect();
 };
 
 
