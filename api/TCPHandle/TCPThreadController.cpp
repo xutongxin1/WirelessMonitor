@@ -3,10 +3,10 @@
 //
 
 #include "TCPThreadController.h"
-#include "TCPHandle.h"
+#include "TCPCommandHandle.h"
 
 TCPThreadController::TCPThreadController(QObject *parent) : QObject(parent) {
-    auto *handler = new TCPHandle;
+    auto *handler = new TCPCommandHandle;
     handler->moveToThread(&WorkThread);
 
 

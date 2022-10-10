@@ -8,7 +8,7 @@
 #include <QTcpSocket>
 #include "RepeaterWidget.h"
 #include "qtmaterialtabs.h"
-#include "TCPHandle.h"
+#include "TCPCommandHandle.h"
 
 class RepeaterWidget;
 struct WindowsInfo//窗口配置信息结构体
@@ -22,7 +22,7 @@ struct DevicesInfo//设备配置信息结构体
     int windowsNum;
     int TabIndex;
     QtMaterialTabs *TabWidget;
-    TCPHandle* TCPHandler;
+    TCPCommandHandle* TCPHandler;
 };
 struct ToNewWidget
 {

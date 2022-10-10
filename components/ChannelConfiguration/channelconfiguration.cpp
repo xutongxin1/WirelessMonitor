@@ -52,8 +52,8 @@ ChannelConfiguration::ChannelConfiguration(int DeviceNum, CfgClass *MainCfg, ToN
     connect(ui->Connect, &QPushButton::clicked, this, &ChannelConfiguration::onConnect);
     connect(ui->Disconnect, &QPushButton::clicked, this, &ChannelConfiguration::onDisconnect);
 
-    QRegExp rx(
-            R"(^(\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5]):([0-9]|[1-9]\d|[1-9]\d{2}|[1-9]\d{3}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$)");
+    QRegExp rx(R"((25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d))");
+
 
     auto *pReg = new QRegExpValidator(rx, this);
 
@@ -70,18 +70,18 @@ ChannelConfiguration::~ChannelConfiguration() {
  */
 void ChannelConfiguration::onConnect() {
     if (!(ui->IP->hasAcceptableInput())) {
-        QToolTip::showText(ui->IP->mapToGlobal(QPoint(100, 0)), "IP端口输入有误");
+        QToolTip::showText(ui->IP->mapToGlobal(QPoint(100, 0)), "IP地址输入有误");
         // 设置LineEdit变为红色
         ui->IP->setStyleSheet("QLineEdit{border:1px solid red }");
         return;
     }
 
     //连接逻辑
-    QStringList list = ui->IP->text().split(":");
-    ip = list[0];
-    port = list[1].toInt();
-    TCPHandler->connectToHost(ip,port,QAbstractSocket::ReadWrite,QAbstractSocket::AnyIPProtocol);
-
+//    QStringList list = ui->IP->text().split(":");
+//    ip = list[0];
+//    port = list[1].toInt();
+    ip = ui->IP->text();
+    TCPHandler->connectToHost(ip, 1920, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
 
 
 }
@@ -89,11 +89,10 @@ void ChannelConfiguration::onConnect() {
 void ChannelConfiguration::SendModePackage() {
     TCPHandler->write("COM\r\n");
     char *buffer;
-    connect(TCPHandler,&QTcpSocket::readyRead,this,[=](){
-        TCPHandler->read(buffer,1024);
-        if(strlen(buffer)==6 &&strncmp(buffer," OK!\r\n",6)==0)
-        {
-            ConnectStep=2;
+    connect(TCPHandler, &QTcpSocket::readyRead, this, [=]() {
+        TCPHandler->read(buffer, 1024);
+        if (strlen(buffer) == 6 && strncmp(buffer, " OK!\r\n", 6) == 0) {
+            ConnectStep = 2;
             TCPHandler->disconnect(SIGNAL(readyRead()));
 
         }

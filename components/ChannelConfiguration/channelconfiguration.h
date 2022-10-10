@@ -29,7 +29,7 @@ private:
 
     ToNewWidget *parentInfo;
 
-    TCPHandle* TCPHandler;
+    TCPCommandHandle* TCPHandler;
 
     int DeviceNum;
 
