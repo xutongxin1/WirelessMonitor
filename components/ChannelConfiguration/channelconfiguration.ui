@@ -168,7 +168,7 @@
           </size>
          </property>
          <property name="placeholderText">
-          <string>IP:Port</string>
+          <string>IP地址</string>
          </property>
         </widget>
        </item>
@@ -225,7 +225,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QtMaterialCircularProgress" name="progressBar">
+    <widget class="QProgressBar" name="progressBar">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -238,8 +238,43 @@
        <height>100</height>
       </size>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QProgressBar::chunk
+{
+border-radius:11px;
+background:qlineargradient(spread:pad,x1:0,y1:0,x2:1,y2:0,stop:0 #01FAFF,stop:1  #26B4FF);
+}
+QProgressBar#progressBar
+{
+height:22px;
+text-align:center;/*文本位置*/
+font-size:14px;
+color:white;
+border-radius:11px;
+background: #1D5573 ;
+}</string>
+     </property>
      <property name="value">
-      <number>24</number>
+      <number>0</number>
+     </property>
+     <property name="format">
+      <string>连接进度%p%</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="connectionTip">
+     <property name="font">
+      <font>
+       <family>幼圆</family>
+       <pointsize>20</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
@@ -256,11 +291,6 @@
    <class>QtMaterialRadioButton</class>
    <extends>QRadioButton</extends>
    <header>qtmaterialradiobutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>QtMaterialCircularProgress</class>
-   <extends>QProgressBar</extends>
-   <header>qtmaterialcircularprogress.h</header>
   </customwidget>
   <customwidget>
    <class>QtMaterialRaisedButton</class>

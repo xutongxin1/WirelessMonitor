@@ -11,6 +11,12 @@
 #include <QTimer>
 
 class TCPCommandHandle : public QTcpSocket {
+    Q_OBJECT
+signals:
+    void hasConnected();//防止与原生方法冲突
+    void receiveFirstHeart();
+    void readyReboot();
+    void ModeChangeSuccess();
 public:
     TCPCommandHandle(QObject *parent = nullptr) ;
     bool isConnected;
@@ -26,12 +32,20 @@ public:
 
     void disconnectFromHost() override;
 
+    void setMode(int mode);
+
 private:
     QString Command;
 
-    void WaitForOK();
+    QString IP;
+
+    void WaitForMode(int mode);
 
     bool isHeartRec=false;
+
+    bool isFirstHeart=false;
+
+    bool isModeSet=false;
 
     QTimer *heartTimer;
 //    void WaitSecondOK();

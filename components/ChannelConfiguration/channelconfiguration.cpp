@@ -17,6 +17,7 @@ ChannelConfiguration::ChannelConfiguration(int DeviceNum, CfgClass *MainCfg, ToN
     ui->ESPButton->setChecked(true);
     ui->Disconnect->setEnabled(false);
     ui->progressBar->hide();
+    ui->connectionTip->hide();
     this->parentInfo = parentInfo;
     this->DeviceNum = DeviceNum;
     this->TCPHandler = (*(parentInfo->DevicesInfo))[DeviceNum].TCPHandler;//结构体这样用
@@ -52,7 +53,8 @@ ChannelConfiguration::ChannelConfiguration(int DeviceNum, CfgClass *MainCfg, ToN
     connect(ui->Connect, &QPushButton::clicked, this, &ChannelConfiguration::onConnect);
     connect(ui->Disconnect, &QPushButton::clicked, this, &ChannelConfiguration::onDisconnect);
 
-    QRegExp rx(R"((25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d))");
+    QRegExp rx(
+            R"((25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d))");
 
 
     auto *pReg = new QRegExpValidator(rx, this);
@@ -75,13 +77,68 @@ void ChannelConfiguration::onConnect() {
         ui->IP->setStyleSheet("QLineEdit{border:1px solid red }");
         return;
     }
+    ui->progressBar->show();
+    ui->progressBar->setValue(5);
+
+    ui->connectionTip->show();
+    ui->connectionTip->setText("正在连接到调试器");
 
     //连接逻辑
 //    QStringList list = ui->IP->text().split(":");
 //    ip = list[0];
 //    port = list[1].toInt();
+
+    disconnect(TCPHandler,0,0,0);
     ip = ui->IP->text();
+    connect(TCPHandler, &TCPCommandHandle::hasConnected, this, [=] {
+        disconnect(TCPHandler, &TCPCommandHandle::hasConnected, 0, 0);
+        ui->progressBar->setValue(25);
+        ui->connectionTip->setText("正在验证调试器状态");
+        TCPHandler->SendHeart();
+    });
     TCPHandler->connectToHost(ip, 1920, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+    ui->Connect->setEnabled(false);
+
+    connect(TCPHandler,&TCPCommandHandle::receiveFirstHeart,this,[=]
+    {
+        //第一次收到是检查模块状态
+        disconnect(TCPHandler, &TCPCommandHandle::receiveFirstHeart, 0, 0);
+        ui->progressBar->setValue(45);
+        ui->connectionTip->setText("正在设置调试器模式");
+
+        connect(TCPHandler,&TCPCommandHandle::receiveFirstHeart,this,[=]
+        {//第二次收到，证明模式切换全部完成
+            ui->progressBar->setValue(100);
+            ui->connectionTip->setText("调试器模式设置完成，请进行下一步配置");
+            disconnect(TCPHandler, &TCPCommandHandle::receiveFirstHeart, 0, 0);
+
+        });
+        TCPHandler->setMode(1);
+    });
+    connect(TCPHandler,&TCPCommandHandle::readyReboot,this,[=]
+    {
+        ui->progressBar->setValue(65);
+        ui->connectionTip->setText("设置完成，等待重启");
+        disconnect(TCPHandler, &TCPCommandHandle::readyReboot, 0, 0);
+    });
+
+    connect(TCPHandler,&TCPCommandHandle::ModeChangeSuccess,this,[=]
+    {
+        ui->progressBar->setValue(85);
+        ui->connectionTip->setText("模式设置成功，检查模块状态");
+        disconnect(TCPHandler, &TCPCommandHandle::ModeChangeSuccess, 0, 0);
+    });
+
+    QTimer::singleShot(45000, this, [=] {
+        if(ui->progressBar->value()!=100)
+        {
+            TCPHandler->disconnectFromHost();
+            ui->connectionTip->setText(ui->connectionTip->text()+"\n错误:操作超时");
+            ui->Connect->setEnabled(true);
+        }
+    });
+
+
 
 
 }
