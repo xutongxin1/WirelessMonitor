@@ -62,8 +62,14 @@ MainWindow::MainWindow(QWidget *parent)
         a.append(i * 30.0);
     }
     qDebug() << a[50] << endl;
-//    test1->test(a);
+    QVector<double> a1;
+    for (int i = 0; i < 100; i++) {
+        //a[i]=i*30.0;
+        a1.append(i * 40.0);
+    }
+    qDebug() << a1[50] << endl;
     test1->AddDate("test", a);
+    test1->AddDate("test1", a1);
 
 
     TCPBridgeConfiguration *tmp = new TCPBridgeConfiguration(1, 4, Cfg->configDeviceIni[1]);

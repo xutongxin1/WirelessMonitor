@@ -2,9 +2,12 @@
 #include "ui_charts.h"
 #include <string.h>
 #include <QDebug>
-
+#include <QPair>
 
 //打开通道不能移动和放缩，默认和关闭可以
+//收到的数据存在这个容器(数据池)，然后调用addData。存进去之前先确保是否已经存在这个名称，不然会继续往相同名称里加
+QHash<QString,QVector<double>> Data_pools;
+
 /*颜色笔可选颜色，默认为红
  */
 enum Pen_color{
@@ -42,7 +45,7 @@ Charts::Charts(QWidget *parent) :
     connect(timerChart,SIGNAL(timeout()),this,SLOT(ReadyShowLine()));
 
 // Allow user to drag axis ranges with mouse, zoom with mouse wheel and select graphs by clicking:
-    //chart配置
+    //chart配置               uiChart->widget->graph(i)->setName();
     uiChart->widget->xAxis->setLabel("Time/秒");
     uiChart->widget->yAxis->setLabel("ADC");
     uiChart->widget->xAxis->setRange(0,100);
@@ -56,8 +59,14 @@ Charts::Charts(QWidget *parent) :
     connect(uiChart->widget->xAxis, SIGNAL(rangeChanged(QCPRange)), uiChart->widget->xAxis2, SLOT(setRange(QCPRange)));
     connect(uiChart->widget->yAxis, SIGNAL(rangeChanged(QCPRange)), uiChart->widget->yAxis2, SLOT(setRange(QCPRange)));
 
-    uiChart->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    //设置基本坐标轴（左侧Y轴和下方X轴）可拖动、可缩放、曲线可选、legend可选、设置伸缩比例，使所有图例可见
+    uiChart->widget->setInteractions(QCP::iRangeDrag|QCP::iRangeZoom| QCP::iSelectAxes | QCP::iSelectLegend | QCP::iSelectPlottables);
+
     connect(uiChart->widget,SIGNAL(mouseMove(QMouseEvent *)),this,SLOT(myMoveEvent(QMouseEvent *)));
+
+    //设置legend只能选择图例
+    uiChart->widget->legend->setSelectableParts(QCPLegend::spItems);
+    connect(uiChart->widget, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged()));
 
 
 }
@@ -99,6 +108,28 @@ void Charts::ShowLine(QCustomPlot *customPlot)
 void Charts::ReadyShowLine()
 {
     timer_count+=0.2;
+
+    //实时增加数据
+    for(int i=0; i < ( DataPairs.size() );i++)
+    {
+        //查找名字相同的
+        QString tempname = (DataPairs.at(i).name);
+        if( Data_pools.contains( tempname ) )
+        {
+            //对比大小来判断是否需要
+            int tempsize = (Data_pools.value( tempname ).size());
+            if( DataPairs.at(i).count != tempsize )
+            {
+                for( int j=(DataPairs.at(i).count); j < (tempsize) ;j++)
+                {
+                    DataPairs.at(i).DataBuff[j]= Data_pools.value( tempname ).at(j);
+                }
+                DataPairs[i].count = tempsize;//记录下最新的大小
+            }
+
+        }
+
+    }
 
     ShowLine(uiChart->widget);
 
@@ -204,12 +235,13 @@ bool Charts::AddDate(QString addname, const QVector<double> &addDate)
         {
             temp->DataBuff[i]=addDate.at(i);
         }
+        temp->count = addDate.size();   //记录已经写了多少数据，方便实时加
         temp->num = 0;
         DataPairs.append(*temp);//插入数据
+        //uiChart->widget->legend->visible()
         uiChart->comboBox->addItem(addname);//combox插入项
         uiChart->widget->addGraph();//加图层准备画图
         qDebug()<<"emptyadd"<<endl;
-        emit monitor(addDate);
         return 1;
     }
     else{   //有数据
@@ -223,18 +255,21 @@ bool Charts::AddDate(QString addname, const QVector<double> &addDate)
         }
         else//如果识别到就先提前加图层准备画图
         {
-            Datanode temp;
-            //开启新的线程和定时器，让他源源不断接收数据
+            Datanode *temp = new Datanode;
+            temp->name = addname;
+            temp->DataBuff = new double[size];
+            temp->flag = 0;
             for(int i=0;i<addDate.size();i++)
             {
-                temp.DataBuff[i]=addDate[i];
+                temp->DataBuff[i]=addDate.at(i);
             }
-            temp.flag = 0;
-            temp.num = i;
-            temp.name = addname;
-            DataPairs.append(temp);//插入数据
+            temp->count = addDate.size();   //记录已经写了多少数据，方便实时加
+            temp->num = i;
+            DataPairs.append(*temp);//插入数据
+            //uiChart->widget->legend->visible()
             uiChart->comboBox->addItem(addname);//combox插入项
             uiChart->widget->addGraph();//加图层准备画图
+            qDebug()<<"has add"<<endl;
             return 1;
         }
     }}
@@ -268,4 +303,23 @@ void Charts::test(const QVector<double> &addDate)
         temp[i]=addDate.at(i);
     }
     qDebug()<<temp[3]<<endl;
+}
+
+
+void Charts::selectionChanged()
+{
+  // 将图形的选择与相应图例项的选择同步
+  for (int i=0; i<uiChart->widget->graphCount(); ++i)
+  {
+    QCPGraph *graph = uiChart->widget->graph(i);
+    QCPPlottableLegendItem *item = uiChart->widget->legend->itemWithPlottable(graph);
+    if (item->selected() || graph->selected())
+    {
+      item->setSelected(true);
+      //注意：这句需要Qcustomplot2.0系列版本
+      graph->setSelection(QCPDataSelection(graph->data()->dataRange()));
+      //这句1.0系列版本即可
+      //graph->setSelected(true);
+    }
+  }
 }

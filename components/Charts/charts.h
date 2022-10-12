@@ -50,14 +50,14 @@ private slots:
 
 private:
     Ui::Charts *uiChart;
-    QList<Datanode> DataPairs;
+    QList<Datanode> DataPairs;  //QList方便与图例顺序对应
     int flag;
     double timer_count=0.0;
     bool checked=0;
     QTimer *timerChart;
 
     bool AddDate(QString addname, const QVector<double> &addDate);
-
+    void selectionChanged();
 };
 
 
