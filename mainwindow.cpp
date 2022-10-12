@@ -62,11 +62,10 @@ MainWindow::MainWindow(QWidget *parent)
         a.append(i * 30.0);
     }
     qDebug() << a[50] << endl;
-    test1->test(a);
+//    test1->test(a);
     test1->AddDate("test", a);
-//    bool res = AddDate("test",a,DevicesWindowsInfo[record_DeviceNum][record_WinNum].widget);
-//    if(res == false) qDebug()<<"false"<<endl;
-//    else qDebug()<<"ok"<<endl;
+
+
     TCPBridgeConfiguration *tmp = new TCPBridgeConfiguration(1, 4, Cfg->configDeviceIni[1]);
 
 //    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());

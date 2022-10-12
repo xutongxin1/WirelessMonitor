@@ -6,6 +6,8 @@
 
 //打开通道不能移动和放缩，默认和关闭可以
 /*颜色笔可选颜色，默认为红
+ */
+enum Pen_color{
         black,
         white,
         darkGray,
@@ -24,7 +26,9 @@
         darkMagenta,
         darkYellow,
         transparent
-*/
+};
+
+
 //graph.setPen,setName。每个曲线都会独占一个graph
 
 Charts::Charts(QWidget *parent) :
@@ -66,16 +70,6 @@ Charts::~Charts()
 void Charts::ShowLine(QCustomPlot *customPlot)
 
 {
-    /*如果你想图形更加精细，可以多定义些点
-    QVector<double> Xvalue(100);
-    QVector<double> Yvalue(100);
-           Buff[flag]=CurrentData;//将新数据存入缓冲区
-           for(int i=0;i<=flag;i++){
-               Xvalue[i]=i*0.2;
-               Yvalue[i]=Buff[i];
-              }
-     */
-
      //查找那些变量需要显示并且显示出来
      for(int i=0;i < ( DataPairs.size() );i++)
      {
@@ -202,16 +196,16 @@ bool Charts::AddDate(QString addname, const QVector<double> &addDate)
     int size = addDate.size();
     if( ( DataPairs.size() ) == 0 )//如果是空链表
     {
-        Datanode temp;
-        temp.name = addname;
-        temp.DataBuff = new double[size];
-        temp.flag = 0;
-//        for(int i=0;i<addDate.size();i++)
-//        {
-//            temp.DataBuff[i]=addDate.at(i);
-//        }
-        temp.num = 0;
-        DataPairs.append(temp);//插入数据
+        Datanode *temp = new Datanode;
+        temp->name = addname;
+        temp->DataBuff = new double[size];
+        temp->flag = 0;
+        for(int i=0;i<addDate.size();i++)
+        {
+            temp->DataBuff[i]=addDate.at(i);
+        }
+        temp->num = 0;
+        DataPairs.append(*temp);//插入数据
         uiChart->comboBox->addItem(addname);//combox插入项
         uiChart->widget->addGraph();//加图层准备画图
         qDebug()<<"emptyadd"<<endl;
@@ -224,16 +218,17 @@ bool Charts::AddDate(QString addname, const QVector<double> &addDate)
         if( (DataPairs.at(i).name) == addname)//存在返回true
         {
             //加入错误,返回0
-            qDebug()<<"出错点1"<<endl;
+            qDebug()<<"警告点1：已存在"<<endl;
             return 0;
         }
         else//如果识别到就先提前加图层准备画图
         {
             Datanode temp;
-//            for(int i=0;i<addDate.size();i++)
-//            {
-//                temp.DataBuff[i]=addDate[i];
-//            }
+            //开启新的线程和定时器，让他源源不断接收数据
+            for(int i=0;i<addDate.size();i++)
+            {
+                temp.DataBuff[i]=addDate[i];
+            }
             temp.flag = 0;
             temp.num = i;
             temp.name = addname;
