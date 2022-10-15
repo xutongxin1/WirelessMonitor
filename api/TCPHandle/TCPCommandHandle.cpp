@@ -30,6 +30,7 @@ void TCPCommandHandle::disconnectFromHost() {
         disconnect(this, &QTcpSocket::disconnected, 0, 0);
         isConnected = false;
         heartTimer->stop();//关闭心跳包发送
+        emit(hasDisconnected());
     });
     QAbstractSocket::disconnectFromHost();
 }
@@ -97,7 +98,6 @@ void TCPCommandHandle::setMode(int mode) {
     char tmp[100];
     sprintf(tmp, R"("{"command":101,"attach":"%d"}")", mode);
     this->write(tmp);
-
 }
 
 void TCPCommandHandle::WaitForMode(int mode) {

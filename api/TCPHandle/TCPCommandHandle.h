@@ -17,6 +17,7 @@ signals:
     void receiveFirstHeart();
     void readyReboot();
     void ModeChangeSuccess();
+    void hasDisconnected();
 public:
     TCPCommandHandle(QObject *parent = nullptr) ;
     bool isConnected;

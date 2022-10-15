@@ -112,6 +112,8 @@ void ChannelConfiguration::onConnect() {
             ui->connectionTip->setText("调试器模式设置完成，请进行下一步配置");
             disconnect(TCPHandler, &TCPCommandHandle::receiveFirstHeart, 0, 0);
 
+            ui->Disconnect->setEnabled(true);
+
         });
         TCPHandler->setMode(1);
     });
@@ -160,8 +162,12 @@ void ChannelConfiguration::SendModePackage() {
  * 断开按钮按下事件
  */
 void ChannelConfiguration::onDisconnect() {
-    ui->Connect->setEnabled(true);
-    ui->Disconnect->setEnabled(false);
+    connect(TCPHandler, &TCPCommandHandle::hasDisconnected, this, [=] {
+        disconnect(TCPHandler, &TCPCommandHandle::hasDisconnected, 0, 0);
+        ui->Connect->setEnabled(true);
+        ui->Disconnect->setEnabled(false);
+    });
+    TCPHandler->disconnectFromHost();
 }
 
 void ChannelConfiguration::reflashUi(bool isXMB) {
