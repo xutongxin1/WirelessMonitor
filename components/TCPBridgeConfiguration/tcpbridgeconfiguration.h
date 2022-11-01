@@ -7,6 +7,7 @@
 
 #include <QSettings>
 #include "RepeaterWidget.h"
+#include "structH.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -17,7 +18,8 @@ class TCPBridgeConfiguration : public RepeaterWidget {
 Q_OBJECT
 
 public:
-    explicit TCPBridgeConfiguration(int DeviceNum, int winNum, QSettings *cfg, QWidget *parent = nullptr);
+    explicit TCPBridgeConfiguration(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInfo,
+                                    QWidget *parent = nullptr);
 
     ~TCPBridgeConfiguration() override;
 
@@ -53,11 +55,18 @@ private:
     int DataBit3 = 8;                 //数据位3
     QString Parity3 = QString::fromUtf8("无");              //校验位3
     double StopBit3 = 1;              //停止位3
+    ToNewWidget *parentInfo;
 
+    TCPCommandHandle *TCPCommandHandle;
 
+    TCPInfoHandle *TCPInfoHandler[4];
+
+    int DeviceNum;
 
     void ChangeMode();
+
     void ReflashBox();
+
     void BeginTCP();
 };
 

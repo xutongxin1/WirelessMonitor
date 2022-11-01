@@ -10,38 +10,45 @@
 #include <QtWidgets/QPushButton>
 #include <QSettings>
 
-typedef struct DataNode{
+typedef struct DataNode {
     QString name;
     double *DataBuff;
     int flag = 0;//判断是否画图不加数据,0——不画图，1——显示图，2——隐藏图但是会有数据
     int num;//在graph里对应的名次，需要实时更新
-    long long count=0;//记录每个数据已经画了多少个了。要注意防止溢出！！！
-}Datanode;
+    long long count = 0;//记录每个数据已经画了多少个了。要注意防止溢出！！！
+} Datanode;
 
 namespace Ui {
-class Charts;
+    class Charts;
 }
 
 typedef std::map<std::string, QPushButton> QPushButtonMap;
-enum WindowsType
-{
-    None,
-    ChannelConfiguration,
-    XCOM,
-    MainChart,
+enum WindowsType {
+    None = 0,
+    Channel_Configuration = 1,
+    XCOM = 50,
+    MainChart = 51,
+    TCP_Bridge_Configuration = 201,
+    TCP_Com = 202,
+
 
 };
 struct RequestNewWidget {
     WindowsType widgetType;
     int DeviceNum;
 };
+
 class RepeaterWidget : public QWidget {
 public:
 //    QPushButtonMap Button;
     explicit RepeaterWidget(QWidget *parent = nullptr);
+
     ~RepeaterWidget();
+
     virtual void GetObjectFromUI(QPushButtonMap &result);
+
     virtual void GetConstructConfig();
+
     virtual void SaveConstructConfig();
 //    virtual Ui::Charts *GetChartUi();
 //    virtual QList<Datanode> GetChartDataPair();
@@ -51,7 +58,7 @@ public:
     QString ConfigFilePath;
     QSettings *cfg;
 
-    bool isRequestNewWidget=false;
+    bool isRequestNewWidget = false;
     RequestNewWidget NewWidget;
 
 };

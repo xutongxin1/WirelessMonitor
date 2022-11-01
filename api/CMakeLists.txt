@@ -1,6 +1,7 @@
 add_subdirectory(RepeaterWidget)
 add_subdirectory(qmetarial)
 add_subdirectory(TCPHandle)
+add_subdirectory(ComToolDepend)
 
 IF (WIN32)
     MESSAGE(STATUS "Now is windows")

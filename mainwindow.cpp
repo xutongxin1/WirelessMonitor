@@ -9,6 +9,8 @@
 #include "ComTool/comtool.h"
 #include <cstdlib>
 #include "TCPBridgeConfiguration/tcpbridgeconfiguration.h"
+#include "TCPCom/tcpcom.h"
+
 
 int record_DeviceNum = 0, record_WinNum = 0;
 
@@ -72,14 +74,14 @@ MainWindow::MainWindow(QWidget *parent)
     test1->AddDate("test1", a1);
 
 
-    TCPBridgeConfiguration *tmp = new TCPBridgeConfiguration(1, 4, Cfg->configDeviceIni[1]);
+//    TCPCom *tmp = new class TCPCom(1, 4, Cfg->configDeviceIni[1], &parentInfo);
 
 //    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());
 
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
     DeviceExchange(1);
-    DeviceWindowsExchange(1, 2);
-    ui->FunctionWindow->setCurrentIndex(ui->FunctionWindow->addWidget(tmp));
+    DeviceWindowsExchange(1, 1);
+    ui->FunctionWindow->setCurrentIndex(2);
 }
 
 MainWindow::~MainWindow() {
@@ -119,17 +121,20 @@ void MainWindow::DeviceWindowsInit() {
             if (WinType == 0)continue;
             DevicesWindowsInfo[DeviceNum].emplace_back();//0位置空占位
             DevicesWindowsInfo[DeviceNum].emplace_back();
-            DevicesInfo[DeviceNum].TCPHandler = new TCPCommandHandle;//都创建一个socket对象吧，防止空指针
+            DevicesInfo[DeviceNum].TCPInfoHandler[1] = new TCPInfoHandle;
+            DevicesInfo[DeviceNum].TCPInfoHandler[2] = new TCPInfoHandle;
+            DevicesInfo[DeviceNum].TCPInfoHandler[3] = new TCPInfoHandle;
+            DevicesInfo[DeviceNum].TCPCommandHandler = new TCPCommandHandle;//都创建一个socket对象吧，防止空指针
             switch (WinType) {
                 case 1:
-                    DevicesWindowsInfo[DeviceNum][WinNum].type = ChannelConfiguration;//结构体初始化
-                    DevicesWindowsInfo[DeviceNum][WinNum].widget = new class ChannelConfiguration(DeviceNum, Cfg,
-                                                                                                  &parentInfo);
+                    DevicesWindowsInfo[DeviceNum][WinNum].type = Channel_Configuration;//结构体初始化
+                    DevicesWindowsInfo[DeviceNum][WinNum].widget = new ChannelConfiguration(DeviceNum, Cfg,
+                                                                                            &parentInfo);
                     DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(
                             DevicesWindowsInfo[DeviceNum][WinNum].widget);
                     DevicesInfo[DeviceNum].TabWidget->addTab("通道配置");//添加tab栏
                     break;
-                case 2:
+                case 50:
                     DevicesWindowsInfo[DeviceNum][WinNum].type = XCOM;//结构体初始化
                     DevicesWindowsInfo[DeviceNum][WinNum].widget = new ComTool(DeviceNum, WinNum,
                                                                                Cfg->configDeviceIni[DeviceNum],
@@ -138,7 +143,7 @@ void MainWindow::DeviceWindowsInit() {
                             DevicesWindowsInfo[DeviceNum][WinNum].widget);
                     DevicesInfo[DeviceNum].TabWidget->addTab("本地串口监视器");//添加tab栏
                     break;
-                case 3:
+                case 51:
                     //记录下相应的变量，方便提取类的成员变量charts
                     record_DeviceNum = DeviceNum;
                     record_WinNum = WinNum;
@@ -149,6 +154,30 @@ void MainWindow::DeviceWindowsInit() {
                             DevicesWindowsInfo[DeviceNum][WinNum].widget);
                     DevicesInfo[DeviceNum].TabWidget->addTab("数据波形图");//添加tab栏
                     break;
+                case 201:
+                    DevicesWindowsInfo[DeviceNum][WinNum].type = TCP_Bridge_Configuration;//结构体初始化
+                    DevicesWindowsInfo[DeviceNum][WinNum].widget =
+                            new TCPBridgeConfiguration(
+                                    DeviceNum,
+                                    WinNum,
+                                    Cfg->configDeviceIni[DeviceNum],
+                                    &parentInfo
+                            );
+                    DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(
+                            DevicesWindowsInfo[DeviceNum][WinNum].widget);
+                    DevicesInfo[DeviceNum].TabWidget->addTab("串口桥配置");//添加tab栏
+                    break;
+                case 202:
+                    DevicesWindowsInfo[DeviceNum][WinNum].type = TCP_Com;//结构体初始化
+                    DevicesWindowsInfo[DeviceNum][WinNum].widget = new TCPCom(DeviceNum, WinNum,
+                                                                              Cfg->configDeviceIni[DeviceNum],
+                                                                              &parentInfo);
+                    DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(
+                            DevicesWindowsInfo[DeviceNum][WinNum].widget);
+                    DevicesInfo[DeviceNum].TabWidget->addTab("串口桥数据监视器");//添加tab栏
+                    break;
+
+
                 default:
                     break;
             }

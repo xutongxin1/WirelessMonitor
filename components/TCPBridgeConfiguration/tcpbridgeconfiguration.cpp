@@ -10,14 +10,20 @@
 #include <QLineEdit>
 #include <QJsonObject>
 
-TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSettings *cfg, QWidget *parent) :
+TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInfo,
+                                               QWidget *parent) :
         RepeaterWidget(parent), ui(new Ui::TCPBridgeConfiguration) {
     ui->setupUi(this);
 
     this->cfg = cfg;
     this->ConfigFilePath = "Win" + QString::number(winNum);
     TCPBridgeConfiguration::GetConstructConfig();
-
+    this->parentInfo = parentInfo;
+    this->DeviceNum = DeviceNum;
+    this->TCPCommandHandle = (*(parentInfo->DevicesInfo))[DeviceNum].TCPCommandHandler;//结构体这样用
+    this->TCPInfoHandler[1] = (*(parentInfo->DevicesInfo))[DeviceNum].TCPInfoHandler[1];
+    this->TCPInfoHandler[2] = (*(parentInfo->DevicesInfo))[DeviceNum].TCPInfoHandler[2];
+    this->TCPInfoHandler[3] = (*(parentInfo->DevicesInfo))[DeviceNum].TCPInfoHandler[3];
 
     void (QComboBox::*fp)(int) =&QComboBox::currentIndexChanged;
     connect(ui->mode1, fp, this, [&](int num) {
@@ -140,6 +146,11 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
 //    connect(ui->)
 
     ReflashBox();
+
+    connect(ui->save, &QPushButton::clicked, this, [&] {
+        this->BeginTCP();
+    });
+
 }
 
 void TCPBridgeConfiguration::GetConstructConfig() {
@@ -367,16 +378,56 @@ void TCPBridgeConfiguration::ReflashBox() {
 }
 
 void TCPBridgeConfiguration::BeginTCP() {
+
     QJsonObject c1;
-    if (mode1 == Closed) { c1.insert("mode", "Closed"); }
+    if (mode1 == Closed) {
+        TCPInfoHandler[1]->changeReadOnly(0);
+        c1.insert("mode", 0);
+    }
     else {
-        if (mode1 == Input) { c1.insert("mode", "Input"); }
-        else { c1.insert("mode", "SingleOutput"); }
+        TCPInfoHandler[1]->changeReadOnly(1);
+        if (mode1 == Input) { c1.insert("mode", 1); }
+        else { c1.insert("mode", 3); }
         c1.insert("band", QString::number(BaudRate1));
         c1.insert("stop", QString::number(StopBit1));
         c1.insert("parity", Parity1);
         c1.insert("data", QString::number(DataBit1));
     }
+    QJsonObject c2;
+    if (mode2 == Closed) {
+        c2.insert("mode", 0);
+        TCPInfoHandler[2]->changeReadOnly(0);
+    }
+    else {
+        if (mode1 == Follow1Output) {
+            c2.insert("mode", 5);
+            TCPInfoHandler[2]->changeReadOnly(2);
+        }
+        else {
+            c2.insert("mode", 6);
+            TCPInfoHandler[2]->changeReadOnly(1);
+        }
+    }
+    QJsonObject c3;
+    if (mode1 == Closed) {
+        c3.insert("mode", 0);
+        TCPInfoHandler[3]->changeReadOnly(0);
+    }
+    else {
+        TCPInfoHandler[3]->changeReadOnly(2);
+        if (mode1 == Output) { c3.insert("mode", 2); }
+        else { c3.insert("mode", 4); }
+        c3.insert("band", QString::number(BaudRate3));
+        c3.insert("stop", QString::number(StopBit3));
+        c3.insert("parity", Parity3);
+        c3.insert("data", QString::number(DataBit3));
+    }
+    QJsonObject all;
+
+    all.insert("c1", c1);
+    all.insert("c2", c2);
+    all.insert("c3", c3);
+
 
 }
 

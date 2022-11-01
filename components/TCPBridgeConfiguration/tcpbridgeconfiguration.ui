@@ -429,7 +429,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QtMaterialRaisedButton" name="pushButton">
+      <widget class="QtMaterialRaisedButton" name="save">
        <property name="text">
         <string>保存并启动！</string>
        </property>

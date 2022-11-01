@@ -13464,7 +13464,7 @@ QCP::Interaction QCPAbstractItem::selectionCategory() const
 
   The layout step queries all layouts and layout elements in the plot for their proposed size and
   arranges the objects accordingly as preparation for the subsequent drawing step. Through this
-  signal, you have the opportunity to update certain things in your plot that depend crucially on
+  signal, you have the opportunity to update certain things in your plot that ComToolDepend crucially on
   the exact dimensions/positioning of layout elements such as axes and axis rects.
 
   \warning However, changing any parameters of this QCustomPlot instance which would normally
@@ -24211,7 +24211,7 @@ double QCPBarsGroup::keyPixelOffset(const QCPBars *bars, double keyCoord)
   Returns the spacing in pixels which is between this \a bars and the following one, both at the
   key coordinate \a keyCoord.
   
-  \note Typically the returned value doesn't depend on \a bars or \a keyCoord. \a bars is only
+  \note Typically the returned value doesn't ComToolDepend on \a bars or \a keyCoord. \a bars is only
   needed to get access to the key axis transformation and axis rect for the modes \ref
   stAxisRectRatio and \ref stPlotCoords. The \a keyCoord is only relevant for spacings given in
   \ref stPlotCoords on a logarithmic axis.

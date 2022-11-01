@@ -29,7 +29,7 @@ void AppData::readSendData()
 
     //没有的时候主动添加点免得太空
     if (AppData::Datas.count() == 0) {
-        AppData::Datas << "16 FF 01 01 E0 E1" << "16 FF 01 01 E1 E2";
+        AppData::Datas << "Hello";
     }
 }
 

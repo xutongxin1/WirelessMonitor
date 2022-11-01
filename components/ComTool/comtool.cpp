@@ -6,8 +6,8 @@
 
 #include "comtool.h"
 #include "ui_comtool.h"
-#include "ComTool/depend/quihelper.h"
-#include "ComTool/depend/quihelperdata.h"
+#include "quihelper.h"
+#include "quihelperdata.h"
 
 /*
  * TODO:shell语法高亮，使用正则表达式https://c.runoob.com/front-end/
