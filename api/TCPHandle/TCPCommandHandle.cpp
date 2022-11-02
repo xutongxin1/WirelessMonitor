@@ -2,6 +2,7 @@
 // Created by xtx on 2022/9/28.
 //
 
+#include <QMessageBox>
 #include "TCPCommandHandle.h"
 
 TCPCommandHandle::TCPCommandHandle(QObject *parent) : QTcpSocket(parent) {
@@ -36,6 +37,7 @@ void TCPCommandHandle::disconnectFromHost() {
 }
 
 void TCPCommandHandle::SendHeart() {
+    qDebug() << "SendHeart";
     if (!isConnected) {
         qDebug() << "没有有效连接";
         return;
@@ -45,6 +47,8 @@ void TCPCommandHandle::SendHeart() {
             isHeartRec = false;//如果已经收到了心跳返回包，则不处理
         }
         else {//没有收到心跳返回包，超时了
+            heartTimer->stop();//关闭心跳包发送
+            emit(heartError());
             this->disconnectFromHost();
             disconnect(this, &QTcpSocket::readyRead, 0, 0);
         }
@@ -72,7 +76,8 @@ void TCPCommandHandle::setMode(int mode) {
     }
     heartTimer->stop();//关闭心跳包发送，防止误传
     QTimer::singleShot(10000, this, [=] {
-        if (!isModeSet) {//超时，自动断开
+        if (!isModeSet) {//设置超时，自动断开.设置成功置位在收到第一个包后
+            emit(setModeError());
             this->disconnectFromHost();
             disconnect(this, &QTcpSocket::connected, 0, 0);
             disconnect(this, &QTcpSocket::readyRead, 0, 0);
@@ -90,8 +95,13 @@ void TCPCommandHandle::setMode(int mode) {
                 heartTimer->stop();//关闭心跳包发送
                 this->WaitForMode(mode);
             });
+            heartTimer->stop();//关闭心跳包发送
             emit(readyReboot());//发送准备重启的信号
-            this->QAbstractSocket::disconnectFromHost();//此处也直接断开，使用原生方法而不是覆写方法，保证时序
+            connect(this, &QTcpSocket::disconnected, this, [=] {
+                disconnect(this, &QTcpSocket::disconnected, 0, 0);
+                isConnected = false;
+            });
+            QAbstractSocket::disconnectFromHost();
 
         }
     });
@@ -104,7 +114,7 @@ void TCPCommandHandle::WaitForMode(int mode) {
     //此处不使用重构方法，防止先收到心跳返回包
     this->QAbstractSocket::connectToHost(IP, 1920, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
     connect(this, &QTcpSocket::connected, this, [=] {
-
+        isHeartRec = true;
         disconnect(this, &QTcpSocket::connected, 0, 0);
         isConnected = true;
         isFirstHeart = true;
@@ -118,7 +128,7 @@ void TCPCommandHandle::WaitForMode(int mode) {
 
                 emit(ModeChangeSuccess());//发送模式切换成功信号
                 isHeartRec = false;
-                isModeSet = true;//完成模式设置
+                isModeSet = true;//完成模式设置的置位
                 this->SendHeart();//发送一个心跳包
                 heartTimer->start(3000);//启动定时心跳
             }

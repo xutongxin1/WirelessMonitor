@@ -5,10 +5,11 @@
 // You may need to build the project (run Qt uic code generator) to get "ui_ChannelConfiguration.h" resolved
 
 #include <QToolTip>
+#include <QMessageBox>
 #include "channelconfiguration.h"
 #include "ui_ChannelConfiguration.h"
 
-
+//TODO:多次连接时可能出现上个连接超时的bug(需要验证)
 ChannelConfiguration::ChannelConfiguration(int DeviceNum, CfgClass *MainCfg, ToNewWidget *parentInfo,
                                            RepeaterWidget *parent)
         :
@@ -61,6 +62,7 @@ ChannelConfiguration::ChannelConfiguration(int DeviceNum, CfgClass *MainCfg, ToN
 
     ui->IP->setValidator(pReg);
 
+
 }
 
 ChannelConfiguration::~ChannelConfiguration() {
@@ -77,6 +79,8 @@ void ChannelConfiguration::onConnect() {
         ui->IP->setStyleSheet("QLineEdit{border:1px solid red }");
         return;
     }
+
+
     ui->progressBar->show();
     ui->progressBar->setValue(5);
 
@@ -89,6 +93,22 @@ void ChannelConfiguration::onConnect() {
 //    port = list[1].toInt();
 
     disconnect(TCPHandler, 0, 0, 0);
+
+    bool hasGiveUp = false;
+    connect(TCPHandler, &TCPCommandHandle::hasDisconnected, this, [&] {
+//        disconnect(TCPHandler, &TCPCommandHandle::hasDisconnected, 0, 0);
+        ui->progressBar->setValue(0);
+        ui->connectionTip->setText("");
+        ui->Connect->setEnabled(true);
+        ui->Disconnect->setEnabled(false);
+        hasGiveUp = true;
+    });
+    connect(TCPHandler, &TCPCommandHandle::heartError, this, [=] {
+        QMessageBox::critical(this, tr("错误"), tr("心跳包返回失败"));
+    });
+    connect(TCPHandler, &TCPCommandHandle::setModeError, this, [=] {
+        QMessageBox::critical(this, tr("错误"), tr("设置模式失败"));
+    });
     ip = ui->IP->text();
     connect(TCPHandler, &TCPCommandHandle::hasConnected, this, [=] {
         disconnect(TCPHandler, &TCPCommandHandle::hasConnected, 0, 0);
@@ -127,10 +147,11 @@ void ChannelConfiguration::onConnect() {
         disconnect(TCPHandler, &TCPCommandHandle::ModeChangeSuccess, 0, 0);
     });
 
-    QTimer::singleShot(45000, this, [=] {
-        if (ui->progressBar->value() != 100) {
+    QTimer::singleShot(45000, this, [&] {
+        if (ui->progressBar->value() != 100 && !hasGiveUp) {
             TCPHandler->disconnectFromHost();
-            ui->connectionTip->setText(ui->connectionTip->text() + "\n错误:操作超时");
+            QMessageBox::critical(this, tr("错误"), tr("连接流程超时"));
+//            ui->connectionTip->setText(ui->connectionTip->text() + "\n错误:操作超时");
             ui->Connect->setEnabled(true);
         }
     });
@@ -155,11 +176,7 @@ void ChannelConfiguration::SendModePackage() {
  * 断开按钮按下事件
  */
 void ChannelConfiguration::onDisconnect() {
-    connect(TCPHandler, &TCPCommandHandle::hasDisconnected, this, [=] {
-        disconnect(TCPHandler, &TCPCommandHandle::hasDisconnected, 0, 0);
-        ui->Connect->setEnabled(true);
-        ui->Disconnect->setEnabled(false);
-    });
+
     TCPHandler->disconnectFromHost();
 }
 
