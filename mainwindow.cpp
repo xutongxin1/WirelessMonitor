@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
     DeviceExchange(1);
     DeviceWindowsExchange(1, 1);
-    ui->FunctionWindow->setCurrentIndex(2);
+//    ui->FunctionWindow->setCurrentIndex(2);
 //    DevicesInfo[1].TabWidget->setCurrentTab(2);
 }
 

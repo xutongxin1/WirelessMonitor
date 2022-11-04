@@ -435,7 +435,7 @@ void TCPBridgeConfiguration::SetUart() {
 
     ui->save->setEnabled(false);
     ui->save->setText("正在设置");
-    connect(TCPCommandHandle, &TCPCommandHandle::sendCommandSuccess, this, [=] {
+    connect(TCPCommandHandle, &TCPCommandHandle::sendCommandError, this, [=] {
         QMessageBox::critical(this, tr("错误"), tr("设置串口失败"));
         ui->save->setEnabled(true);
         ui->save->setText("保存并应用");
@@ -445,7 +445,7 @@ void TCPBridgeConfiguration::SetUart() {
         ui->save->setEnabled(true);
         ui->save->setText("保存并应用");
     });
-    TCPCommandHandle->SendCommand(all,"COM\r\n");
+    TCPCommandHandle->SendCommand(all,"OK!\r\n");
 }
 
 

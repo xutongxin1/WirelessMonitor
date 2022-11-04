@@ -63,6 +63,8 @@ private:
 
     bool isModeSet=false;
 
+    bool hasReceiveReply;
+
     QTimer *heartTimer;
 //    void WaitSecondOK();
 

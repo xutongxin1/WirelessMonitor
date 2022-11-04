@@ -7,7 +7,7 @@
 
 TCPCommandHandle::TCPCommandHandle(QObject *parent) : QTcpSocket(parent) {
     heartTimer = new QTimer(this);
-    connect(heartTimer, &QTimer::timeout, this, [=] {
+    connect(heartTimer, &QTimer::timeout, this, [&] {
         this->SendHeart();//初始化定时器
     });
 }
@@ -42,7 +42,8 @@ void TCPCommandHandle::SendHeart() {
         qDebug() << "没有有效连接";
         return;
     }
-    QTimer::singleShot(2000, this, [=] {
+    isHeartRec = false;
+    QTimer::singleShot(2000, this, [&] {
         if (isHeartRec) {
             isHeartRec = false;//如果已经收到了心跳返回包，则不处理
         }
@@ -53,7 +54,7 @@ void TCPCommandHandle::SendHeart() {
             disconnect(this, &QTcpSocket::readyRead, 0, 0);
         }
     });
-    connect(this, &QTcpSocket::readyRead, this, [=] {
+    connect(this, &QTcpSocket::readyRead, this, [&] {
         QByteArray t2 = this->read(1024);
         if (t2.length() == 5 && t2 == "OK!\r\n") {
             //读取到心跳返回包
@@ -65,7 +66,7 @@ void TCPCommandHandle::SendHeart() {
             }
         }
     });
-    this->write("COM\r\n", 5);//心跳包
+    this->write("COM\r\n");//心跳包
 }
 
 
@@ -118,7 +119,7 @@ void TCPCommandHandle::WaitForMode(int mode) {
         disconnect(this, &QTcpSocket::connected, 0, 0);
         isConnected = true;
         isFirstHeart = true;
-        connect(this, &QTcpSocket::readyRead, this, [=] {
+        connect(this, &QTcpSocket::readyRead, this, [&,mode] {
             //接收到模式切换包
             QByteArray t2 = this->read(1024);
             char tmp[20];
@@ -127,9 +128,8 @@ void TCPCommandHandle::WaitForMode(int mode) {
                 disconnect(this, &QTcpSocket::readyRead, 0, 0);
 
                 emit(ModeChangeSuccess());//发送模式切换成功信号
-                isHeartRec = false;
                 isModeSet = true;//完成模式设置的置位
-                this->SendHeart();//发送一个心跳包
+//                this->SendHeart();//发送一个心跳包
                 heartTimer->start(3000);//启动定时心跳
             }
         });
@@ -142,20 +142,22 @@ void TCPCommandHandle::SendCommand(QJsonObject command, QString reply) {
 }
 
 void TCPCommandHandle::SendCommand(QString command, QString reply) {
-    bool hasRecieve = false;
+    hasReceiveReply = false;
+
     heartTimer->stop();
-    connect(this, &QTcpSocket::readyRead, this, [&] {
+    connect(this, &QTcpSocket::readyRead, this, [&,reply] {
                 QByteArray t2 = this->read(1024);
                 if (t2 == reply) {
                     //读取到心跳返回包
                     disconnect(this, &QTcpSocket::readyRead, 0, 0);
-                    hasRecieve = true;
+                    hasReceiveReply = true;
                     emit(sendCommandSuccess());
+                    heartTimer->start(3000);
                 }
             }
     );
-    QTimer::singleShot(45000, this, [&] {
-        if (!hasRecieve) {
+    QTimer::singleShot(5000, this, [&] {
+        if (!hasReceiveReply) {
             emit(sendCommandError());
         }
     });
