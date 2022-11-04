@@ -9,6 +9,10 @@
 #include <QTcpSocket>
 #include <QThread>
 #include <QTimer>
+#include <QJsonDocument>
+#include <QJsonValue>
+#include <QJsonArray>
+#include <QJsonObject>
 
 class TCPCommandHandle : public QTcpSocket {
     Q_OBJECT
@@ -21,6 +25,8 @@ signals:
     void heartError();
     void setModeError();
     void waitForModeError();
+    void sendCommandSuccess();
+    void sendCommandError();
 public:
     TCPCommandHandle(QObject *parent = nullptr) ;
     bool isConnected;
@@ -38,6 +44,12 @@ public:
 
     void setMode(int mode);
 
+    void SendCommand(QJsonObject command, QString reply);
+    void SendCommand(QString command,QString reply);
+
+    QString getStringFromJsonObject(const QJsonObject& jsonObject);
+
+    bool getConnectionState();
 private:
     QString Command;
 

@@ -10,44 +10,45 @@
 #include "ui_ChannelConfiguration.h"
 
 //TODO:多次连接时可能出现上个连接超时的bug(需要验证)
-ChannelConfiguration::ChannelConfiguration(int DeviceNum, CfgClass *MainCfg, ToNewWidget *parentInfo,
+ChannelConfiguration::ChannelConfiguration(int DeviceNum, QSettings *MainCFG, QSettings *DeviceCFG,
+                                           ToNewWidget *parentInfo,
                                            RepeaterWidget *parent)
         :
         RepeaterWidget(parent), ui(new Ui::ChannelConfiguration) {
     ui->setupUi(this);
+
+    this->cfg = DeviceCFG;
+    this->MainCFG = MainCFG;
+
     ui->ESPButton->setChecked(true);
     ui->Disconnect->setEnabled(false);
     ui->progressBar->hide();
     ui->connectionTip->hide();
     this->parentInfo = parentInfo;
-    this->DeviceNum = DeviceNum;
+    this->DeviceGroup = "Device " + QString::number(DeviceNum);
     this->TCPHandler = (*(parentInfo->DevicesInfo))[DeviceNum].TCPCommandHandler;//结构体这样用
+    this->GroupName = "Win1";
+    ChannelConfiguration::GetConstructConfig();
 
+//    ui->note->setText(MainCfg->GetMainCfg(cfgText + "note"));
+//
+//    ui->IP->setText(MainCfg->GetMainCfg(cfgText + "IP"));
 
-    QString cfgText = "/Device " + QString::number(DeviceNum) + "/";
-    ui->note->setText(MainCfg->GetMainCfg(cfgText + "note"));
-
-    ui->IP->setText(MainCfg->GetMainCfg(cfgText + "IP"));
-
-    connect(ui->ESPButton, &QAbstractButton::toggled, this, [=] {
-        if (ui->ESPButton->isChecked()) {
-            MainCfg->SaveMainCfg(cfgText + "WayToConnect", "1");
-            reflashUi(true);
-        }
+    connect(ui->ESPButton, &QAbstractButton::toggled, this, [&] {
+        ChannelConfiguration::SaveConstructConfig();
+        reflashUi(true);
     });
-    connect(ui->COMButton, &QAbstractButton::toggled, this, [=] {
-        if (ui->COMButton->isChecked()) {
-            MainCfg->SaveMainCfg(cfgText + "WayToConnect", "2");
-            reflashUi(false);
-        }
+    connect(ui->COMButton, &QAbstractButton::toggled, this, [&] {
+        ChannelConfiguration::SaveConstructConfig();
+        reflashUi(false);
     });
 
-    connect(ui->note, &QLineEdit::editingFinished, this, [=] {
-        MainCfg->SaveMainCfg(cfgText + "note", ui->note->text());
+    connect(ui->note, &QLineEdit::editingFinished, this, [&] {
+        ChannelConfiguration::SaveConstructConfig();
     });
 
-    connect(ui->IP, &QLineEdit::editingFinished, this, [=] {
-        MainCfg->SaveMainCfg(cfgText + "IP", ui->IP->text());
+    connect(ui->IP, &QLineEdit::editingFinished, this, [&] {
+        ChannelConfiguration::SaveConstructConfig();
         ui->IP->setStyleSheet("QLineEdit{border:1px solid gray border-radius:1px}");
     });
 
@@ -62,11 +63,46 @@ ChannelConfiguration::ChannelConfiguration(int DeviceNum, CfgClass *MainCfg, ToN
 
     ui->IP->setValidator(pReg);
 
-
 }
 
 ChannelConfiguration::~ChannelConfiguration() {
     delete ui;
+}
+
+void ChannelConfiguration::GetConstructConfig() {
+    MainCFG->beginGroup(DeviceGroup);
+    if (MainCFG->value("WayToConnect") == 1) {
+        ui->ESPButton->setChecked(true);
+    }
+    else {
+        ui->COMButton->setChecked(true);
+    }
+    ui->IP->setText(MainCFG->value("IP").toString());
+    ui->note->setText(MainCFG->value("note").toString());
+    MainCFG->endGroup();
+
+    cfg->beginGroup(GroupName);
+    ui->FuncitonComboBox->setCurrentIndex(cfg->value("mode").toInt());
+    cfg->endGroup();
+
+}
+
+void ChannelConfiguration::SaveConstructConfig() {
+
+    MainCFG->beginGroup(DeviceGroup);
+    if (ui->ESPButton->isChecked()) {
+        MainCFG->setValue("WayToConnect", 1);
+    }
+    else {
+        MainCFG->setValue("WayToConnect", 2);
+    }
+    MainCFG->setValue("note", ui->note->text());
+    MainCFG->setValue("IP", ui->IP->text());
+    MainCFG->endGroup();
+
+    cfg->beginGroup(GroupName);
+    cfg->setValue("mode", ui->FuncitonComboBox->currentIndex());
+    cfg->endGroup();
 }
 
 /*!
@@ -133,7 +169,7 @@ void ChannelConfiguration::onConnect() {
             ui->Disconnect->setEnabled(true);
 
         });
-        TCPHandler->setMode(1);
+        TCPHandler->setMode(ui->FuncitonComboBox->currentIndex());
     });
     connect(TCPHandler, &TCPCommandHandle::readyReboot, this, [=] {
         ui->progressBar->setValue(65);
@@ -187,8 +223,4 @@ void ChannelConfiguration::reflashUi(bool isXMB) {
     ui->IP->setVisible(isXMB);
     ui->Connect->setVisible(isXMB);
     ui->Disconnect->setVisible(isXMB);
-}
-
-void ChannelConfiguration::SecondConnect() {
-
 }

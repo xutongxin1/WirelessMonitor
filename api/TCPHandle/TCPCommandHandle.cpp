@@ -137,4 +137,36 @@ void TCPCommandHandle::WaitForMode(int mode) {
 
 }
 
+void TCPCommandHandle::SendCommand(QJsonObject command, QString reply) {
+    TCPCommandHandle::SendCommand(getStringFromJsonObject(command), reply);
+}
 
+void TCPCommandHandle::SendCommand(QString command, QString reply) {
+    bool hasRecieve = false;
+    heartTimer->stop();
+    connect(this, &QTcpSocket::readyRead, this, [&] {
+                QByteArray t2 = this->read(1024);
+                if (t2 == reply) {
+                    //读取到心跳返回包
+                    disconnect(this, &QTcpSocket::readyRead, 0, 0);
+                    hasRecieve = true;
+                    emit(sendCommandSuccess());
+                }
+            }
+    );
+    QTimer::singleShot(45000, this, [&] {
+        if (!hasRecieve) {
+            emit(sendCommandError());
+        }
+    });
+    this->write(command.toLatin1());
+}
+
+
+QString TCPCommandHandle::getStringFromJsonObject(const QJsonObject &jsonObject) {
+    return QString(QJsonDocument(jsonObject).toJson());
+}
+
+bool TCPCommandHandle::getConnectionState() {
+    return isConnected;
+}

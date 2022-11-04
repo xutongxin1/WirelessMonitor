@@ -9,6 +9,7 @@
 #include "ui_TCPBridgeConfiguration.h"
 #include <QLineEdit>
 #include <QJsonObject>
+#include <QMessageBox>
 
 TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInfo,
                                                QWidget *parent) :
@@ -16,7 +17,7 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
     ui->setupUi(this);
 
     this->cfg = cfg;
-    this->ConfigFilePath = "Win" + QString::number(winNum);
+    this->GroupName = "Win" + QString::number(winNum);
     TCPBridgeConfiguration::GetConstructConfig();
     this->parentInfo = parentInfo;
     this->DeviceNum = DeviceNum;
@@ -148,7 +149,7 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
     ReflashBox();
 
     connect(ui->save, &QPushButton::clicked, this, [&] {
-        this->BeginTCP();
+        this->SetUart();
     });
 
 }
@@ -377,8 +378,12 @@ void TCPBridgeConfiguration::ReflashBox() {
     ui->DataBit3->setCurrentIndex(ui->DataBit3->findText(QString::number(TCPBridgeConfiguration::DataBit3)));
 }
 
-void TCPBridgeConfiguration::BeginTCP() {
+void TCPBridgeConfiguration::SetUart() {
 
+    if (TCPCommandHandle->getConnectionState()==false) {
+        qDebug() << "No connection found";
+        return;
+    }
     QJsonObject c1;
     if (mode1 == Closed) {
         TCPInfoHandler[1]->changeReadOnly(0);
@@ -428,7 +433,19 @@ void TCPBridgeConfiguration::BeginTCP() {
     all.insert("c2", c2);
     all.insert("c3", c3);
 
-
+    ui->save->setEnabled(false);
+    ui->save->setText("正在设置");
+    connect(TCPCommandHandle, &TCPCommandHandle::sendCommandSuccess, this, [=] {
+        QMessageBox::critical(this, tr("错误"), tr("设置串口失败"));
+        ui->save->setEnabled(true);
+        ui->save->setText("保存并应用");
+    });
+    connect(TCPCommandHandle, &TCPCommandHandle::sendCommandSuccess, this, [=] {
+        QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok, QMessageBox::Ok);
+        ui->save->setEnabled(true);
+        ui->save->setText("保存并应用");
+    });
+    TCPCommandHandle->SendCommand(all,"COM\r\n");
 }
 
 

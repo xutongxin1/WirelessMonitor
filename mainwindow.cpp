@@ -82,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent)
     DeviceExchange(1);
     DeviceWindowsExchange(1, 1);
     ui->FunctionWindow->setCurrentIndex(2);
+//    DevicesInfo[1].TabWidget->setCurrentTab(2);
 }
 
 MainWindow::~MainWindow() {
@@ -108,7 +109,8 @@ void MainWindow::DeviceWindowsInit() {
 
     DevicesInfo.emplace_back();//Main窗口
     DevicesInfo[0].TabIndex = 0;//在ui内默认创建,必定是0
-    for (int DeviceNum = 1; DeviceNum <= DeviceCount; DeviceNum++) {
+    for (int DeviceNum = 1; DeviceNum <= DeviceCount; DeviceNum++) //设备遍历初始化
+    {
         //创建Tab栏,初始化DevicesInfo内数据
         auto *NewTab = new QtMaterialTabs();
         struct DevicesInfo tmp{.windowsNum = Cfg->GetMainCfg(
@@ -116,19 +118,24 @@ void MainWindow::DeviceWindowsInit() {
                 NewTab), .TabWidget=NewTab};
         DevicesInfo.push_back(tmp);
         DevicesWindowsInfo.emplace_back();//创建行
-        for (int WinNum = 1; WinNum <= DevicesInfo[DeviceNum].windowsNum; WinNum++) {
+
+        //创建socket对象
+        DevicesInfo[DeviceNum].TCPInfoHandler[1] = new TCPInfoHandle;
+        DevicesInfo[DeviceNum].TCPInfoHandler[2] = new TCPInfoHandle;
+        DevicesInfo[DeviceNum].TCPInfoHandler[3] = new TCPInfoHandle;
+        DevicesInfo[DeviceNum].TCPCommandHandler = new TCPCommandHandle;//都创建一个socket对象吧，防止空指针
+        for (int WinNum = 1; WinNum <= DevicesInfo[DeviceNum].windowsNum; WinNum++)//窗口遍历初始化
+        {
             int WinType = Cfg->GetDeviceCfg(DeviceNum, "/Win" + QString::number(WinNum) + "/type").toInt();
             if (WinType == 0)continue;
             DevicesWindowsInfo[DeviceNum].emplace_back();//0位置空占位
             DevicesWindowsInfo[DeviceNum].emplace_back();
-            DevicesInfo[DeviceNum].TCPInfoHandler[1] = new TCPInfoHandle;
-            DevicesInfo[DeviceNum].TCPInfoHandler[2] = new TCPInfoHandle;
-            DevicesInfo[DeviceNum].TCPInfoHandler[3] = new TCPInfoHandle;
-            DevicesInfo[DeviceNum].TCPCommandHandler = new TCPCommandHandle;//都创建一个socket对象吧，防止空指针
             switch (WinType) {
                 case 1:
                     DevicesWindowsInfo[DeviceNum][WinNum].type = Channel_Configuration;//结构体初始化
-                    DevicesWindowsInfo[DeviceNum][WinNum].widget = new ChannelConfiguration(DeviceNum, Cfg,
+                    DevicesWindowsInfo[DeviceNum][WinNum].widget = new ChannelConfiguration(DeviceNum,
+                                                                                            Cfg->configDeviceIni[0],
+                                                                                            Cfg->configDeviceIni[DeviceNum],
                                                                                             &parentInfo);
                     DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(
                             DevicesWindowsInfo[DeviceNum][WinNum].widget);
@@ -221,7 +228,7 @@ void MainWindow::DeviceWindowsExchange(int DeviceNum, int WinNum) {
 //    {
 //        ErrorHandle("尝试打开不存在的窗口");
 //    }
-    qDebug("尝试切换到%d设备%d窗口", DeviceNum, WinNum);
+    qDebug("try to switch %d device, %d windows", DeviceNum, WinNum);
 //    DevicesInfo[DeviceNum].TabWidget->setTabActive(WinNum);
     ui->FunctionWindow->setCurrentIndex(DevicesWindowsInfo[DeviceNum][WinNum].index);
 }

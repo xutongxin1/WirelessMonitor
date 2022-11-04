@@ -67,7 +67,9 @@ private:
 
     void ReflashBox();
 
-    void BeginTCP();
+    void SetUart();
+
+
 };
 
 

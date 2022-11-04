@@ -5,7 +5,7 @@
 #include "TCPInfoHandle.h"
 
 TCPInfoHandle::TCPInfoHandle(QObject *parent) : QTcpSocket(parent) {
-    this->isReadOnly=isReadOnly;
+//    this->isReadOnly=isReadOnly;
 
 }
 

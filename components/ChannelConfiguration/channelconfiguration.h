@@ -19,10 +19,15 @@ class ChannelConfiguration : public RepeaterWidget {
 Q_OBJECT
 
 public:
-    explicit ChannelConfiguration(int DeviceNum, CfgClass *MainCfg, ToNewWidget *parentInfo,
+    explicit ChannelConfiguration(int DeviceNum,  QSettings *MainCFG,QSettings *DeviceCFG, ToNewWidget *parentInfo,
                                   RepeaterWidget *parent = nullptr);
 
     ~ChannelConfiguration() override;
+
+    void GetConstructConfig() override;
+
+    void SaveConstructConfig() override;
+
 
 private:
     Ui::ChannelConfiguration *ui;
@@ -31,11 +36,13 @@ private:
 
     TCPCommandHandle* TCPHandler;
 
-    int DeviceNum;
+    QString DeviceGroup;
 
     QString ip;
     int port;
     int ConnectStep;
+
+    QSettings* MainCFG;
 
     void onConnect();
 
