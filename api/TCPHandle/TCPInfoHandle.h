@@ -25,11 +25,18 @@ public:
 
     void disconnectFromHost() override;
 
-    void changeReadOnly(char isReadOnly) { this->isReadOnly = isReadOnly; };
+    enum TCPInfoMode {
+        TCPInfoMode_None = 0,
+        TCPInfoMode_IN,
+        TCPInfoMode_OUT,
+    };
+
+    void changeTCPInfoMode(TCPInfoMode mode) { TCPMode = mode; };
+
 
 private:
     QString IP;
-    char isReadOnly;//0关闭,1读取,2写入
+    TCPInfoMode TCPMode;
 };
 
 

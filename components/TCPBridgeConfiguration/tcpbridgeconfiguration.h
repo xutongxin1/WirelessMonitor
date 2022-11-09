@@ -43,6 +43,8 @@ private:
     IOMode mode2 = Closed;
     IOMode mode3 = Closed;
 
+    QString IP;
+
     int BaudRate1 = 115200;                //波特率1
     int DataBit1 = 8;                 //数据位1
     QString Parity1 = QString::fromUtf8("无");              //校验位1
@@ -68,6 +70,8 @@ private:
     void ReflashBox();
 
     void SetUart();
+
+    void setTCP();
 
 
 };

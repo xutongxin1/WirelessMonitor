@@ -366,12 +366,12 @@ void TCPCom::readData() {
         append(1, buffer);
         receiveCount = receiveCount + data.size();
         ui->btnReceiveCount->setText(QString("接收 : %1 字节").arg(receiveCount));
-
-        //启用网络转发则调用网络发送数据
-        if (tcpOk) {
-            socket->write(data);
-            append(4, QString(buffer));
-        }
+//
+//        //启用网络转发则调用网络发送数据
+//        if (tcpOk) {
+//            socket->write(data);
+//            append(4, QString(buffer));
+//        }
     }
 }
 

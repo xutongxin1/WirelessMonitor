@@ -380,17 +380,29 @@ void TCPBridgeConfiguration::ReflashBox() {
 
 void TCPBridgeConfiguration::SetUart() {
 
-    if (TCPCommandHandle->getConnectionState()==false) {
+    if (!TCPCommandHandle->getConnectionState()) {
         qDebug() << "No connection found";
         return;
     }
+    this->IP = TCPCommandHandle->IP;
+
+    if (!TCPInfoHandler[1]->isConnected) {
+        TCPInfoHandler[1]->connectToHost(IP, 1921, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+    }
+    if (!TCPInfoHandler[2]->isConnected) {
+        TCPInfoHandler[2]->connectToHost(IP, 1922, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+    }
+    if (!TCPInfoHandler[3]->isConnected) {
+        TCPInfoHandler[3]->connectToHost(IP, 1923, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+    }
+
     QJsonObject c1;
     if (mode1 == Closed) {
-        TCPInfoHandler[1]->changeReadOnly(0);
+        TCPInfoHandler[1]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_None);
         c1.insert("mode", 0);
     }
     else {
-        TCPInfoHandler[1]->changeReadOnly(1);
+        TCPInfoHandler[1]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_IN);
         if (mode1 == Input) { c1.insert("mode", 1); }
         else { c1.insert("mode", 3); }
         c1.insert("band", QString::number(BaudRate1));
@@ -401,25 +413,25 @@ void TCPBridgeConfiguration::SetUart() {
     QJsonObject c2;
     if (mode2 == Closed) {
         c2.insert("mode", 0);
-        TCPInfoHandler[2]->changeReadOnly(0);
+        TCPInfoHandler[2]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_None);
     }
     else {
         if (mode1 == Follow1Output) {
             c2.insert("mode", 5);
-            TCPInfoHandler[2]->changeReadOnly(2);
+            TCPInfoHandler[2]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_OUT);
         }
         else {
             c2.insert("mode", 6);
-            TCPInfoHandler[2]->changeReadOnly(1);
+            TCPInfoHandler[2]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_IN);
         }
     }
     QJsonObject c3;
     if (mode1 == Closed) {
         c3.insert("mode", 0);
-        TCPInfoHandler[3]->changeReadOnly(0);
+        TCPInfoHandler[3]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_None);
     }
     else {
-        TCPInfoHandler[3]->changeReadOnly(2);
+        TCPInfoHandler[3]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_OUT);
         if (mode1 == Output) { c3.insert("mode", 2); }
         else { c3.insert("mode", 4); }
         c3.insert("band", QString::number(BaudRate3));
@@ -445,7 +457,11 @@ void TCPBridgeConfiguration::SetUart() {
         ui->save->setEnabled(true);
         ui->save->setText("保存并应用");
     });
-    TCPCommandHandle->SendCommand(all,"OK!\r\n");
+    TCPCommandHandle->SendCommand(all, "OK!\r\n");
+
+    QTimer::singleShot(1000, this, [&] {
+        if (!(TCPInfoHandler[1]->isConnected && TCPInfoHandler[2]->isConnected && TCPInfoHandler[3]->isConnected)) {
+            QMessageBox::critical(this, tr("错误"), tr("设置通信链路失败"));
+        }
+    });
 }
-
-

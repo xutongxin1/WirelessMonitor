@@ -50,10 +50,12 @@ public:
     QString getStringFromJsonObject(const QJsonObject& jsonObject);
 
     bool getConnectionState();
+
+    QString IP;
 private:
     QString Command;
 
-    QString IP;
+
 
     void WaitForMode(int mode);
 
