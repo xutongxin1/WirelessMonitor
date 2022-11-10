@@ -152,6 +152,7 @@ void TCPCommandHandle::SendCommand(QString command, QString reply) {
                     disconnect(this, &QTcpSocket::readyRead, 0, 0);
                     hasReceiveReply = true;
                     emit(sendCommandSuccess());
+                    emit(startInfoConnection());
                     heartTimer->start(3000);
                 }
             }

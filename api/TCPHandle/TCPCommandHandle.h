@@ -27,6 +27,8 @@ signals:
     void waitForModeError();
     void sendCommandSuccess();
     void sendCommandError();
+    void startInfoConnection();
+    void stopInfoConnection();
 public:
     TCPCommandHandle(QObject *parent = nullptr) ;
     bool isConnected;

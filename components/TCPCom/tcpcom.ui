@@ -247,23 +247,35 @@
             </layout>
            </item>
            <item>
-            <widget class="QPushButton" name="btnSendCount">
+            <widget class="QLabel" name="btnSendCount">
+             <property name="text">
+              <string>接收 : 0  字节</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="btnReceiveCount">
              <property name="text">
               <string>发送 : 0 字节</string>
              </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btnReceiveCount">
-             <property name="text">
-              <string>接收 : 0 字节</string>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="btnStopShow">
+            <widget class="QtMaterialRaisedButton" name="btnStartShow">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>60</height>
+              </size>
+             </property>
              <property name="text">
-              <string>停止显示</string>
+              <string>启动显示</string>
              </property>
             </widget>
            </item>
@@ -322,6 +334,11 @@
    <extends>QWidget</extends>
    <header>repeaterwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QtMaterialRaisedButton</class>
+   <extends>QPushButton</extends>
+   <header>qtmaterialraisedbutton.h</header>
   </customwidget>
   <customwidget>
    <class>QtMaterialRadioButton</class>

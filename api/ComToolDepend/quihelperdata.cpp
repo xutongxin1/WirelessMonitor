@@ -458,3 +458,4 @@ QString QUIHelperData::byteArrayToHexStr(const QByteArray &data)
 
     return temp.trimmed().toUpper();
 }
+

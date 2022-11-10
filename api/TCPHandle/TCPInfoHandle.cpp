@@ -37,8 +37,7 @@ bool TCPInfoHandle::enableRecEmit() {
         disconnect(this, &QTcpSocket::readyRead, 0, 0);
         connect(this, &QTcpSocket::readyRead, this, [&] {
             QByteArray buffer = this->readAll();
-            QString rec = buffer;
-            emit(RecNewData(rec, IP, IOPort, QTime::currentTime()));
+            emit(RecNewData(buffer, IP, IOPort, QTime::currentTime()));
         });
         return true;
     }
