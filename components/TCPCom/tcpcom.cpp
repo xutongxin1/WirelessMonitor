@@ -43,16 +43,16 @@ TCPCom::TCPCom(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInf
 
         //选项栏绑定
         if (TCPInfoHandler[2]->TCPMode == TCPInfoHandle::TCPInfoMode_OUT) {
-            ui->channelToSend->setItemData(1, 0, Qt::UserRole - 1);
-        }
-        else {
             ui->channelToSend->setItemData(1, -1, Qt::UserRole - 1);
         }
+        else {
+            ui->channelToSend->setItemData(1, 0, Qt::UserRole - 1);
+        }
         if (TCPInfoHandler[3]->TCPMode == TCPInfoHandle::TCPInfoMode_OUT) {
-            ui->channelToSend->setItemData(2, 0, Qt::UserRole - 1);
+            ui->channelToSend->setItemData(2, -1, Qt::UserRole - 1);
         }
         else {
-            ui->channelToSend->setItemData(2, -1, Qt::UserRole - 1);
+            ui->channelToSend->setItemData(2, 0, Qt::UserRole - 1);
         }
 
         //数据接收绑定
@@ -198,20 +198,20 @@ void TCPCom::sendData() {
     if (ui->channelToSend->currentIndex() == 0) {
         if (TCPInfoHandler[2]->TCPMode == TCPInfoHandle::TCPInfoMode_OUT) {
             append(2, data);
-            TCPInfoHandler[2]->write(data);
+            TCPInfoHandler[2]->write(buffer);
         }
         if (TCPInfoHandler[3]->TCPMode == TCPInfoHandle::TCPInfoMode_OUT) {
             append(3, data);
-            TCPInfoHandler[3]->write(data);
+            TCPInfoHandler[3]->write(buffer);
         }
     }
     else if (ui->channelToSend->currentIndex() == 1) {
         append(2, data);
-        TCPInfoHandler[2]->write(data);
+        TCPInfoHandler[2]->write(buffer);
     }
     else if (ui->channelToSend->currentIndex() == 2) {
         append(3, data);
-        TCPInfoHandler[3]->write(data);
+        TCPInfoHandler[3]->write(buffer);
     }
 
     sendCount = sendCount + buffer.size();

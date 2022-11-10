@@ -416,7 +416,7 @@ void TCPBridgeConfiguration::SetUart() {
         TCPInfoHandler[2]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_None);
     }
     else {
-        if (mode1 == Follow1Output) {
+        if (mode2 == Follow1Output) {
             c2.insert("mode", 5);
             TCPInfoHandler[2]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_OUT);
         }
@@ -426,13 +426,13 @@ void TCPBridgeConfiguration::SetUart() {
         }
     }
     QJsonObject c3;
-    if (mode1 == Closed) {
+    if (mode3 == Closed) {
         c3.insert("mode", 0);
         TCPInfoHandler[3]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_None);
     }
     else {
         TCPInfoHandler[3]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_OUT);
-        if (mode1 == Output) { c3.insert("mode", 2); }
+        if (mode3 == Output) { c3.insert("mode", 2); }
         else { c3.insert("mode", 4); }
         c3.insert("band", QString::number(BaudRate3));
         c3.insert("stop", QString::number(StopBit3));
@@ -449,24 +449,22 @@ void TCPBridgeConfiguration::SetUart() {
     ui->save->setText("正在设置");
 
     connect(TCPCommandHandle, &TCPCommandHandle::sendCommandError, this, [=] {
-        disconnect(TCPCommandHandle,&TCPCommandHandle::sendCommandSuccess,0,0);
-        disconnect(TCPCommandHandle,&TCPCommandHandle::sendCommandError,0,0);
+        disconnect(TCPCommandHandle, &TCPCommandHandle::sendCommandSuccess, 0, 0);
+        disconnect(TCPCommandHandle, &TCPCommandHandle::sendCommandError, 0, 0);
         QMessageBox::critical(this, tr("错误"), tr("设置串口失败"));
         ui->save->setEnabled(true);
         ui->save->setText("保存并应用");
     });
     connect(TCPCommandHandle, &TCPCommandHandle::sendCommandSuccess, this, [=] {
-        disconnect(TCPCommandHandle,&TCPCommandHandle::sendCommandSuccess,0,0);
-        disconnect(TCPCommandHandle,&TCPCommandHandle::sendCommandError,0,0);
+        disconnect(TCPCommandHandle, &TCPCommandHandle::sendCommandSuccess, 0, 0);
+        disconnect(TCPCommandHandle, &TCPCommandHandle::sendCommandError, 0, 0);
         QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok, QMessageBox::Ok);
         ui->save->setEnabled(true);
         ui->save->setText("保存并应用");
     });
 
 
-
     TCPCommandHandle->SendCommand(all, "OK!\r\n");
-
 
 
     QTimer::singleShot(1000, this, [&] {

@@ -128,7 +128,15 @@ void ChannelConfiguration::onConnect() {
 //    ip = list[0];
 //    port = list[1].toInt();
 
-    disconnect(TCPHandler, 0, 0, 0);
+    disconnect(TCPHandler, &TCPCommandHandle::hasDisconnected, 0, 0);
+    disconnect(TCPHandler, &TCPCommandHandle::receiveFirstHeart, 0, 0);
+    disconnect(TCPHandler, &TCPCommandHandle::readyReboot, 0, 0);
+    disconnect(TCPHandler, &TCPCommandHandle::ModeChangeSuccess, 0, 0);
+    disconnect(TCPHandler, &TCPCommandHandle::hasDisconnected, 0, 0);
+    disconnect(TCPHandler, &TCPCommandHandle::heartError, 0, 0);
+    disconnect(TCPHandler, &TCPCommandHandle::setModeError, 0, 0);
+    disconnect(TCPHandler, &TCPCommandHandle::sendCommandSuccess, 0, 0);
+    disconnect(TCPHandler, &TCPCommandHandle::sendCommandError, 0, 0);
 
     bool hasGiveUp = false;
     connect(TCPHandler, &TCPCommandHandle::hasDisconnected, this, [&] {
