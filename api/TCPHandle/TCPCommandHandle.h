@@ -47,9 +47,9 @@ public:
     void SendCommand(QJsonObject command, QString reply);
     void SendCommand(QString command,QString reply);
 
-    QString getStringFromJsonObject(const QJsonObject& jsonObject);
+    static QString getStringFromJsonObject(const QJsonObject& jsonObject);
 
-    bool getConnectionState();
+    bool getConnectionState() const;
 
     QString IP;
 private:

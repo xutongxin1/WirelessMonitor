@@ -118,11 +118,11 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
     ui->Parity1->addItems(parityList);
     ui->Parity3->addItems(parityList);
     connect(ui->Parity1, fp, this, [&](int num) {
-        Parity1 = ui->Parity1->currentText();
+        Parity1 = ui->Parity1->currentIndex();
         ChangeMode();
     });
     connect(ui->Parity3, fp, this, [&](int num) {
-        Parity3 = ui->Parity3->currentText();
+        Parity3 = ui->Parity3->currentIndex();
         ChangeMode();
     });
 
@@ -161,11 +161,11 @@ void TCPBridgeConfiguration::GetConstructConfig() {
     TCPBridgeConfiguration::mode3 = IOMode(cfg->value("mode3", TCPBridgeConfiguration::mode3).toInt());
     TCPBridgeConfiguration::BaudRate1 = cfg->value("BaudRate1", TCPBridgeConfiguration::BaudRate1).toInt();
     TCPBridgeConfiguration::DataBit1 = cfg->value("DataBit1", TCPBridgeConfiguration::DataBit1).toInt();
-    TCPBridgeConfiguration::Parity1 = cfg->value("Parity1", TCPBridgeConfiguration::Parity1).toString();
+    TCPBridgeConfiguration::Parity1 = cfg->value("Parity1", TCPBridgeConfiguration::Parity1).toInt();
     TCPBridgeConfiguration::StopBit1 = cfg->value("StopBit1", TCPBridgeConfiguration::StopBit1).toInt();
     TCPBridgeConfiguration::BaudRate3 = cfg->value("BaudRate3", TCPBridgeConfiguration::BaudRate3).toInt();
     TCPBridgeConfiguration::DataBit3 = cfg->value("DataBit3", TCPBridgeConfiguration::DataBit3).toInt();
-    TCPBridgeConfiguration::Parity3 = cfg->value("Parity3", TCPBridgeConfiguration::Parity3).toString();
+    TCPBridgeConfiguration::Parity3 = cfg->value("Parity3", TCPBridgeConfiguration::Parity3).toInt();
     TCPBridgeConfiguration::StopBit3 = cfg->value("StopBit3", TCPBridgeConfiguration::StopBit3).toInt();
     cfg->endGroup();
 }
@@ -261,7 +261,7 @@ void TCPBridgeConfiguration::ChangeMode() {
 
         ui->BaudRate3->setCurrentText(QString::number(BaudRate1));
         ui->DataBit3->setCurrentText(QString::number(DataBit1));
-        ui->Parity3->setCurrentText(Parity1);
+        ui->Parity3->setCurrentIndex(Parity3);
         ui->StopBit3->setCurrentText(QString::number(StopBit1));
     }
     else if (mode3 == SingleOutput) {
@@ -320,13 +320,13 @@ void TCPBridgeConfiguration::ChangeMode() {
         case Follow1Output:
             ui->BaudRate2->setText(QString::number(BaudRate1));
             ui->DataBit2->setText(QString::number(DataBit1));
-            ui->Parity2->setText(Parity1);
+            ui->Parity2->setText(ui->Parity1->currentText());
             ui->StopBit2->setText(QString::number(StopBit1));
             break;
         case Follow3Input:
             ui->BaudRate2->setText(QString::number(BaudRate3));
             ui->DataBit2->setText(QString::number(DataBit3));
-            ui->Parity2->setText(Parity3);
+            ui->Parity2->setText(ui->Parity3->currentText());
             ui->StopBit2->setText(QString::number(StopBit3));
             break;
         default:
@@ -372,8 +372,8 @@ void TCPBridgeConfiguration::ReflashBox() {
     ui->BaudRate3->setCurrentIndex(ui->BaudRate3->findText(QString::number(TCPBridgeConfiguration::BaudRate3)));
     ui->StopBit1->setCurrentIndex(ui->StopBit1->findText(QString::number(TCPBridgeConfiguration::StopBit1)));
     ui->StopBit3->setCurrentIndex(ui->StopBit3->findText(QString::number(TCPBridgeConfiguration::StopBit3)));
-    ui->Parity1->setCurrentIndex(ui->Parity1->findText(TCPBridgeConfiguration::Parity1));
-    ui->Parity3->setCurrentIndex(ui->Parity3->findText(TCPBridgeConfiguration::Parity3));
+    ui->Parity1->setCurrentIndex(Parity1);
+    ui->Parity3->setCurrentIndex(Parity3);
     ui->DataBit1->setCurrentIndex(ui->DataBit1->findText(QString::number(TCPBridgeConfiguration::DataBit1)));
     ui->DataBit3->setCurrentIndex(ui->DataBit3->findText(QString::number(TCPBridgeConfiguration::DataBit3)));
 }
@@ -447,17 +447,27 @@ void TCPBridgeConfiguration::SetUart() {
 
     ui->save->setEnabled(false);
     ui->save->setText("正在设置");
+
     connect(TCPCommandHandle, &TCPCommandHandle::sendCommandError, this, [=] {
+        disconnect(TCPCommandHandle,&TCPCommandHandle::sendCommandSuccess,0,0);
+        disconnect(TCPCommandHandle,&TCPCommandHandle::sendCommandError,0,0);
         QMessageBox::critical(this, tr("错误"), tr("设置串口失败"));
         ui->save->setEnabled(true);
         ui->save->setText("保存并应用");
     });
     connect(TCPCommandHandle, &TCPCommandHandle::sendCommandSuccess, this, [=] {
+        disconnect(TCPCommandHandle,&TCPCommandHandle::sendCommandSuccess,0,0);
+        disconnect(TCPCommandHandle,&TCPCommandHandle::sendCommandError,0,0);
         QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok, QMessageBox::Ok);
         ui->save->setEnabled(true);
         ui->save->setText("保存并应用");
     });
+
+
+
     TCPCommandHandle->SendCommand(all, "OK!\r\n");
+
+
 
     QTimer::singleShot(1000, this, [&] {
         if (!(TCPInfoHandler[1]->isConnected && TCPInfoHandler[2]->isConnected && TCPInfoHandler[3]->isConnected)) {

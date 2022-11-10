@@ -73,41 +73,9 @@ void TCPCom::initForm() {
     sendCount = 0;
     isShow = true;
 
-//    ui->cboxSendInterval->addItems(AppData::Intervals);
-//    ui->SendDataEdit->addItems(AppData::Datas);
-
-    //读取数据
-    timerRead = new QTimer(this);
-    timerRead->setInterval(100);
-    connect(timerRead, SIGNAL(timeout()), this, SLOT(readData()));
-
-    //发送数据
-    timerSend = new QTimer(this);
-    connect(timerSend, SIGNAL(timeout()), this, SLOT(sendData()));
-    connect(ui->btnSend, SIGNAL(clicked()), this, SLOT(sendData()));
-
-    //保存数据
-    timerSave = new QTimer(this);
-    connect(timerSave, SIGNAL(timeout()), this, SLOT(saveData()));
-    connect(ui->btnSave, SIGNAL(clicked()), this, SLOT(saveData()));
-
     ui->tabWidget->setCurrentIndex(0);
     changeEnable(false);
 
-    tcpOk = false;
-    socket = new QTcpSocket(this);
-    socket->abort();
-    connect(socket, SIGNAL(readyRead()), this, SLOT(readDataNet()));
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-    connect(socket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(readErrorNet()));
-#else
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(readErrorNet()));
-#endif
-
-    timerConnect = new QTimer(this);
-    connect(timerConnect, SIGNAL(timeout()), this, SLOT(connectNet()));
-    timerConnect->setInterval(3000);
-    timerConnect->start();
 
 #ifdef __arm__
     ui->widgetRight->setFixedWidth(280);
@@ -115,159 +83,23 @@ void TCPCom::initForm() {
 }
 
 void TCPCom::initConfig() {
-//    QStringList comList;
-//    for (int i = 1; i <= 20; i++) {
-//        comList << QString("COM%1").arg(i);
-//    }
-//
-//    comList << "ttyUSB0" << "ttyS0" << "ttyS1" << "ttyS2" << "ttyS3" << "ttyS4";
-//    comList << "ttymxc1" << "ttymxc2" << "ttymxc3" << "ttymxc4";
-//    comList << "ttySAC1" << "ttySAC2" << "ttySAC3" << "ttySAC4";
-//    ui->cboxPortName->addItems(comList);
-//    ui->cboxPortName->setCurrentIndex(ui->cboxPortName->findText(TCPCom::PortName));
-//    connect(ui->cboxPortName, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-
-//    QStringList baudList;
-//    baudList << QString::number(TCPCom::BaudRate) << "600" << "1200"
-//             << "1800" << "2400" << "4800" << "9600" << "14400" << "19200" << "38400"
-//             << "56000" << "57600" << "76800" << "115200" << "128000" << "256000";
-//
-//    ui->cboxBaudRate->addItems(baudList);
-//    ui->cboxBaudRate->setCurrentIndex(ui->cboxBaudRate->findText(QString::number(TCPCom::BaudRate)));
-//    connect(ui->cboxBaudRate, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-////    void (QComboBox::*fp)(int) =&QComboBox::activated;
-//    connect(ui->cboxBaudRate->lineEdit(), &QLineEdit::editingFinished, this, [=] {
-//
-//        TCPCom::BaudRate = ui->cboxBaudRate->lineEdit()->text().toInt();
-//        saveConfig();
-//
-//
-//    });
-
-//    QStringList dataBitsList;
-//    dataBitsList << "5" << "6" << "7" << "8";
-//
-//    ui->cboxDataBit->addItems(dataBitsList);
-//    ui->cboxDataBit->setCurrentIndex(ui->cboxDataBit->findText(QString::number(TCPCom::DataBit)));
-//    connect(ui->cboxDataBit, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-
-//    QStringList parityList;
-//    parityList << "无" << "奇" << "偶";
-//#ifdef Q_OS_WIN
-//    parityList << "标志";
-//#endif
-//    parityList << "空格";
-//
-//    ui->cboxParity->addItems(parityList);
-//    ui->cboxParity->setCurrentIndex(ui->cboxParity->findText(TCPCom::Parity));
-//    connect(ui->cboxParity, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-//
-//    QStringList stopBitsList;
-//    stopBitsList << "1";
-//#ifdef Q_OS_WIN
-//    stopBitsList << "1.5";
-//#endif
-//    stopBitsList << "2";
-//
-//    ui->cboxStopBit->addItems(stopBitsList);
-//    ui->cboxStopBit->setCurrentIndex(ui->cboxStopBit->findText(QString::number(TCPCom::StopBit)));
-//    connect(ui->cboxStopBit, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-
     ui->ckHexSend->setChecked(TCPCom::HexSend);
     connect(ui->ckHexSend, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
 
     ui->ckHexReceive->setChecked(TCPCom::HexReceive);
     connect(ui->ckHexReceive, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
 
-//    ui->ckDebug->setChecked(TCPCom::Debug);
-//    connect(ui->ckDebug, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
-//
-//    ui->ckAutoClear->setChecked(TCPCom::AutoClear);
-//    connect(ui->ckAutoClear, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
-//
-//    ui->ckAutoSend->setChecked(TCPCom::AutoSend);
-//    connect(ui->ckAutoSend, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
-//
-//    ui->ckAutoSave->setChecked(TCPCom::AutoSave);
-//    connect(ui->ckAutoSave, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
-//
-//    QStringList sendInterval;
-//    QStringList saveInterval;
-//    sendInterval << "100" << "300" << "500";
-//
-//    for (int i = 1000; i <= 10000; i = i + 1000) {
-//        sendInterval << QString::number(i);
-//        saveInterval << QString::number(i);
-//    }
-//
-//    ui->cboxSendInterval->addItems(sendInterval);
-//    ui->cboxSaveInterval->addItems(saveInterval);
-//
-//    ui->cboxSendInterval->setCurrentIndex(ui->cboxSendInterval->findText(QString::number(TCPCom::SendInterval)));
-//    connect(ui->cboxSendInterval, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-//    ui->cboxSaveInterval->setCurrentIndex(ui->cboxSaveInterval->findText(QString::number(TCPCom::SaveInterval)));
-//    connect(ui->cboxSaveInterval, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-
-    timerSend->setInterval(TCPCom::SendInterval);
-    timerSave->setInterval(TCPCom::SaveInterval);
-
-    if (TCPCom::AutoSend) {
-        timerSend->start();
-    }
-
-    if (TCPCom::AutoSave) {
-        timerSave->start();
-    }
-
-    //串口转网络部分
-//    ui->cboxMode->setCurrentIndex(ui->cboxMode->findText(TCPCom::Mode));
-//    connect(ui->cboxMode, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-//
-//    ui->txtServerIP->setText(TCPCom::ServerIP);
-//    connect(ui->txtServerIP, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-//
-//    ui->txtServerPort->setText(QString::number(TCPCom::ServerPort));
-//    connect(ui->txtServerPort, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-//
-//    ui->txtListenPort->setText(QString::number(TCPCom::ListenPort));
-//    connect(ui->txtListenPort, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-
-//    QStringList values;
-//    values << "0" << "10" << "50";
-//
-//    for (int i = 100; i < 1000; i = i + 100) {
-//        values << QString("%1").arg(i);
-//    }
-//
-//    ui->cboxSleepTime->addItems(values);
-//
-//    ui->cboxSleepTime->setCurrentIndex(ui->cboxSleepTime->findText(QString::number(TCPCom::SleepTime)));
-//    connect(ui->cboxSleepTime, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-//
-//    ui->ckAutoConnect->setChecked(TCPCom::AutoConnect);
-//    connect(ui->ckAutoConnect, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
 }
 
 void TCPCom::saveConfig() {
 
-
     TCPCom::HexSend = ui->ckHexSend->isChecked();
     TCPCom::HexReceive = ui->ckHexReceive->isChecked();
-
-
-
     TCPCom::SaveConstructConfig();
 }
 
 void TCPCom::changeEnable(bool b) {
-//    ui->cboxBaudRate->setEnabled(!b);
-//    ui->cboxDataBit->setEnabled(!b);
-//    ui->cboxParity->setEnabled(!b);
-//    ui->cboxPortName->setEnabled(!b);
-//    ui->cboxStopBit->setEnabled(!b);
-//    ui->btnSend->setEnabled(b);
-//    ui->ckAutoSend->setEnabled(b);
-//    ui->ckAutoSave->setEnabled(b);
+
 }
 
 void TCPCom::append(int type, const QString &data, bool clear) {
@@ -352,26 +184,9 @@ void TCPCom::readData() {
             buffer = QString::fromLocal8Bit(data);
         }
 
-//        //启用调试则模拟调试数据
-//        if (ui->ckDebug->isChecked()) {
-//            int count = AppData::Keys.count();
-//            for (int i = 0; i < count; i++) {
-//                if (buffer.startsWith(AppData::Keys.at(i))) {
-//                    sendData(AppData::Values.at(i));
-//                    break;
-//                }
-//            }
-//        }
-
         append(1, buffer);
         receiveCount = receiveCount + data.size();
         ui->btnReceiveCount->setText(QString("接收 : %1 字节").arg(receiveCount));
-//
-//        //启用网络转发则调用网络发送数据
-//        if (tcpOk) {
-//            socket->write(data);
-//            append(4, QString(buffer));
-//        }
     }
 }
 

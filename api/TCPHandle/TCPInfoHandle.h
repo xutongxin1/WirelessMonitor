@@ -7,6 +7,7 @@
 
 
 #include <QTcpSocket>
+#include <QTime>
 
 class TCPInfoHandle : public QTcpSocket {
 Q_OBJECT
@@ -14,6 +15,8 @@ signals:
 
     void hasConnected();//防止与原生方法冲突
     void hasDisconnected();
+
+    void RecNewData(QString data, QString ip, int port, QTime time);
 
 public:
     TCPInfoHandle(QObject *parent = nullptr);
@@ -25,18 +28,26 @@ public:
 
     void disconnectFromHost() override;
 
+    qint64 write(const QString &data);
+    qint64 write(const char *data, qint64 len);
+    qint64 write(const char *data);
+    virtual qint64 write(const QByteArray &data);
+
     enum TCPInfoMode {
         TCPInfoMode_None = 0,
         TCPInfoMode_IN,
         TCPInfoMode_OUT,
     };
 
-    void changeTCPInfoMode(TCPInfoMode mode) { TCPMode = mode; };
+    void changeTCPInfoMode(TCPInfoMode mode);
 
+
+    bool enableRecEmit();
 
 private:
     QString IP;
     TCPInfoMode TCPMode;
+    int IOPort;
 };
 
 

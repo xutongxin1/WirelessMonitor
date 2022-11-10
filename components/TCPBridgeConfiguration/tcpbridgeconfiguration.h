@@ -47,7 +47,7 @@ private:
 
     int BaudRate1 = 115200;                //波特率1
     int DataBit1 = 8;                 //数据位1
-    QString Parity1 = QString::fromUtf8("无");              //校验位1
+    int Parity1 = 0;              //校验位1
     double StopBit1 = 1;              //停止位1
 //    int BaudRate2 = 115200;                //波特率2
 //    int DataBit2 = 8;                 //数据位2
@@ -55,7 +55,7 @@ private:
 //    double StopBit2 = 1;              //停止位2
     int BaudRate3 = 115200;                //波特率3
     int DataBit3 = 8;                 //数据位3
-    QString Parity3 = QString::fromUtf8("无");              //校验位3
+    int Parity3 = 0;             //校验位3
     double StopBit3 = 1;              //停止位3
     ToNewWidget *parentInfo;
 

@@ -169,6 +169,6 @@ QString TCPCommandHandle::getStringFromJsonObject(const QJsonObject &jsonObject)
     return QString(QJsonDocument(jsonObject).toJson());
 }
 
-bool TCPCommandHandle::getConnectionState() {
+bool TCPCommandHandle::getConnectionState() const {
     return isConnected;
 }
