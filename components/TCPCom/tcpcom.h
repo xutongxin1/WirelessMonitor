@@ -75,6 +75,8 @@ private:
 
     void SaveConstructConfig();
 
+    QString IP;
+
 
 private slots:
 
@@ -93,10 +95,6 @@ private slots:
     void readErrorNet();
 
 private slots:
-
-
-    void on_btnStopShow_clicked();
-
 
     void on_btnClear_clicked();
 

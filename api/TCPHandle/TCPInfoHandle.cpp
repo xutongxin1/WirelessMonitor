@@ -22,7 +22,7 @@ void TCPInfoHandle::disconnectFromHost() {
 void TCPInfoHandle::connectToHost(const QString &hostName, quint16 port, QIODevice::OpenMode protocol = ReadWrite,
                                   QAbstractSocket::NetworkLayerProtocol mode = AnyIPProtocol) {
     connect(this, &QTcpSocket::connected, this, [=] {
-        disconnect(this, &QTcpSocket::connected, 0, 0);
+        disconnect(this, &QTcpSocket::connected, this, 0);
         isConnected = true;
         emit(hasConnected());
     });

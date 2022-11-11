@@ -267,7 +267,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QtMaterialRaisedButton" name="btnStartShow">
+            <widget class="QtMaterialRaisedButton" name="btnStartTest">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -275,7 +275,7 @@
               </size>
              </property>
              <property name="text">
-              <string>启动显示</string>
+              <string>启动测试</string>
              </property>
             </widget>
            </item>

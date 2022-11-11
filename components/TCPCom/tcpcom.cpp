@@ -9,12 +9,13 @@
 #include "quihelper.h"
 #include "quihelperdata.h"
 
+#define _DEBUG 1
+
 /*
  * TODO:shell语法高亮，使用正则表达式https://c.runoob.com/front-end/
  * TODO:以回车分隔
  * TODO:ui修改
  */
-
 TCPCom::TCPCom(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInfo, QWidget *parent) :
         RepeaterWidget(parent), ui(new Ui::tcpcom) {
     this->cfg = cfg;
@@ -37,6 +38,8 @@ TCPCom::TCPCom(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInf
     this->TCPInfoHandler[1] = (*(parentInfo->DevicesInfo))[DeviceNum].TCPInfoHandler[1];
     this->TCPInfoHandler[2] = (*(parentInfo->DevicesInfo))[DeviceNum].TCPInfoHandler[2];
     this->TCPInfoHandler[3] = (*(parentInfo->DevicesInfo))[DeviceNum].TCPInfoHandler[3];
+
+    this->IP = TCPCommandHandle->IP;
 
     connect(TCPCommandHandle, &TCPCommandHandle::startInfoConnection, this, [&] {
 //        disconnect(TCPCommandHandle, &TCPCommandHandle::startInfoConnection, 0, 0);
@@ -70,9 +73,50 @@ TCPCom::TCPCom(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInf
         }
     });
 
-    connect(ui->btnSend,&QPushButton::clicked,this,[&]{
+    connect(ui->btnSend, &QPushButton::clicked, this, [&] {
         this->sendData();
     });
+
+#if _DEBUG
+    connect(ui->btnStartTest, &QPushButton::clicked, this, [&] {
+
+        this->IP = "127.0.0.1";
+        if (!TCPInfoHandler[1]->isConnected) {
+            TCPInfoHandler[1]->connectToHost(IP, 1921, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+        }
+        if (!TCPInfoHandler[2]->isConnected) {
+            TCPInfoHandler[2]->connectToHost(IP, 1922, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+        }
+        if (!TCPInfoHandler[3]->isConnected) {
+            TCPInfoHandler[3]->connectToHost(IP, 1923, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+        }
+
+        //默认设置模式
+        connect(TCPInfoHandler[1], &QTcpSocket::connected, this, [&] {
+            TCPInfoHandler[1]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_IN);
+            TCPInfoHandler[2]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_IN);
+            TCPInfoHandler[3]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_OUT);
+            //数据接收绑定
+            if (TCPInfoHandler[1]->TCPMode == TCPInfoHandle::TCPInfoMode_IN) {
+                connect(TCPInfoHandler[1], &TCPInfoHandle::RecNewData, this,
+                        [&](const QByteArray &data, const QString &ip, int port, QTime time) {
+                            this->getData(data, port);
+                        });
+            }
+            if (TCPInfoHandler[2]->TCPMode == TCPInfoHandle::TCPInfoMode_IN) {
+                connect(TCPInfoHandler[2], &TCPInfoHandle::RecNewData, this,
+                        [&](const QByteArray &data, const QString &ip, int port, QTime time) {
+                            this->getData(data, port);
+                        });
+            }
+        });
+
+
+
+
+
+    });
+#endif
 }
 
 TCPCom::~TCPCom() {
@@ -235,18 +279,6 @@ void TCPCom::saveData() {
     file.close();
 
     on_btnClear_clicked();
-}
-
-
-void TCPCom::on_btnStopShow_clicked() {
-    if (ui->btnStartShow->text() == "停止显示") {
-        isShow = false;
-        ui->btnStartShow->setText("开始显示");
-    }
-    else {
-        isShow = true;
-        ui->btnStartShow->setText("停止显示");
-    }
 }
 
 void TCPCom::on_btnData_clicked() {
