@@ -57,7 +57,7 @@ public:
 private:
     QString Command;
 
-
+    int HeartErrorTime=0;
 
     void WaitForMode(int mode);
 

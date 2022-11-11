@@ -46,12 +46,16 @@ void TCPCommandHandle::SendHeart() {
     QTimer::singleShot(2000, this, [&] {
         if (isHeartRec) {
             isHeartRec = false;//如果已经收到了心跳返回包，则不处理
+            HeartErrorTime=0;
         }
         else {//没有收到心跳返回包，超时了
-            heartTimer->stop();//关闭心跳包发送
-            emit(heartError());
-            this->disconnectFromHost();
-            disconnect(this, &QTcpSocket::readyRead, 0, 0);
+            if(++HeartErrorTime==3) {
+                HeartErrorTime=0;
+                heartTimer->stop();//关闭心跳包发送
+                emit(heartError());
+                this->disconnectFromHost();
+                disconnect(this, &QTcpSocket::readyRead, 0, 0);
+            }
         }
     });
     connect(this, &QTcpSocket::readyRead, this, [&] {

@@ -109,7 +109,7 @@ void TCPCom::changeEnable(bool b) {
 
 void TCPCom::append(int type, const QString &data, bool clear) {
     static int currentCount = 0;
-    static int maxCount = 8192;
+    static int maxCount = 81920;
 
     if (clear) {
         ui->txtMain->clear();
