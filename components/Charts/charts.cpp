@@ -5,6 +5,8 @@
 #include <QPair>
 
 //打开通道不能移动和放缩，默认和关闭可以
+//DataPairs是负责后台更新维护显示数据的，因为图标显示需要double数组。
+//Data_pools是中间数据池，用容器去维护。
 //收到的数据存在这个容器(数据池)，然后调用addData。存进去之前先确保是否已经存在这个名称，不然会继续往相同名称里加
 QHash<QString,QVector<double>> Data_pools;
 
@@ -237,8 +239,12 @@ bool Charts::AddDate(QString addname, const QVector<double> &addDate)
         }
         temp->count = addDate.size();   //记录已经写了多少数据，方便实时加
         temp->num = 0;
-        DataPairs.append(*temp);//插入数据
-        //uiChart->widget->legend->visible()
+        DataPairs.append(*temp);//插入数据          //DataPairs是负责后台更新维护显示数据的，因为图标显示需要double数组。
+                                                  //Data_pools是中间数据池，用容器去维护。
+
+        //！！！数据池插入！！！
+        Data_pools.insert(addname,addDate);
+
         uiChart->comboBox->addItem(addname);//combox插入项
         uiChart->widget->addGraph();//加图层准备画图
         qDebug()<<"emptyadd"<<endl;
@@ -266,9 +272,12 @@ bool Charts::AddDate(QString addname, const QVector<double> &addDate)
             temp->count = addDate.size();   //记录已经写了多少数据，方便实时加
             temp->num = i;
             DataPairs.append(*temp);//插入数据
-            //uiChart->widget->legend->visible()
+
+            //！！！数据池插入！！！
+            Data_pools.insert(addname,addDate);
+
             uiChart->comboBox->addItem(addname);//combox插入项
-            uiChart->widget->addGraph();//加图层准备画图
+            uiChart->widget->addGraph();//创建新画布
             qDebug()<<"has add"<<endl;
             return 1;
         }
@@ -291,6 +300,52 @@ void Charts::on_pushButton_yincang_clicked()
     }
     uiChart->widget->replot();//重绘图形
 }
+
+/*****
+ * Del是给外界的接口作用是删除可以绘图的变量，因此不用ui界面互动。
+ * 如果识别到就先删除图层
+*****/
+bool Charts::DelDate(QString addname)
+{
+    //删除数据池里的数据和pair里的数据
+    QHash<QString,QVector<double>>::iterator i;
+
+    i = Data_pools.find(addname);
+    if(i != Data_pools.end())   //如果找到了
+    {
+        Data_pools.erase(i);//删除数据池项目
+
+        //查找Datapairs并删除
+        for(int i=0; i < ( DataPairs.size() );i++)
+        {
+            if(DataPairs.at(i).name == addname)
+            {
+                uiChart->comboBox->removeItem( i );//combox删除项
+                uiChart->widget->removeGraph( i );//减少图层
+                DataPairs.removeAt( i );//减少list
+            }
+        }
+
+
+        qDebug()<<"del ok！"<<endl;
+        return 1;
+    }
+    else//没找到
+    {
+        qDebug()<<"del fail！"<<endl;
+        return 0;
+    }
+}
+
+/*****
+ * Change是给外界的接口作用是维护更新可以绘图的变量，因此不用ui界面互动。
+*****/
+bool Charts::ChangeDate(QString addname)
+{
+
+}
+
+
 
 void Charts::test(const QVector<double> &addDate)
 {

@@ -5,6 +5,21 @@
 #include "qcustomplot.h"
 #include "RepeaterWidget.h"
 
+/*
+typedef struct DataNode {
+    QString name;
+    double *DataBuff;
+    int flag = 0;//判断是否画图不加数据,0——不画图，1——显示图，2——隐藏图但是会有数据
+    int num;//在graph里对应的名次，需要实时更新(暂时荒废)
+    long long count = 0;//记录每个数据已经画了多少个了。要注意防止溢出！！！
+} Datanode;
+
+QList<Datanode> DataPairs;  //QList方便与图例顺序对应.是负责后台更新维护显示数据的，因为图标显示需要double数组
+
+QHash<QString,QVector<double>> Data_pools;是中间数据池，用容器去维护。
+
+这是因为每当删除一个Graph，则Graph数量进行减一，即假设有两个Graph，分别为Graph0和Graph1，当删除Graph0时Graph1变为了Graph0。
+*/
 
 
 namespace Ui {
@@ -30,9 +45,15 @@ public:
 
     void ShowLine(QCustomPlot *customPlot);//显示折线图
 
-//    Ui::Charts *GetChartUi(){return uiChart;}
-//    QList<Datanode> GetChartDataPair(){return DataPairs;}
 
+
+
+    //！！！公开函数！！！
+    bool AddDate(QString addname, const QVector<double> &addDate);
+    bool DelDate(QString addname);
+    bool ChangeDate(QString addname);
+
+    void selectionChanged();
     void test(const QVector<double> &addDate);
 public slots:
 
@@ -56,8 +77,6 @@ private:
     bool checked=0;
     QTimer *timerChart;
 
-    bool AddDate(QString addname, const QVector<double> &addDate);
-    void selectionChanged();
 };
 
 
