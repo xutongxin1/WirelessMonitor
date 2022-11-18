@@ -323,12 +323,14 @@ bool Charts::DelDate(QString addname)
                 uiChart->comboBox->removeItem( i );//combox删除项
                 uiChart->widget->removeGraph( i );//减少图层
                 DataPairs.removeAt( i );//减少list
+
+                qDebug()<<"del ok！"<<endl;
+                return 1;
             }
         }
 
 
-        qDebug()<<"del ok！"<<endl;
-        return 1;
+
     }
     else//没找到
     {
@@ -339,10 +341,24 @@ bool Charts::DelDate(QString addname)
 
 /*****
  * Change是给外界的接口作用是维护更新可以绘图的变量，因此不用ui界面互动。
+ * 中介是Data_pools
 *****/
-bool Charts::ChangeDate(QString addname)
+bool Charts::ChangeDate(QString addname,double ChangeDate)
 {
+    if( Data_pools.contains(addname) )
+    {
+        Data_pools[addname].append(ChangeDate);
 
+        qDebug()<<"change ok！"<<endl;
+        return 1;
+    }
+    else
+    {
+        qDebug()<<"change find fail！"<<endl;
+        return 0;
+    }
+    qDebug()<<"change fail！"<<endl;
+    return 0;
 }
 
 

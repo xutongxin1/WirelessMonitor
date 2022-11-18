@@ -51,7 +51,7 @@ public:
     //！！！公开函数！！！
     bool AddDate(QString addname, const QVector<double> &addDate);
     bool DelDate(QString addname);
-    bool ChangeDate(QString addname);
+    bool ChangeDate(QString addname,double ChangeDate);
 
     void selectionChanged();
     void test(const QVector<double> &addDate);
