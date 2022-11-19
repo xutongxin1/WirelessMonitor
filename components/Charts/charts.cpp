@@ -221,10 +221,10 @@ void Charts::on_pushButton_add_clicked()
 }
 
 /*****
- * Add是给外界的接口作用是增加可以绘图的变量，因此不用ui界面互动。
+ * registerData是给外界的接口作用是增加可以绘图的变量，因此不用ui界面互动。
  * 如果识别到就先提前加图层准备画图
 *****/
-bool Charts::AddDate(QString addname, const QVector<double> &addDate)
+bool Charts::registerData(QString addname, const QVector<double> &addDate)
 {
     int size = addDate.size();
     if( ( DataPairs.size() ) == 0 )//如果是空链表
@@ -247,7 +247,7 @@ bool Charts::AddDate(QString addname, const QVector<double> &addDate)
 
         uiChart->comboBox->addItem(addname);//combox插入项
         uiChart->widget->addGraph();//加图层准备画图
-        qDebug()<<"emptyadd"<<endl;
+        qDebug()<<"registerData:emptyadd"<<endl;
         return 1;
     }
     else{   //有数据
@@ -256,7 +256,7 @@ bool Charts::AddDate(QString addname, const QVector<double> &addDate)
         if( (DataPairs.at(i).name) == addname)//存在返回true
         {
             //加入错误,返回0
-            qDebug()<<"警告点1：已存在"<<endl;
+            qDebug()<<"registerData：已存在"<<endl;
             return 0;
         }
         else//如果识别到就先提前加图层准备画图
@@ -278,12 +278,12 @@ bool Charts::AddDate(QString addname, const QVector<double> &addDate)
 
             uiChart->comboBox->addItem(addname);//combox插入项
             uiChart->widget->addGraph();//创建新画布
-            qDebug()<<"has add"<<endl;
+            qDebug()<<"registerData:register success!"<<endl;
             return 1;
         }
     }}
     qDebug()<<(DataPairs.size())<<endl;
-    qDebug()<<"出错点2"<<endl;
+    qDebug()<<"registerData:fail!"<<endl;
     return 0;
 }
 
@@ -302,10 +302,10 @@ void Charts::on_pushButton_yincang_clicked()
 }
 
 /*****
- * Del是给外界的接口作用是删除可以绘图的变量，因此不用ui界面互动。
+ * antiRegisterData是给外界的接口作用是删除可以绘图的变量，因此不用ui界面互动。
  * 如果识别到就先删除图层
 *****/
-bool Charts::DelDate(QString addname)
+bool Charts::antiRegisterData(QString addname)
 {
     //删除数据池里的数据和pair里的数据
     QHash<QString,QVector<double>>::iterator i;
@@ -324,7 +324,7 @@ bool Charts::DelDate(QString addname)
                 uiChart->widget->removeGraph( i );//减少图层
                 DataPairs.removeAt( i );//减少list
 
-                qDebug()<<"del ok！"<<endl;
+                qDebug()<<"antiRegisterData: ok！"<<endl;
                 return 1;
             }
         }
@@ -334,33 +334,55 @@ bool Charts::DelDate(QString addname)
     }
     else//没找到
     {
-        qDebug()<<"del fail！"<<endl;
+        qDebug()<<"antiRegisterData: fail！"<<endl;
         return 0;
     }
+    qDebug()<<"antiRegisterData: fail！"<<endl;
+    return 0;
 }
 
 /*****
- * Change是给外界的接口作用是维护更新可以绘图的变量，因此不用ui界面互动。
+ * updateData
  * 中介是Data_pools
 *****/
-bool Charts::ChangeDate(QString addname,double ChangeDate)
+bool Charts::updateData(QString addname,double ChangeDate)
 {
     if( Data_pools.contains(addname) )
     {
         Data_pools[addname].append(ChangeDate);
 
-        qDebug()<<"change ok！"<<endl;
+        qDebug()<<"updateData: ok！"<<endl;
         return 1;
     }
     else
     {
-        qDebug()<<"change find fail！"<<endl;
+        qDebug()<<"updateData: find fail！"<<endl;
         return 0;
     }
-    qDebug()<<"change fail！"<<endl;
+    qDebug()<<"updateData: fail！"<<endl;
     return 0;
 }
 
+/*****
+ * checkData
+ * 检测是否注册过的接口
+ * 成功找到返回1，失败0
+*****/
+bool Charts::checkData(QString addname)
+{
+    if( Data_pools.contains(addname) )
+    {
+        qDebug()<<"check: find！"<<endl;
+        return 1;
+    }
+    else
+    {
+        qDebug()<<"check: find fail！"<<endl;
+        return 0;
+    }
+    qDebug()<<"check: fail！"<<endl;
+    return 0;
+}
 
 
 void Charts::test(const QVector<double> &addDate)
