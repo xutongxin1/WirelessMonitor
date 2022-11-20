@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DataCirculation</class>
+ <widget class="RepeaterWidget" name="DataCirculation">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1080</width>
+    <height>620</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DataCirculation</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QWidget" name="verticalLayoutWidget_2">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>数据处理</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comProcessMode">
+         <item>
+          <property name="text">
+           <string>无</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>进行数据过滤</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>直接发送给外部</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>数据过滤模式</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comCirculateMode">
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="insertPolicy">
+          <enum>QComboBox::InsertAtCurrent</enum>
+         </property>
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+         </property>
+         <item>
+          <property name="text">
+           <string>直出模式</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>逗号分隔模式</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>键值对模式</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>scanf模式</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>正则表达式模式</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>外置python函数</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>过滤后的数据去向</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comDateFlowMode">
+         <item>
+          <property name="text">
+           <string>发去绘图</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>发送给外部设备</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>外部去向</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comOutputMode">
+         <item>
+          <property name="text">
+           <string>发送给外部TCP服务器</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>构建为POST数据包发送数据</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnTestFlow">
+         <property name="text">
+          <string>测试数据流</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QtMaterialRaisedButton" name="btnStart">
+         <property name="text">
+          <string>启动数据流处理</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>选择文件</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>已选择：xxx.py</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QTableWidget" name="tableWidget">
+         <row>
+          <property name="text">
+           <string>1</string>
+          </property>
+         </row>
+         <column>
+          <property name="text">
+           <string>变量命名</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>变量测试结果</string>
+          </property>
+         </column>
+         <item row="0" column="0">
+          <property name="text">
+           <string>TestA</string>
+          </property>
+         </item>
+         <item row="0" column="1">
+          <property name="text">
+           <string/>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QPushButton" name="btnTest">
+           <property name="text">
+            <string>测试</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnGenerateKey">
+           <property name="text">
+            <string>根据测试数据生成数据名</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>RepeaterWidget</class>
+   <extends>QWidget</extends>
+   <header>repeaterwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QtMaterialRaisedButton</class>
+   <extends>QPushButton</extends>
+   <header>qtmaterialraisedbutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

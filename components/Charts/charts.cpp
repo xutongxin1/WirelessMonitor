@@ -364,11 +364,11 @@ bool Charts::updateData(QString addname,double ChangeDate)
 }
 
 /*****
- * checkData
+ * checkRegister
  * 检测是否注册过的接口
  * 成功找到返回1，失败0
 *****/
-bool Charts::checkData(QString addname)
+bool Charts::checkRegister(QString addname)
 {
     if( Data_pools.contains(addname) )
     {

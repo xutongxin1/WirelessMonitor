@@ -77,7 +77,16 @@ TCPCom::TCPCom(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInf
         this->sendData();
     });
 
+    connect(ui->btnPaste, &QPushButton::clicked, this, [&] {
+        QClipboard *clipboard = QApplication::clipboard();
+        QString text = clipboard->text();
+        ui->SendDataEdit->setPlainText(text);
+        this->sendData();
+    });
+
+
 #if _DEBUG
+    ui->btnStartTest->setHidden(false);
     connect(ui->btnStartTest, &QPushButton::clicked, this, [&] {
 
         this->IP = "127.0.0.1";
@@ -112,10 +121,9 @@ TCPCom::TCPCom(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInf
         });
 
 
-
-
-
     });
+#else
+    ui->btnStartTest->setHidden(true);
 #endif
 }
 

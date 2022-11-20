@@ -51,7 +51,7 @@ public:
     //！！！公开函数！！！
     bool registerData(QString addname, const QVector<double> &addDate);
     bool antiRegisterData(QString addname);
-    bool checkData(QString addname);
+    bool checkRegister(QString addname);
     bool updateData(QString addname,double ChangeDate);
 
     void selectionChanged();

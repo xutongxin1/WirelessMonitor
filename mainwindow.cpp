@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include "TCPBridgeConfiguration/tcpbridgeconfiguration.h"
 #include "TCPCom/tcpcom.h"
+#include "DataCirculation/datacirculation.h"
 
 
 int record_DeviceNum = 0, record_WinNum = 0;
@@ -54,6 +55,9 @@ MainWindow::MainWindow(QWidget *parent)
             MainWindow::DeviceExchange(i);
         });
     }
+    connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
+    DeviceExchange(1);
+//    DeviceWindowsExchange(1, 1);
 
 
     DeviceWindowsInit();
@@ -70,17 +74,15 @@ MainWindow::MainWindow(QWidget *parent)
         a1.append(i * 40.0);
     }
     qDebug() << a1[50] << endl;
-    test1->AddDate("test", a);
-    test1->AddDate("test1", a1);
+    test1->registerData("test", a);
+    test1->registerData("test1", a1);
+
+    
+    DataCirculation *tmp = new class DataCirculation();
+    ui->FunctionWindow->setCurrentIndex(ui->FunctionWindow->addWidget(tmp));
 
 
-//    TCPCom *tmp = new class TCPCom(1, 4, Cfg->configDeviceIni[1], &parentInfo);
 
-//    connect(DeviceSelect[0], SIGNAL(clicked()), this, SLOT());
-
-    connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
-    DeviceExchange(1);
-    DeviceWindowsExchange(1, 1);
 //    ui->FunctionWindow->setCurrentIndex(2);
 //    DevicesInfo[1].TabWidget->setCurrentTab(2);
 }

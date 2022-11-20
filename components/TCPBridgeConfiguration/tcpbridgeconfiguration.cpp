@@ -26,6 +26,7 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
     this->TCPInfoHandler[2] = (*(parentInfo->DevicesInfo))[DeviceNum].TCPInfoHandler[2];
     this->TCPInfoHandler[3] = (*(parentInfo->DevicesInfo))[DeviceNum].TCPInfoHandler[3];
 
+    //通道选择变更逻辑
     void (QComboBox::*fp)(int) =&QComboBox::currentIndexChanged;
     connect(ui->mode1, fp, this, [&](int num) {
         switch (ui->mode1->currentIndex()) {
@@ -68,10 +69,10 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
         }
         ChangeMode();
     });
+
     ChangeMode();//初始化模式选择器
 
-
-
+    //初始化波特率表
     QStringList baudList;
     baudList << QString::number(TCPBridgeConfiguration::BaudRate1) << QString::number(TCPBridgeConfiguration::BaudRate3)
              << "600" << "1200"
@@ -99,6 +100,7 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
         ChangeMode();
     });
 
+    //初始化数据位表
     QStringList dataBitsList;
     dataBitsList << "5" << "6" << "7" << "8";
 
@@ -113,6 +115,7 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
         ChangeMode();
     });
 
+    //初始化校验位表
     QStringList parityList;
     parityList << "无" << "奇" << "偶";
     ui->Parity1->addItems(parityList);
@@ -126,6 +129,7 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
         ChangeMode();
     });
 
+    //初始化停止位表
     QStringList stopBitsList;
     stopBitsList << "1";
 #ifdef Q_OS_WIN
@@ -146,14 +150,19 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
 
 //    connect(ui->)
 
+    //刷新选项
     ReflashBox();
 
+    //应用配置
     connect(ui->save, &QPushButton::clicked, this, [&] {
         this->SetUart();
     });
 
 }
-
+/**
+ * @description: 获取配置文件
+ * @return {*}
+ */
 void TCPBridgeConfiguration::GetConstructConfig() {
     cfg->beginGroup(GroupName);
     TCPBridgeConfiguration::mode1 = IOMode(cfg->value("mode1", TCPBridgeConfiguration::mode1).toInt());
@@ -170,6 +179,10 @@ void TCPBridgeConfiguration::GetConstructConfig() {
     cfg->endGroup();
 }
 
+/**
+ * @description: 保存配置文件
+ * @return {*}
+ */
 void TCPBridgeConfiguration::SaveConstructConfig() {
     cfg->beginGroup(GroupName);
     cfg->setValue("mode1", TCPBridgeConfiguration::mode1);
@@ -190,6 +203,10 @@ TCPBridgeConfiguration::~TCPBridgeConfiguration() {
     delete ui;
 }
 
+/**
+ * @description: 切换通道模式的显示处理（不是应用）
+ * @return {*}
+ */
 void TCPBridgeConfiguration::ChangeMode() {
 
     //独占模式对中间选项的处理
@@ -336,7 +353,10 @@ void TCPBridgeConfiguration::ChangeMode() {
     SaveConstructConfig();
     ReflashBox();
 }
-
+/**
+ * @description: 刷新Ui通道选项
+ * @return {*}
+ */
 void TCPBridgeConfiguration::ReflashBox() {
     switch (mode1) {
         case Input:
@@ -378,6 +398,10 @@ void TCPBridgeConfiguration::ReflashBox() {
     ui->DataBit3->setCurrentIndex(ui->DataBit3->findText(QString::number(TCPBridgeConfiguration::DataBit3)));
 }
 
+/**
+ * @description: 应用设置
+ * @return {*}
+ */
 void TCPBridgeConfiguration::SetUart() {
 
     if (!TCPCommandHandle->getConnectionState()) {
@@ -386,6 +410,7 @@ void TCPBridgeConfiguration::SetUart() {
     }
     this->IP = TCPCommandHandle->IP;
 
+    //连接信号服务器
     if (!TCPInfoHandler[1]->isConnected) {
         TCPInfoHandler[1]->connectToHost(IP, 1921, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
     }
@@ -396,6 +421,7 @@ void TCPBridgeConfiguration::SetUart() {
         TCPInfoHandler[3]->connectToHost(IP, 1923, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
     }
 
+    //构造配置文件
     QJsonObject c1;
     if (mode1 == Closed) {
         TCPInfoHandler[1]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_None);
@@ -466,7 +492,7 @@ void TCPBridgeConfiguration::SetUart() {
 
     TCPCommandHandle->SendCommand(all, "OK!\r\n");
 
-
+    //超时设置
     QTimer::singleShot(1000, this, [&] {
         if (!(TCPInfoHandler[1]->isConnected && TCPInfoHandler[2]->isConnected && TCPInfoHandler[3]->isConnected)) {
             QMessageBox::critical(this, tr("错误"), tr("设置通信链路失败"));
