@@ -9,6 +9,7 @@
 #include <QFrame>
 #include <QtWidgets/QPushButton>
 #include <QSettings>
+#include <QDebug>
 
 typedef struct DataNode {
     QString name;

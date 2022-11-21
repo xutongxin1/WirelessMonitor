@@ -15,6 +15,7 @@ TCPCommandHandle::TCPCommandHandle(QObject *parent) : QTcpSocket(parent) {
 void TCPCommandHandle::connectToHost(const QString &hostName, quint16 port, QIODevice::OpenMode protocol = ReadWrite,
                                      QAbstractSocket::NetworkLayerProtocol mode = AnyIPProtocol) {
     connect(this, &QTcpSocket::connected, this, [=] {
+        qInfo("已连接到服务器%s:%d", qPrintable(hostName), port);
         disconnect(this, &QTcpSocket::connected, 0, 0);
         isConnected = true;
         isFirstHeart = true;
@@ -28,6 +29,7 @@ void TCPCommandHandle::connectToHost(const QString &hostName, quint16 port, QIOD
 
 void TCPCommandHandle::disconnectFromHost() {
     connect(this, &QTcpSocket::disconnected, this, [=] {
+        qInfo("从服务器断开%s", qPrintable(this->IP));
         disconnect(this, &QTcpSocket::disconnected, 0, 0);
         isConnected = false;
         heartTimer->stop();//关闭心跳包发送
@@ -46,11 +48,12 @@ void TCPCommandHandle::SendHeart() {
     QTimer::singleShot(2000, this, [&] {
         if (isHeartRec) {
             isHeartRec = false;//如果已经收到了心跳返回包，则不处理
-            HeartErrorTime=0;
+            HeartErrorTime = 0;
         }
         else {//没有收到心跳返回包，超时了
-            if(++HeartErrorTime==3) {
-                HeartErrorTime=0;
+            if (++HeartErrorTime == 3) {
+                qCritical("心跳包3次错误");
+                HeartErrorTime = 0;
                 heartTimer->stop();//关闭心跳包发送
                 emit(heartError());
                 this->disconnectFromHost();
@@ -82,6 +85,7 @@ void TCPCommandHandle::setMode(int mode) {
     heartTimer->stop();//关闭心跳包发送，防止误传
     QTimer::singleShot(10000, this, [=] {
         if (!isModeSet) {//设置超时，自动断开.设置成功置位在收到第一个包后
+            qCritical("模式设置超时");
             emit(setModeError());
             this->disconnectFromHost();
             disconnect(this, &QTcpSocket::connected, 0, 0);
@@ -123,7 +127,7 @@ void TCPCommandHandle::WaitForMode(int mode) {
         disconnect(this, &QTcpSocket::connected, 0, 0);
         isConnected = true;
         isFirstHeart = true;
-        connect(this, &QTcpSocket::readyRead, this, [&,mode] {
+        connect(this, &QTcpSocket::readyRead, this, [&, mode] {
             //接收到模式切换包
             QByteArray t2 = this->read(1024);
             char tmp[20];
@@ -149,7 +153,7 @@ void TCPCommandHandle::SendCommand(QString command, QString reply) {
     hasReceiveReply = false;
 
     heartTimer->stop();
-    connect(this, &QTcpSocket::readyRead, this, [&,reply] {
+    connect(this, &QTcpSocket::readyRead, this, [&, reply] {
                 QByteArray t2 = this->read(1024);
                 if (t2 == reply) {
                     //读取到心跳返回包

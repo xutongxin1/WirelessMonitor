@@ -56,11 +56,14 @@ MainWindow::MainWindow(QWidget *parent)
         });
     }
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
-    DeviceExchange(1);
-//    DeviceWindowsExchange(1, 1);
+
 
 
     DeviceWindowsInit();
+
+    DeviceExchange(1);
+//    DeviceWindowsExchange(1, 1);
+
     //lulu_test
     QVector<double> a;
     for (int i = 0; i < 100; i++) {
@@ -77,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
     test1->registerData("test", a);
     test1->registerData("test1", a1);
 
-    
+
     DataCirculation *tmp = new class DataCirculation();
     ui->FunctionWindow->setCurrentIndex(ui->FunctionWindow->addWidget(tmp));
 

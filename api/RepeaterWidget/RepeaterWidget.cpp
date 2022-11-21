@@ -4,6 +4,7 @@
 
 #include "RepeaterWidget.h"
 
+
 void RepeaterWidget::GetObjectFromUI(QPushButtonMap &result) {
 
 }

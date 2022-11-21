@@ -12,6 +12,7 @@ TCPInfoHandle::TCPInfoHandle(QObject *parent) : QTcpSocket(parent) {
 
 void TCPInfoHandle::disconnectFromHost() {
     connect(this, &QTcpSocket::disconnected, this, [=] {
+        qInfo("从服务器断开%s", qPrintable(this->IP));
         disconnect(this, &QTcpSocket::disconnected, 0, 0);
         isConnected = false;
         emit(hasDisconnected());
@@ -22,6 +23,7 @@ void TCPInfoHandle::disconnectFromHost() {
 void TCPInfoHandle::connectToHost(const QString &hostName, quint16 port, QIODevice::OpenMode protocol = ReadWrite,
                                   QAbstractSocket::NetworkLayerProtocol mode = AnyIPProtocol) {
     connect(this, &QTcpSocket::connected, this, [=] {
+        qInfo("已连接到服务器%s:%d", qPrintable(hostName), port);
         disconnect(this, &QTcpSocket::connected, this, 0);
         isConnected = true;
         emit(hasConnected());
