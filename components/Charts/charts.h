@@ -23,19 +23,24 @@ QHash<QString,QVector<double>> Data_pools;是中间数据池，用容器去维�
 
 
 namespace Ui {
-class Charts;
+    class Charts;
 }
 
-class Charts : public RepeaterWidget
-{
-    Q_OBJECT
+class Charts : public RepeaterWidget {
+Q_OBJECT
+
 //friend bool AddDate(QString addname, const QVector<double> &addDate, Charts *Chart);
-friend class MainWindow;
-friend class ChartThread;
+    friend class MainWindow;
+
+    friend class ChartThread;
+
 signals:
+
     void monitor(const QVector<double> &addDate);
+
 public:
-    explicit Charts(QWidget *parent = nullptr);
+    explicit Charts(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInfo, QWidget *parent = nullptr);
+
     ~Charts();
 
     double Buff[100];    //数据缓冲数组
@@ -49,16 +54,22 @@ public:
 
 
     //！！！公开函数！！！
-    bool registerData(QString addname, const QVector<double> &addDate);
-    bool antiRegisterData(QString addname);
+    bool registerData(const QString& addname, const QVector<double> &addDate = QVector<double>());
+
+    bool antiRegisterData(QString addName);
+
     bool checkRegister(QString addname);
-    bool updateData(QString addname,double ChangeDate);
+
+    bool updateData(QString addname, double ChangeDate);
 
     void selectionChanged();
+
     void test(const QVector<double> &addDate);
+
 public slots:
 
     void ReadyShowLine();
+
     void myMoveEvent(QMouseEvent *event);
     //本例中用于修改实时数据，并调用ShowLine函数
 
@@ -67,6 +78,7 @@ private slots:
     void on_pushButton_clicked();
 
     void on_pushButton_add_clicked();
+
     void on_pushButton_yincang_clicked();
 //    void keep_monitor();
 
@@ -74,12 +86,11 @@ private:
     Ui::Charts *uiChart;
     QList<Datanode> DataPairs;  //QList方便与图例顺序对应
     int flag;
-    double timer_count=0.0;
-    bool checked=0;
+    double timer_count = 0.0;
+    bool checked = 0;
     QTimer *timerChart;
 
 };
-
 
 
 #endif // CHARTS_H

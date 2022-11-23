@@ -10,6 +10,7 @@
 #include <QtWidgets/QPushButton>
 #include <QSettings>
 #include <QDebug>
+#include "structH.h"
 
 typedef struct DataNode {
     QString name;
@@ -24,16 +25,7 @@ namespace Ui {
 }
 
 typedef std::map<std::string, QPushButton> QPushButtonMap;
-enum WindowsType {
-    None = 0,
-    Channel_Configuration = 1,
-    XCOM = 50,
-    MainChart = 51,
-    TCP_Bridge_Configuration = 201,
-    TCP_Com = 202,
 
-
-};
 struct RequestNewWidget {
     WindowsType widgetType;
     int DeviceNum;
@@ -58,9 +50,15 @@ public:
     QString GroupName;
     QString ConfigFilePath;
     QSettings *cfg;
+    int DeviceNum;
+    ToNewWidget *parentInfo;
 
     bool isRequestNewWidget = false;
     RequestNewWidget NewWidget;
+
+    TCPCommandHandle *TCPCommandHandle;
+
+    TCPInfoHandle *TCPInfoHandler[4];
 
 };
 

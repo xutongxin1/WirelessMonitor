@@ -11,7 +11,7 @@ void logMessageHandler(QtMsgType type, const QMessageLogContext &context, const 
 //    QString levelText;
     switch (type) {
         case QtDebugMsg:
-            typeStr=QString("%1 (%2:%3, %4)\n").arg(typeStr,context.file).arg(context.line).arg(context.function);
+            typeStr = QString("%1 (%2:%3, %4)\n").arg(typeStr, context.file).arg(context.line).arg(context.function);
 //            levelText = "Debug";
             break;
         case QtInfoMsg:
@@ -21,19 +21,28 @@ void logMessageHandler(QtMsgType type, const QMessageLogContext &context, const 
 //            levelText = "Warning";
             break;
         case QtCriticalMsg:
-            typeStr=QString("%1 (%2:%3, %4)\n").arg(typeStr,context.file).arg(context.line).arg(context.function);
+            typeStr = QString("%1 \n(%2:%3, %4)\n").arg(typeStr, context.file).arg(context.line).arg(context.function);
 //            levelText = "Critical";
             break;
         case QtFatalMsg:
-            typeStr=QString("%1 (%2:%3, %4)\n").arg(typeStr,context.file).arg(context.line).arg(context.function);
+            typeStr = QString("%1 \n(%2:%3, %4)\n").arg(typeStr, context.file).arg(context.line).arg(context.function);
 //            levelText = "Fatal";
             break;
+
     }
-//    static QDateTime current_date_time =QDateTime::currentDateTime();
-//    static QString current_date =current_date_time.toString("yyyy.MM.dd-hh:mm:ss.zzz");
-    QFile file("./running.log");
+
+    QDateTime currentTim = QDateTime::currentDateTime();
+    QString fileName = currentTim.toString("yyyyMMdd") + "_DataLog.log";
+    QString strCurrentPath = QCoreApplication::applicationDirPath() + "/log/" + fileName;
+    QDir parentPath(QCoreApplication::applicationDirPath() + "/log/");
+    if (!parentPath.exists()) {
+        parentPath.mkpath(QCoreApplication::applicationDirPath() + "/log");//创建文件夹
+    }
+
+    QFile file(strCurrentPath);
     file.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream textStream(&file);
+    textStream.setCodec(QTextCodec::codecForName("UTF8"));//设置编码格式
     textStream << typeStr << endl;
     std::cout << typeStr.toStdString().data() << std::endl;
 }

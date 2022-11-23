@@ -5,7 +5,7 @@
 #include "TCPInfoHandle.h"
 
 TCPInfoHandle::TCPInfoHandle(QObject *parent) : QTcpSocket(parent) {
-//    this->isReadOnly=isReadOnly;
+
 
 }
 
@@ -15,6 +15,7 @@ void TCPInfoHandle::disconnectFromHost() {
         qInfo("从服务器断开%s", qPrintable(this->IP));
         disconnect(this, &QTcpSocket::disconnected, 0, 0);
         isConnected = false;
+        TCPMode=TCPInfoMode_None;
         emit(hasDisconnected());
     });
     QAbstractSocket::disconnectFromHost();
@@ -89,4 +90,16 @@ qint64 TCPInfoHandle::write(const QByteArray &data) {
     else {
         return -1;
     }
+}
+
+QByteArray TCPInfoHandle::read(qint64 maxlen) {
+    QByteArray data = QIODevice::read(maxlen);
+    qDebug("read %s", qPrintable(data));
+    return data;
+}
+
+QByteArray TCPInfoHandle::readAll() {
+    QByteArray data = QIODevice::readAll();
+    qDebug("read %s", qPrintable(data));
+    return data;
 }

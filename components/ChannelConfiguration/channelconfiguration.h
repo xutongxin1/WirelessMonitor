@@ -32,10 +32,6 @@ public:
 private:
     Ui::ChannelConfiguration *ui;
 
-    ToNewWidget *parentInfo;
-
-    TCPCommandHandle* TCPHandler;
-
     QString DeviceGroup;
 
     QString ip;

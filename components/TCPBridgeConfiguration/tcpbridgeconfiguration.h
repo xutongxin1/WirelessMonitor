@@ -57,17 +57,15 @@ private:
     int DataBit3 = 8;                 //数据位3
     int Parity3 = 0;             //校验位3
     double StopBit3 = 1;              //停止位3
-    ToNewWidget *parentInfo;
 
-    TCPCommandHandle *TCPCommandHandle;
+
+    class TCPCommandHandle *TCPCommandHandle;
 
     TCPInfoHandle *TCPInfoHandler[4];
 
-    int DeviceNum;
-
     void ChangeMode();
 
-    void ReflashBox();
+    void RefreshBox();
 
     void SetUart();
 

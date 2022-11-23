@@ -92,30 +92,28 @@ void TCPCommandHandle::setMode(int mode) {
             disconnect(this, &QTcpSocket::readyRead, 0, 0);
         }
     });
+    disconnect(this, &QTcpSocket::disconnected, 0, 0);
+    connect(this, &QTcpSocket::disconnected, this, [=] {
+        disconnect(this, &QTcpSocket::disconnected, 0, 0);
+        qDebug("%s断开连接",qPrintable(IP));
+        isConnected = false;
+        heartTimer->stop();//关闭心跳包发送
+        this->WaitForMode(mode);
+    });//这里选择放在外面是因为服务端会先关闭
     connect(this, &QTcpSocket::readyRead, this, [=] {
         //此处的包是模式设置返回包，收到该包后调试器应当重启
         QByteArray t2 = this->read(1024);
         if (t2.length() == 5 && t2 == "OK!\r\n") {
             disconnect(this, &QTcpSocket::readyRead, 0, 0);
-
-            connect(this, &QTcpSocket::disconnected, this, [=] {
-                disconnect(this, &QTcpSocket::disconnected, 0, 0);
-                isConnected = false;
-                heartTimer->stop();//关闭心跳包发送
-                this->WaitForMode(mode);
-            });
             heartTimer->stop();//关闭心跳包发送
             emit(readyReboot());//发送准备重启的信号
-            connect(this, &QTcpSocket::disconnected, this, [=] {
-                disconnect(this, &QTcpSocket::disconnected, 0, 0);
-                isConnected = false;
-            });
+            qDebug("准备断开连接");
             QAbstractSocket::disconnectFromHost();
-
         }
     });
     char tmp[100];
-    sprintf(tmp, R"("{"command":101,"attach":"%d"}")", mode);
+    sprintf(tmp, R"({"command":101,"attach":"%d"})", mode);
+
     this->write(tmp);
 }
 
@@ -123,6 +121,7 @@ void TCPCommandHandle::WaitForMode(int mode) {
     //此处不使用重构方法，防止先收到心跳返回包
     this->QAbstractSocket::connectToHost(IP, 1920, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
     connect(this, &QTcpSocket::connected, this, [=] {
+        qInfo("已连接到服务器%s:%d", qPrintable(IP), 1920);
         isHeartRec = true;
         disconnect(this, &QTcpSocket::connected, 0, 0);
         isConnected = true;
@@ -181,3 +180,31 @@ QString TCPCommandHandle::getStringFromJsonObject(const QJsonObject &jsonObject)
 bool TCPCommandHandle::getConnectionState() const {
     return isConnected;
 }
+
+qint64 TCPCommandHandle::write(const char *data, qint64 len) {
+    qDebug("send %s", data);
+    return QIODevice::write(data, len);
+}
+
+qint64 TCPCommandHandle::write(const char *data) {
+    qDebug("send %s", data);
+    return QIODevice::write(data);
+}
+
+qint64 TCPCommandHandle::write(const QByteArray &data) {
+    qDebug("send %s", qPrintable(data));
+    return QIODevice::write(data);
+}
+
+QByteArray TCPCommandHandle::read(qint64 maxlen) {
+    QByteArray data = QIODevice::read(maxlen);
+    qDebug("read %s", qPrintable(data));
+    return data;
+}
+
+QByteArray TCPCommandHandle::readAll() {
+    QByteArray data = QIODevice::readAll();
+    qDebug("read %s", qPrintable(data));
+    return data;
+}
+
