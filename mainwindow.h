@@ -31,7 +31,6 @@ public:
     vector<DevicesInfo> DevicesInfo;//设备信息
     int DeviceCount;//设备数量
 
-    Charts *test1 = new Charts();;
 
 
 private:

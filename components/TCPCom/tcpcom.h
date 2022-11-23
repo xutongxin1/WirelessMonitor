@@ -67,9 +67,7 @@ private:
 
     QTimer *timerConnect;       //定时器重连
 
-    TCPCommandHandle *TCPCommandHandle;
 
-    TCPInfoHandle *TCPInfoHandler[4];
 
     void GetConstructConfig();
 

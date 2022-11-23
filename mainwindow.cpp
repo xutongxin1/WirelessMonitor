@@ -58,30 +58,19 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->settingButton, SIGNAL(pressed()), m_drawer, SLOT(openDrawer()));
 
 
-
     DeviceWindowsInit();
 
     DeviceExchange(1);
 //    DeviceWindowsExchange(1, 1);
 
-    //lulu_test
-    QVector<double> a;
-    for (int i = 0; i < 100; i++) {
-        //a[i]=i*30.0;
-        a.append(i * 30.0);
-    }
-    qDebug() << a[50] << endl;
-    QVector<double> a1;
-    for (int i = 0; i < 100; i++) {
-        //a[i]=i*30.0;
-        a1.append(i * 40.0);
-    }
-    qDebug() << a1[50] << endl;
-    test1->registerData("test", a);
-    test1->registerData("test1", a1);
 
 
-    DataCirculation *tmp = new class DataCirculation();
+
+
+    DataCirculation *tmp = new DataCirculation(1,
+                                               5,
+                                               Cfg->configDeviceIni[1],
+                                               &parentInfo);
     ui->FunctionWindow->setCurrentIndex(ui->FunctionWindow->addWidget(tmp));
 
 
@@ -155,17 +144,38 @@ void MainWindow::DeviceWindowsInit() {
                             DevicesWindowsInfo[DeviceNum][WinNum].widget);
                     DevicesInfo[DeviceNum].TabWidget->addTab("本地串口监视器");//添加tab栏
                     break;
-                case 51:
-                    //记录下相应的变量，方便提取类的成员变量charts
+                case 51: {                    //记录下相应的变量，方便提取类的成员变量charts
                     record_DeviceNum = DeviceNum;
                     record_WinNum = WinNum;
 
                     DevicesWindowsInfo[DeviceNum][WinNum].type = MainChart;//结构体初始化
+                    Charts *test1 = new Charts(DeviceNum,
+                                               WinNum,
+                                               Cfg->configDeviceIni[DeviceNum],
+                                               &parentInfo);
                     DevicesWindowsInfo[DeviceNum][WinNum].widget = test1;
                     DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(
                             DevicesWindowsInfo[DeviceNum][WinNum].widget);
                     DevicesInfo[DeviceNum].TabWidget->addTab("数据波形图");//添加tab栏
+
+                    //测试数据添加
+                    //lulu_test
+                    QVector<double> a;
+                    for (int i = 0; i < 100; i++) {
+                        //a[i]=i*30.0;
+                        a.append(i * 30.0);
+                    }
+                    qDebug() << a[50] << endl;
+                    QVector<double> a1;
+                    for (int i = 0; i < 100; i++) {
+                        //a[i]=i*30.0;
+                        a1.append(i * 40.0);
+                    }
+                    qDebug() << a1[50] << endl;
+                    test1->registerData("test", a);
+                    test1->registerData("test1", a1);
                     break;
+                }
                 case 201:
                     DevicesWindowsInfo[DeviceNum][WinNum].type = TCP_Bridge_Configuration;//结构体初始化
                     DevicesWindowsInfo[DeviceNum][WinNum].widget =
@@ -195,8 +205,8 @@ void MainWindow::DeviceWindowsInit() {
             }
         }
 
-        Charts test;  //图标界面测试
-        test.show();
+//        Charts test;  //图标界面测试
+//        test.show();
         //tab栏绑定
         connect(NewTab, &QtMaterialTabs::currentChanged, this, [=](int num) {
             //这里的num从0开始，所以要+1

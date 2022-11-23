@@ -151,7 +151,7 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int DeviceNum, int winNum, QSetti
 //    connect(ui->)
 
     //刷新选项
-    ReflashBox();
+    RefreshBox();
 
     //应用配置
     connect(ui->save, &QPushButton::clicked, this, [&] {
@@ -351,13 +351,13 @@ void TCPBridgeConfiguration::ChangeMode() {
     }
 
     SaveConstructConfig();
-    ReflashBox();
+    RefreshBox();
 }
 /**
  * @description: 刷新Ui通道选项
  * @return {*}
  */
-void TCPBridgeConfiguration::ReflashBox() {
+void TCPBridgeConfiguration::RefreshBox() {
     switch (mode1) {
         case Input:
             ui->mode1->setCurrentIndex(1);

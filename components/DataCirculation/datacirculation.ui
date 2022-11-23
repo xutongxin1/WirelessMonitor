@@ -21,138 +21,157 @@
      </property>
      <widget class="QWidget" name="verticalLayoutWidget_2">
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>数据处理</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
+        <layout class="QVBoxLayout" name="grpProcessMode">
+         <item>
+          <widget class="QLabel" name="labelProcessMode">
+           <property name="text">
+            <string>数据处理</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comProcessMode">
+           <item>
+            <property name="text">
+             <string>无</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>进行数据过滤</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>直接发送给外部</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QComboBox" name="comProcessMode">
+        <layout class="QVBoxLayout" name="grpCirculationMode">
          <item>
-          <property name="text">
-           <string>无</string>
-          </property>
+          <widget class="QLabel" name="labelCirculationMode">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="text">
+            <string>数据过滤模式</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
          </item>
          <item>
-          <property name="text">
-           <string>进行数据过滤</string>
-          </property>
+          <widget class="QComboBox" name="comCirculationMode">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="insertPolicy">
+            <enum>QComboBox::InsertAtCurrent</enum>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+           </property>
+           <item>
+            <property name="text">
+             <string>直出模式</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>逗号分隔模式</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>键值对模式</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>scanf模式</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>正则表达式模式</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>外置python函数</string>
+            </property>
+           </item>
+          </widget>
          </item>
-         <item>
-          <property name="text">
-           <string>直接发送给外部</string>
-          </property>
-         </item>
-        </widget>
+        </layout>
        </item>
        <item>
-        <widget class="QLabel" name="label">
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text">
-          <string>数据过滤模式</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
+        <layout class="QVBoxLayout" name="grpDateFlowMode">
+         <item>
+          <widget class="QLabel" name="labelDateFlowMode">
+           <property name="text">
+            <string>过滤后的数据去向</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comDateFlowMode">
+           <item>
+            <property name="text">
+             <string>发去绘图</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>发送给外部设备</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QComboBox" name="comCirculateMode">
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="insertPolicy">
-          <enum>QComboBox::InsertAtCurrent</enum>
-         </property>
-         <property name="sizeAdjustPolicy">
-          <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
-         </property>
+        <layout class="QVBoxLayout" name="grpOutputMode">
          <item>
-          <property name="text">
-           <string>直出模式</string>
-          </property>
+          <widget class="QLabel" name="labelOutputMode">
+           <property name="text">
+            <string>外部去向</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
          </item>
          <item>
-          <property name="text">
-           <string>逗号分隔模式</string>
-          </property>
+          <widget class="QComboBox" name="comOutputMode">
+           <item>
+            <property name="text">
+             <string>发送给外部TCP服务器</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>构建为POST数据包发送数据</string>
+            </property>
+           </item>
+          </widget>
          </item>
-         <item>
-          <property name="text">
-           <string>键值对模式</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>scanf模式</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>正则表达式模式</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>外置python函数</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>过滤后的数据去向</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="comDateFlowMode">
-         <item>
-          <property name="text">
-           <string>发去绘图</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>发送给外部设备</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>外部去向</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="comOutputMode">
-         <item>
-          <property name="text">
-           <string>发送给外部TCP服务器</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>构建为POST数据包发送数据</string>
-          </property>
-         </item>
-        </widget>
+        </layout>
        </item>
        <item>
         <spacer name="verticalSpacer">
@@ -184,14 +203,14 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="btnSelectFile">
            <property name="text">
             <string>选择文件</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_5">
+          <widget class="QLabel" name="labelSelectFile">
            <property name="text">
             <string>已选择：xxx.py</string>
            </property>

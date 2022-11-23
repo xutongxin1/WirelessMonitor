@@ -36,18 +36,21 @@ public:
 
     virtual qint64 write(const QByteArray &data);
 
+    virtual QByteArray read(qint64 maxlen);
+
+    virtual QByteArray readAll();
+
     enum TCPInfoMode {
         TCPInfoMode_None = 0,
         TCPInfoMode_IN,
-        TCPInfoMode_OUT,
-    };
+        TCPInfoMode_OUT
+    }TCPMode=TCPInfoMode_None;
 
     void changeTCPInfoMode(TCPInfoMode mode);
 
 
     bool enableRecEmit();
 
-    TCPInfoMode TCPMode;
 private:
     QString IP;
     int IOPort;

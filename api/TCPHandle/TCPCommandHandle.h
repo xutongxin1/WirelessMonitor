@@ -54,6 +54,16 @@ public:
     bool getConnectionState() const;
 
     QString IP;
+    virtual qint64 write(const char *data, qint64 len);
+
+    virtual qint64 write(const char *data);
+
+    virtual qint64 write(const QByteArray &data);
+
+    virtual QByteArray read(qint64 maxlen);
+
+    virtual QByteArray readAll();
+
 private:
     QString Command;
 
@@ -71,6 +81,7 @@ private:
 
     QTimer *heartTimer;
 //    void WaitSecondOK();
+
 
 
 };
