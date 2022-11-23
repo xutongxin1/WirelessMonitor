@@ -11,7 +11,7 @@ TCPCommandHandle::TCPCommandHandle(QObject *parent) : QTcpSocket(parent) {
         this->SendHeart();//初始化定时器
     });
 }
-
+///重写连接服务器
 void TCPCommandHandle::connectToHost(const QString &hostName, quint16 port, QIODevice::OpenMode protocol = ReadWrite,
                                      QAbstractSocket::NetworkLayerProtocol mode = AnyIPProtocol) {
     connect(this, &QTcpSocket::connected, this, [=] {
@@ -26,7 +26,7 @@ void TCPCommandHandle::connectToHost(const QString &hostName, quint16 port, QIOD
     this->QAbstractSocket::connectToHost(hostName, port, protocol, mode);
 
 }
-
+///重写断开服务器
 void TCPCommandHandle::disconnectFromHost() {
     connect(this, &QTcpSocket::disconnected, this, [=] {
         qInfo("从服务器断开%s", qPrintable(this->IP));
@@ -38,6 +38,7 @@ void TCPCommandHandle::disconnectFromHost() {
     QAbstractSocket::disconnectFromHost();
 }
 
+/// 发送心跳包
 void TCPCommandHandle::SendHeart() {
     qDebug() << "SendHeart";
     if (!isConnected) {
@@ -76,7 +77,8 @@ void TCPCommandHandle::SendHeart() {
     this->write("COM\r\n");//心跳包
 }
 
-
+/// 设置模式
+/// \param mode 设置的模式
 void TCPCommandHandle::setMode(int mode) {
     if (!isConnected) {
         qDebug() << "没有有效连接";
@@ -117,6 +119,8 @@ void TCPCommandHandle::setMode(int mode) {
     this->write(tmp);
 }
 
+/// 等待开机回复的RF消息
+/// \param mode 期望模式
 void TCPCommandHandle::WaitForMode(int mode) {
     //此处不使用重构方法，防止先收到心跳返回包
     this->QAbstractSocket::connectToHost(IP, 1920, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
@@ -144,11 +148,17 @@ void TCPCommandHandle::WaitForMode(int mode) {
 
 }
 
-void TCPCommandHandle::SendCommand(QJsonObject command, QString reply) {
+/// 发送指令并绑定回复
+/// \param command 指令
+/// \param reply 回复
+void TCPCommandHandle::SendCommand(const QJsonObject& command, const QString& reply) {
     TCPCommandHandle::SendCommand(getStringFromJsonObject(command), reply);
 }
 
-void TCPCommandHandle::SendCommand(QString command, QString reply) {
+/// 发送指令并绑定回复
+/// \param command 指令
+/// \param reply 回复
+void TCPCommandHandle::SendCommand(const QString& command, const QString& reply) {
     hasReceiveReply = false;
 
     heartTimer->stop();
@@ -172,15 +182,20 @@ void TCPCommandHandle::SendCommand(QString command, QString reply) {
     this->write(command.toLatin1());
 }
 
-
+/// 从JsonObject提取为QString
+/// \param jsonObject 输入的JsonObject
+/// \return 返回的字符串
 QString TCPCommandHandle::getStringFromJsonObject(const QJsonObject &jsonObject) {
     return QString(QJsonDocument(jsonObject).toJson());
 }
 
+/// 获取连接状态
+/// \return 连接状态
 bool TCPCommandHandle::getConnectionState() const {
     return isConnected;
 }
 
+//以下均为重写
 qint64 TCPCommandHandle::write(const char *data, qint64 len) {
     qDebug("send %s", data);
     return QIODevice::write(data, len);

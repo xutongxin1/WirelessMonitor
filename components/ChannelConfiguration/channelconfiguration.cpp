@@ -124,6 +124,7 @@ void ChannelConfiguration::onConnect() {
         return;
     }
 
+    qDebug("开始启动连接");
 
     ui->progressBar->show();
     ui->progressBar->setValue(5);
@@ -177,6 +178,7 @@ void ChannelConfiguration::onConnect() {
         ui->progressBar->setValue(25);
         ui->connectionTip->setText("正在验证调试器状态");
         TCPCommandHandle->SendHeart();
+        qInfo("等待第一个心跳包");
     });
     //开始TCP连接
     TCPCommandHandle->connectToHost(ip, 1920, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
@@ -202,12 +204,14 @@ void ChannelConfiguration::onConnect() {
     connect(TCPCommandHandle, &TCPCommandHandle::readyReboot, this, [&] {
         ui->progressBar->setValue(65);
         ui->connectionTip->setText("设置完成，等待重启");
+        qInfo("等待RF返回包");
         disconnect(TCPCommandHandle, &TCPCommandHandle::readyReboot, 0, 0);
     });
     //模式设置成功
     connect(TCPCommandHandle, &TCPCommandHandle::ModeChangeSuccess, this, [&] {
         ui->progressBar->setValue(85);
         ui->connectionTip->setText("模式设置成功，检查模块状态");
+        qInfo("等待重启后的心跳包应答");
         disconnect(TCPCommandHandle, &TCPCommandHandle::ModeChangeSuccess, 0, 0);
     });
 
@@ -218,6 +222,7 @@ void ChannelConfiguration::onConnect() {
             QMessageBox::critical(this, tr("错误"), tr("连接流程超时"));
 //            ui->connectionTip->setText(ui->connectionTip->text() + "\n错误:操作超时");
             ui->Connect->setEnabled(true);
+            qCritical("连接超时");
         }
     });
 
@@ -246,6 +251,7 @@ void ChannelConfiguration::onConnect() {
  */
 void ChannelConfiguration::onDisconnect() {
 
+    qDebug("开始关闭连接");
     TCPCommandHandle->disconnectFromHost();
 }
 

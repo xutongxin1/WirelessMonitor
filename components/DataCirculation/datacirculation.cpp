@@ -126,6 +126,7 @@ void DataCirculation::TestCirculationMode() {
 }
 
 void DataCirculation::GetConstructConfig() {
+    qDebug("读取DataCirculation配置文件");
     cfg->beginGroup(GroupName);
     circulationMode = CirculationMode(cfg->value("circulationMode", circulationMode).toInt());
     processMode = ProcessMode(cfg->value("processMode", processMode).toInt());
@@ -135,6 +136,7 @@ void DataCirculation::GetConstructConfig() {
 }
 
 void DataCirculation::SaveConstructConfig() {
+    qDebug("写入DataCirculation配置文件");
     cfg->beginGroup(GroupName);
     cfg->setValue("circulationMode", circulationMode);
     cfg->setValue("processMode", processMode);
@@ -175,6 +177,8 @@ void DataCirculation::StartCirculation() {
     if (!(*(parentInfo->DevicesInfo))[DeviceNum].hasChart) {
         qCritical("不存在绘图界面");
     }
+
+    qDebug() << "开始绑定数据流";
     chartWindow = (*(parentInfo->DevicesInfo))[DeviceNum].ChartsWindows;
 
     ui->btnStart->setEnabled(false);
@@ -215,7 +219,7 @@ void DataCirculation::StartCirculation() {
 
 void DataCirculation::DoCirculation(const QByteArray &data) {
     QString strtmp = data;
-    qDebug("解析数据%s", qPrintable(strtmp));
+    qDebug("准备解析数据%s", qPrintable(strtmp));
     QStringList buffer;
     if (strtmp.indexOf("\r\n") != -1) {
         buffer = strtmp.split("\r\n");

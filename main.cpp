@@ -11,7 +11,8 @@ void logMessageHandler(QtMsgType type, const QMessageLogContext &context, const 
 //    QString levelText;
     switch (type) {
         case QtDebugMsg:
-            typeStr = QString("%1 (%2:%3, %4)\n").arg(typeStr, context.file).arg(context.line).arg(context.function);
+            //是否启动高详细度日志
+//            typeStr = QString("%1 (%2:%3, %4)\n").arg(typeStr, context.file).arg(context.line).arg(context.function);
 //            levelText = "Debug";
             break;
         case QtInfoMsg:

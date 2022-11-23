@@ -46,8 +46,8 @@ public:
 
     void setMode(int mode);
 
-    void SendCommand(QJsonObject command, QString reply);
-    void SendCommand(QString command,QString reply);
+    void SendCommand(const QJsonObject& command, const QString& reply);
+    void SendCommand(const QString& command,const QString& reply);
 
     static QString getStringFromJsonObject(const QJsonObject& jsonObject);
 

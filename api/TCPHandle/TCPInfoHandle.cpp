@@ -9,18 +9,19 @@ TCPInfoHandle::TCPInfoHandle(QObject *parent) : QTcpSocket(parent) {
 
 }
 
-
+///断开服务器重写
 void TCPInfoHandle::disconnectFromHost() {
     connect(this, &QTcpSocket::disconnected, this, [=] {
         qInfo("从服务器断开%s", qPrintable(this->IP));
         disconnect(this, &QTcpSocket::disconnected, 0, 0);
         isConnected = false;
-        TCPMode=TCPInfoMode_None;
+        TCPMode = TCPInfoMode_None;
         emit(hasDisconnected());
     });
     QAbstractSocket::disconnectFromHost();
 }
 
+/// 连接服务器重写
 void TCPInfoHandle::connectToHost(const QString &hostName, quint16 port, QIODevice::OpenMode protocol = ReadWrite,
                                   QAbstractSocket::NetworkLayerProtocol mode = AnyIPProtocol) {
     connect(this, &QTcpSocket::connected, this, [=] {
@@ -35,6 +36,8 @@ void TCPInfoHandle::connectToHost(const QString &hostName, quint16 port, QIODevi
 
 }
 
+/// 启动监听的connect
+/// \return
 bool TCPInfoHandle::enableRecEmit() {
     if (this->isConnected && this->TCPMode == TCPInfoMode_IN) {
         disconnect(this, &QTcpSocket::readyRead, 0, 0);
@@ -49,15 +52,22 @@ bool TCPInfoHandle::enableRecEmit() {
     }
 }
 
+///修改该通道的运行模式
+/// \param mode
 void TCPInfoHandle::changeTCPInfoMode(TCPInfoHandle::TCPInfoMode mode) {
     TCPMode = mode;
     if (mode == TCPInfoMode_IN) {
         this->enableRecEmit();
     }
+    else {
+        disconnect(this, &QTcpSocket::readyRead, 0, 0);
+    }
 }
 
+//以下为保护性重写
 qint64 TCPInfoHandle::write(const QString &data) {
     if (TCPMode == TCPInfoMode_OUT) {
+        qDebug("send %s", qPrintable(data));
         return QIODevice::write(data.toUtf8());
     }
     else {
@@ -67,6 +77,7 @@ qint64 TCPInfoHandle::write(const QString &data) {
 
 qint64 TCPInfoHandle::write(const char *data, qint64 len) {
     if (TCPMode == TCPInfoMode_OUT) {
+        qDebug("send %s", qPrintable(data));
         return QIODevice::write(data, len);
     }
     else {
@@ -76,6 +87,7 @@ qint64 TCPInfoHandle::write(const char *data, qint64 len) {
 
 qint64 TCPInfoHandle::write(const char *data) {
     if (TCPMode == TCPInfoMode_OUT) {
+        qDebug("send %s", qPrintable(data));
         return QIODevice::write(data);
     }
     else {
@@ -85,6 +97,7 @@ qint64 TCPInfoHandle::write(const char *data) {
 
 qint64 TCPInfoHandle::write(const QByteArray &data) {
     if (TCPMode == TCPInfoMode_OUT) {
+        qDebug("send %s", qPrintable(data));
         return QIODevice::write(data);
     }
     else {
