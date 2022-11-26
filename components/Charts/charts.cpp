@@ -92,7 +92,13 @@ void Charts::ShowLine(QCustomPlot *customPlot) {
         //记录每个变量的画图次数
         int tempCount = DataPairs.at(i).count;
         if ((DataPairs.at(i).flag) == 1) {
-            customPlot->graph(i)->setPen(QPen(Qt::red));
+            //可以后期设置
+            QPen pen;
+            pen.setWidth(3);//设置线宽,默认是3
+            //pen.setStyle(Qt::PenStyle::DashLine);//设置为虚线
+            pen.setColor(Qt::blue);//设置线条蓝色
+            customPlot->graph(i)->setName(DataPairs.at(i).name);
+            customPlot->graph(i)->setPen(pen);
             customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff[tempCount]));
             customPlot->graph(i)->setVisible(true);
             customPlot->graph(i)->rescaleAxes(true); //自动调成范围，只能放大。想要缩小把true去掉
@@ -118,13 +124,15 @@ void Charts::ReadyShowLine() {
         //查找名字相同的
         QString tempname = (DataPairs.at(i).name);
         if (Data_pools.contains(tempname)) {
-            //对比大小来判断是否需要
+            //对比count已经画的大小和缓冲池的大小来判断是否需要
             int tempsize = (Data_pools.value(tempname).size());
             if (DataPairs.at(i).count != tempsize) {
+
                 for (int j = (DataPairs.at(i).count); j < (tempsize); j++) {
                     DataPairs.at(i).DataBuff[j] = Data_pools.value(tempname).at(j);
                 }
                 DataPairs[i].count = tempsize;//记录下最新的大小
+
             }
 
         }
@@ -138,6 +146,7 @@ void Charts::ReadyShowLine() {
 
 void Charts::myMoveEvent(QMouseEvent *event) {
     //获取鼠标坐标，相对父窗体坐标
+    int c_flag=0;
     int x_pos = event->pos().x();
     int y_pos = event->pos().y();
     qDebug() << "event->pos()" << event->pos();
@@ -151,13 +160,14 @@ void Charts::myMoveEvent(QMouseEvent *event) {
         QCPGraph *graph = uiChart->widget->graph(i);
         if (graph->selected()) {
             line_y_val = uiChart->widget->graph(i)->data()->at(x_val)->value;
+            c_flag = 1;
         }
     }
 
     //曲线的上点坐标位置，用来显示QToolTip提示框
     float out_x = uiChart->widget->xAxis->coordToPixel(x_val);
     float out_y = uiChart->widget->yAxis->coordToPixel(y_val);
-//    float out_value = uiChart->widget->yAxis->coordToPixel(line_y_val);
+    float out_value = uiChart->widget->yAxis->coordToPixel(line_y_val);
 
     QString str, strToolTip;
     str = QString::number(x_val, 10, 3);
@@ -165,12 +175,26 @@ void Charts::myMoveEvent(QMouseEvent *event) {
     strToolTip += str;
     strToolTip += "\n";
 
-    str = QString::number(y_val, 10, 3);
-    strToolTip += "ADC: ";
-    strToolTip += str;
-    strToolTip += "\n";
+    if(c_flag)
+    {
+        str = QString::number(line_y_val, 10, 3);
+        strToolTip += "ADC: ";
+        strToolTip += str;
+        strToolTip += "\n";
+        QToolTip::showText(mapToGlobal(QPoint(out_x, out_value)), strToolTip, uiChart->widget);
 
-    QToolTip::showText(mapToGlobal(QPoint(out_x, out_y)), strToolTip, uiChart->widget);
+    }
+    else
+    {
+        str = QString::number(y_val, 10, 3);
+        strToolTip += "ADC: ";
+        strToolTip += str;
+        strToolTip += "\n";
+        QToolTip::showText(mapToGlobal(QPoint(out_x, out_y)), strToolTip, uiChart->widget);
+    }
+
+
+
 
 }
 
@@ -214,6 +238,7 @@ void Charts::on_pushButton_add_clicked() {
 /*****
  * registerData是给外界的接口作用是增加可以绘图的变量，因此不用ui界面互动。
  * 如果识别到就先提前加图层准备画图
+ * 成功返回1，失败0
 *****/
 bool Charts::registerData(const QString& addname, const QVector<double>& addDate) {
     qDebug("注册变量 %s",qPrintable(addname));
@@ -291,6 +316,7 @@ void Charts::on_pushButton_yincang_clicked() {
 /*****
  * antiRegisterData是给外界的接口作用是删除可以绘图的变量，因此不用ui界面互动。
  * 如果识别到就先删除图层
+ * 成功返回1，失败0
 *****/
 bool Charts::antiRegisterData(QString addName) {
     qDebug() << "反注册变量 " << addName;
@@ -328,6 +354,7 @@ bool Charts::antiRegisterData(QString addName) {
 /*****
  * updateData
  * 中介是Data_pools
+ * 成功返回1，失败0
 *****/
 bool Charts::updateData(QString addname, double ChangeDate) {
     if (Data_pools.contains(addname)) {
