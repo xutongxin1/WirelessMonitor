@@ -255,11 +255,9 @@ void ChannelConfiguration::onDisconnect() {
     TCPCommandHandle->disconnectFromHost();
 }
 
-/**
- * @description: Ui刷新
- * @param {bool} isXMB 是否是小卖部调试器模式
- * @return {*}
- */
+
+/// Ui刷新
+/// \param isXMB isXMB是否是小卖部调试器模式
 void ChannelConfiguration::reflashUi(bool isXMB) {
     ui->label_3->setVisible(isXMB);
     ui->FuncitonComboBox->setVisible(isXMB);

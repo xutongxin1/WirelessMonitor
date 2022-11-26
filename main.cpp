@@ -3,7 +3,7 @@
 #include <QApplication>
 #include "Charts/charts.h"
 
-//日志消息的处理函数
+///日志消息的处理函数
 void logMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message) {
     //获取格式化的日志信息
     QString typeStr = qFormatLogMessage(type, context, message);

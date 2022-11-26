@@ -82,7 +82,7 @@ DataCirculation::DataCirculation(int DeviceNum, int winNum, QSettings *cfg, ToNe
 DataCirculation::~DataCirculation() {
     delete ui;
 }
-
+///数据过滤测试按钮
 void DataCirculation::TestCirculationMode() {
     bool bOk = false;
     QString TestData = QInputDialog::getMultiLineText(this,
@@ -124,7 +124,7 @@ void DataCirculation::TestCirculationMode() {
     }
 
 }
-
+///读取配置文件
 void DataCirculation::GetConstructConfig() {
     qDebug("读取DataCirculation配置文件");
     cfg->beginGroup(GroupName);
@@ -135,6 +135,7 @@ void DataCirculation::GetConstructConfig() {
     cfg->endGroup();
 }
 
+///保存配置文件
 void DataCirculation::SaveConstructConfig() {
     qDebug("写入DataCirculation配置文件");
     cfg->beginGroup(GroupName);
@@ -145,7 +146,7 @@ void DataCirculation::SaveConstructConfig() {
     cfg->endGroup();
     RefreshBox();
 }
-
+///刷新ui选项
 void DataCirculation::RefreshBox() {
     bool tmpBool = true;//为false就是想隐藏的
     //模式为无时隐藏选项
@@ -171,7 +172,7 @@ void DataCirculation::RefreshBox() {
     ui->labelOutputMode->setVisible(tmpBool);
 
 }
-
+///启动数据流过滤，绑定通道
 void DataCirculation::StartCirculation() {
     //检查界面是否存在
     if (!(*(parentInfo->DevicesInfo))[DeviceNum].hasChart) {
@@ -216,7 +217,8 @@ void DataCirculation::StartCirculation() {
     ui->btnStart->setText("停止数据流处理");
     ui->btnStart->setEnabled(true);
 }
-
+///对目标数据进行过滤
+/// \param data 过滤目标数据
 void DataCirculation::DoCirculation(const QByteArray &data) {
     QString strtmp = data;
     qDebug("准备解析数据%s", qPrintable(strtmp));
