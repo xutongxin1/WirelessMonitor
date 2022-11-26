@@ -92,24 +92,62 @@ void Charts::ShowLine(QCustomPlot *customPlot) {
         //记录每个变量的画图次数
         int tempCount = DataPairs.at(i).count;
         if ((DataPairs.at(i).flag) == 1) {
-            //可以后期设置
-            QPen pen;
-            pen.setWidth(3);//设置线宽,默认是3
-            //pen.setStyle(Qt::PenStyle::DashLine);//设置为虚线
-            pen.setColor(Qt::blue);//设置线条蓝色
-            customPlot->graph(i)->setName(DataPairs.at(i).name);
-            customPlot->graph(i)->setPen(pen);
-            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff[tempCount]));
-            customPlot->graph(i)->setVisible(true);
-            customPlot->graph(i)->rescaleAxes(true); //自动调成范围，只能放大。想要缩小把true去掉
-            DataPairs[i].count++;
-            qDebug() << "red1" << i << endl;
+
+            if(tempCount<DataPairs.at(i).d_size)    //如果需要更新去画
+            {
+                //可以后期设置
+                QPen pen;
+                pen.setWidth(3);//设置线宽,默认是3
+                //pen.setStyle(Qt::PenStyle::DashLine);//设置为虚线
+                pen.setColor(Qt::red);//设置线条红色
+                customPlot->graph(i)->setName(DataPairs.at(i).name);
+                customPlot->graph(i)->setPen(pen);
+                customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff[tempCount]));
+                customPlot->graph(i)->setVisible(true);
+                customPlot->graph(i)->rescaleAxes(true); //自动调成范围，只能放大。想要缩小把true去掉
+                DataPairs[i].count++;
+                qDebug() << "red1" << i << endl;
+            }
+            else if(tempCount==DataPairs.at(i).d_size)    //没有新增数据就画最后一个数据/不画
+            {
+                /*
+                //可以后期设置
+                QPen pen;
+                pen.setWidth(3);//设置线宽,默认是3
+                //pen.setStyle(Qt::PenStyle::DashLine);//设置为虚线
+                pen.setColor(Qt::red);//设置线条红色
+                customPlot->graph(i)->setName(DataPairs.at(i).name);
+                customPlot->graph(i)->setPen(pen);
+                customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff[tempCount-1]));
+                customPlot->graph(i)->setVisible(true);
+                customPlot->graph(i)->rescaleAxes(true); //自动调成范围，只能放大。想要缩小把true去掉
+                DataPairs[i].count++;
+                qDebug() << "red1" << i << endl;
+                */
+            }
+
+
         }
-        else if ((DataPairs.at(i).flag) == 2) {
-            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff[tempCount]));
-            customPlot->graph(i)->setVisible(false);
-            DataPairs[i].count++;
-            qDebug() << "red2" << i << endl;
+        else if ((DataPairs.at(i).flag) == 2)
+        {
+            if(tempCount<DataPairs.at(i).d_size)    //如果需要更新去画
+            {
+                customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff[tempCount]));
+                customPlot->graph(i)->setVisible(false);
+                DataPairs[i].count++;
+                qDebug() << "red2" << i << endl;
+
+            }
+            else if(tempCount==DataPairs.at(i).d_size)   //没有新增数据就画最后一个数据/不画
+            {
+                /*
+                customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff[tempCount-1]));
+                customPlot->graph(i)->setVisible(false);
+                DataPairs[i].count++;
+                qDebug() << "red2" << i << endl;
+                */
+            }
+
         }
     }
     customPlot->replot();//重绘图形
@@ -126,12 +164,13 @@ void Charts::ReadyShowLine() {
         if (Data_pools.contains(tempname)) {
             //对比count已经画的大小和缓冲池的大小来判断是否需要
             int tempsize = (Data_pools.value(tempname).size());
-            if (DataPairs.at(i).count != tempsize) {
+            if (DataPairs.at(i).d_size != tempsize) {
 
-                for (int j = (DataPairs.at(i).count); j < (tempsize); j++) {
+                //for (int j = (DataPairs.at(i).count); j < (tempsize); j++) {
+                int j = (DataPairs.at(i).d_size);
                     DataPairs.at(i).DataBuff[j] = Data_pools.value(tempname).at(j);
-                }
-                DataPairs[i].count = tempsize;//记录下最新的大小
+                //}
+                //DataPairs[i].count = tempsize;//记录下最新的大小
 
             }
 
@@ -252,7 +291,7 @@ bool Charts::registerData(const QString& addname, const QVector<double>& addDate
         for (int i = 0; i < addDate.size(); i++) {
             temp->DataBuff[i] = addDate.at(i);
         }
-        temp->count = addDate.size();   //记录已经写了多少数据，方便实时加
+        temp->d_size = addDate.size();   //记录已经写了多少数据，方便实时加
         temp->num = 0;
         DataPairs.append(*temp);//插入数据          //DataPairs是负责后台更新维护显示数据的，因为图标显示需要double数组。
         //Data_pools是中间数据池，用容器去维护。
@@ -282,7 +321,7 @@ bool Charts::registerData(const QString& addname, const QVector<double>& addDate
                 for (int i = 0; i < addDate.size(); i++) {
                     temp->DataBuff[i] = addDate.at(i);
                 }
-                temp->count = addDate.size();   //记录已经写了多少数据，方便实时加
+                temp->d_size = addDate.size();   //记录已经写了多少数据，方便实时加
                 temp->num = i;
                 DataPairs.append(*temp);//插入数据
 
