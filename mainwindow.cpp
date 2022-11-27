@@ -161,11 +161,6 @@ void MainWindow::DeviceWindowsInit() {
                     //测试数据添加
                     //lulu_test
                     QVector<double> a;
-                    for (int i = 0; i < 10; i++) {
-
-                        //a.append(i * 30.0);
-                    }
-                    //qDebug() << a[8] << endl;
 
                     test1->registerData("test");
                     break;

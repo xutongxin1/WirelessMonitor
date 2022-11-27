@@ -1,3 +1,4 @@
+/*
 #ifndef CTHREADPOOL_H
 #define CTHREADPOOL_H
 
@@ -28,3 +29,4 @@ signals:
 };
 
 #endif // DATARECEIVER_H
+*/
