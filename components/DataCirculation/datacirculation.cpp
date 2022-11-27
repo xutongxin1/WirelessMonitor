@@ -193,7 +193,7 @@ void DataCirculation::StartCirculation() {
     for (int i = 0; i < row; i++) {
         struct value tmpValue{ui->tableWidget->item(i, 0)->text(), ""};
         values.emplace_back(tmpValue);
-        chartWindow->registerData(tmpValue.name);
+        chartWindow->registerData(tmpValue.name,sys_time);
     }
 
     //绑定数据进入过滤

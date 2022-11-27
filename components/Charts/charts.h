@@ -10,13 +10,15 @@
 
 
 /*
+enum DataType{ sys_time , user_time };
 typedef struct DataNode {
     QString name;
-    QVector<double> *DataBuff;
-    QList<double> DoubleList;
+    QList<double> *DoubleList;
+    QList<QPair<double,double>> *TimeDouble_List;
     int flag = 0;//判断是否画图不加数据,0——不画图，1——显示图，2——隐藏图但是会有数据
-    long long d_size = 0;//记录数据大小
-    long long count = 0;//记录每个数据已经画了多少个了。要注意防止溢出！！！
+    DataType DataNodeType;
+    //long long d_size = 0;//记录数据存储大小
+    //long long count = 0;//记录每个数据已经画了多少个了。要注意防止溢出！！！
 } Datanode;
 
 QList<Datanode> DataPairs;  //QList方便与图例顺序对应.是负责后台更新维护显示数据的，因为图标显示需要double数组
@@ -99,13 +101,16 @@ public:
 
 
     //！！！公开函数！！！
-    bool registerData(const QString& addname);
+    bool registerData(const QString& addname , DataType datatype);
 
     bool antiRegisterData(QString addName);
 
     bool checkRegister(QString addname);
 
-    bool updateData(QString addname, double ChangeDate);
+    bool updateData(QString addname, double ChangeData);
+    bool updateData(QString addname, double ChangeTime , double ChangeData);
+
+//    bool updateData2(QString addname, double ChangeTime , double ChangeData);
 
     void selectionChanged();
 

@@ -161,8 +161,8 @@ void MainWindow::DeviceWindowsInit() {
                     //测试数据添加
                     //lulu_test
                     QVector<double> a;
-
-                    test1->registerData("test");
+                    test1->registerData("test",user_time);
+                    //test1->registerData("test",sys_time);
                     break;
                 }
                 case 201:
