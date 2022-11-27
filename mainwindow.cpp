@@ -161,19 +161,13 @@ void MainWindow::DeviceWindowsInit() {
                     //测试数据添加
                     //lulu_test
                     QVector<double> a;
-                    for (int i = 0; i < 100; i++) {
-                        //a[i]=i*30.0;
-                        a.append(i * 30.0);
+                    for (int i = 0; i < 10; i++) {
+
+                        //a.append(i * 30.0);
                     }
-                    qDebug() << a[50] << endl;
-                    QVector<double> a1;
-                    for (int i = 0; i < 100; i++) {
-                        //a[i]=i*30.0;
-                        a1.append(i * 40.0);
-                    }
-                    qDebug() << a1[50] << endl;
-                    test1->registerData("test", a);
-                    test1->registerData("test1", a1);
+                    //qDebug() << a[8] << endl;
+
+                    test1->registerData("test");
                     break;
                 }
                 case 201:

@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>开启通道</string>
+    <string>暂停显示</string>
    </property>
    <property name="checkable">
     <bool>false</bool>

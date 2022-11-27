@@ -4,12 +4,16 @@
 #include <QDebug>
 #include <QPair>
 
+
+Q_GLOBAL_STATIC(DataReceiver, s_DataReceiver)
+QList<Datanode> DataPairs;  //QList方便与图例顺序对应
+
 //打开通道不能移动和放缩，默认和关闭可以
 //DataPairs是负责后台更新维护显示数据的，因为图标显示需要double数组。
 //Data_pools是中间数据池，用容器去维护。
 //收到的数据存在这个容器(数据池)，然后调用addData。存进去之前先确保是否已经存在这个名称，不然会继续往相同名称里加
-QHash<QString, QVector<double>> Data_pools;
-
+QHash<QString, Datanode> Data_pools;
+bool hide_flag=1;//0是关闭，1是开启
 /*颜色笔可选颜色，默认为红
  */
 enum Pen_color {
@@ -33,7 +37,7 @@ enum Pen_color {
     transparent
 };
 
-
+//QThread * move_thread = new QThread();
 //graph.setPen,setName。每个曲线都会独占一个graph
 
 Charts::Charts(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInfo, QWidget *parent) :
@@ -51,8 +55,17 @@ Charts::Charts(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInf
     (*(parentInfo->DevicesInfo))[DeviceNum].ChartsWindows=this;
 
     timerChart = new QTimer(this);
-    timerChart->setInterval(200);
-    connect(timerChart, SIGNAL(timeout()), this, SLOT(ReadyShowLine()));
+    timerChart->setInterval(1000);
+
+
+    timerChart->start();//每500ms重绘一次折线图，一直画
+    DataReceiver::getInstance()->start();
+    connect(DataReceiver::getInstance(), &DataReceiver::oneDataReady, this,[&]{ShowLine(uiChart->widget);});
+    //thread = new Thread;
+    connect(timerChart, &QTimer::timeout, this,[&]{timer_count++;updateData("test",100.0);});
+    //connect(timerChart, &QTimer::timeout, this,&Charts::ReadyShowLine);//不开线程
+//    connect(thread, &Thread::oneDataReady, this, &Charts::ReadyShowLine);
+    //connect(thread, SIGNAL(oneDataReady()), this, SLOT(ReadyShowLine()));
 
 // Allow user to drag axis ranges with mouse, zoom with mouse wheel and select graphs by clicking:
     //chart配置               uiChart->widget->graph(i)->setName();
@@ -78,7 +91,8 @@ Charts::Charts(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInf
     //设置legend只能选择图例
     uiChart->widget->legend->setSelectableParts(QCPLegend::spItems);
     connect(uiChart->widget, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged()));
-
+    //ReadyShowLine();
+    ShowLine(uiChart->widget);
 
 }
 
@@ -87,65 +101,74 @@ Charts::~Charts() {
 }
 
 void Charts::ShowLine(QCustomPlot *customPlot) {
-    //查找那些变量需要显示并且显示出来
-    for (int i = 0; i < (DataPairs.size()); i++) {
-        //记录每个变量的画图次数
-        int tempCount = DataPairs.at(i).count;
-        if ((DataPairs.at(i).flag) == 1) {
 
-            if(tempCount<DataPairs.at(i).d_size)    //如果需要更新去画
-            {
-                //可以后期设置
-                QPen pen;
-                pen.setWidth(3);//设置线宽,默认是3
-                //pen.setStyle(Qt::PenStyle::DashLine);//设置为虚线
-                pen.setColor(Qt::red);//设置线条红色
-                customPlot->graph(i)->setName(DataPairs.at(i).name);
-                customPlot->graph(i)->setPen(pen);
-                customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff[tempCount]));
-                customPlot->graph(i)->setVisible(true);
-                customPlot->graph(i)->rescaleAxes(true); //自动调成范围，只能放大。想要缩小把true去掉
-                DataPairs[i].count++;
-                qDebug() << "red1" << i << endl;
+    if(hide_flag)//0是关闭，1是开启
+    {
+        //查找那些变量需要显示并且显示出来
+        for (int i = 0; i < (DataPairs.size()); i++) {
+            //记录每个变量的画图次数
+            int tempCount = DataPairs.at(i).count;
+            int tempSize = DataPairs.at(i).DataBuff->size();
+            if ((DataPairs.at(i).flag) == 1) {
+
+                if(tempCount<tempSize)    //如果需要更新去画
+                {
+                    //可以后期设置
+                    QPen pen;
+                    pen.setWidth(2);//设置线宽,默认是2
+                    //pen.setStyle(Qt::PenStyle::DashLine);//设置为虚线
+                    pen.setColor(Qt::red);//设置线条红色
+                    customPlot->graph(i)->setName(DataPairs.at(i).name);
+                    customPlot->graph(i)->setPen(pen);
+                    for(;tempCount<tempSize;tempCount++)
+                    {
+                        customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff->at(tempCount)));
+                        DataPairs[i].count++;
+                    }
+                    customPlot->graph(i)->setVisible(true);
+                    customPlot->graph(i)->rescaleAxes(true); //自动调成范围，只能放大。想要缩小把true去掉
+
+                    //qDebug() << "red1" << i << endl;
+                }
+
+
             }
-            else if(tempCount==DataPairs.at(i).d_size)    //没有新增数据就画最后一个数据/不画
+            else if ((DataPairs.at(i).flag) == 2)
             {
-                /*
-                //可以后期设置
-                QPen pen;
-                pen.setWidth(3);//设置线宽,默认是3
-                //pen.setStyle(Qt::PenStyle::DashLine);//设置为虚线
-                pen.setColor(Qt::red);//设置线条红色
-                customPlot->graph(i)->setName(DataPairs.at(i).name);
-                customPlot->graph(i)->setPen(pen);
-                customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff[tempCount-1]));
-                customPlot->graph(i)->setVisible(true);
-                customPlot->graph(i)->rescaleAxes(true); //自动调成范围，只能放大。想要缩小把true去掉
-                DataPairs[i].count++;
-                qDebug() << "red1" << i << endl;
-                */
+                if(tempCount<tempSize)    //如果需要更新去画
+                {
+                    for(;tempCount<tempSize;tempCount++)
+                    {
+                        customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff->at(tempCount)));
+                        DataPairs[i].count++;
+                    }
+
+                    customPlot->graph(i)->setVisible(false);
+
+                    //qDebug() << "red2" << i << endl;
+
+                }
+
+
             }
-
-
         }
-        else if ((DataPairs.at(i).flag) == 2)
-        {
-            if(tempCount<DataPairs.at(i).d_size)    //如果需要更新去画
+    }
+    else
+    {
+        //查找那些变量需要显示并且显示出来
+        for (int i = 0; i < (DataPairs.size()); i++) {
+            //记录每个变量的画图次数
+            int tempCount = DataPairs.at(i).count;
             {
-                customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff[tempCount]));
-                customPlot->graph(i)->setVisible(false);
-                DataPairs[i].count++;
-                qDebug() << "red2" << i << endl;
 
-            }
-            else if(tempCount==DataPairs.at(i).d_size)   //没有新增数据就画最后一个数据/不画
-            {
-                /*
-                customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DataBuff[tempCount-1]));
-                customPlot->graph(i)->setVisible(false);
-                DataPairs[i].count++;
-                qDebug() << "red2" << i << endl;
-                */
+                if(tempCount<DataPairs.at(i).DataBuff->size())    //如果需要更新去画
+                {
+
+                    DataPairs[i].count++;
+
+                }
+
+
             }
 
         }
@@ -155,29 +178,12 @@ void Charts::ShowLine(QCustomPlot *customPlot) {
 }
 
 void Charts::ReadyShowLine() {
-    timer_count += 0.2;
+    //timer_count += 0.2;
 
     //实时增加数据
-    for (int i = 0; i < (DataPairs.size()); i++) {
-        //查找名字相同的
-        QString tempname = (DataPairs.at(i).name);
-        if (Data_pools.contains(tempname)) {
-            //对比count已经画的大小和缓冲池的大小来判断是否需要
-            int tempsize = (Data_pools.value(tempname).size());
-            if (DataPairs.at(i).d_size != tempsize) {
 
-                //for (int j = (DataPairs.at(i).count); j < (tempsize); j++) {
-                int j = (DataPairs.at(i).d_size);
-                    DataPairs.at(i).DataBuff[j] = Data_pools.value(tempname).at(j);
-                //}
-                //DataPairs[i].count = tempsize;//记录下最新的大小
-
-            }
-
-        }
-
-    }
-
+    qDebug() << "111！" << endl;
+    //move_thread->start();
     ShowLine(uiChart->widget);
 
 }
@@ -188,7 +194,7 @@ void Charts::myMoveEvent(QMouseEvent *event) {
     int c_flag=0;
     int x_pos = event->pos().x();
     int y_pos = event->pos().y();
-    qDebug() << "event->pos()" << event->pos();
+//    qDebug() << "event->pos()" << event->pos();
 
     //鼠标坐标转化为CustomPlot内部坐标
     float x_val = uiChart->widget->xAxis->pixelToCoord(x_pos);
@@ -241,17 +247,20 @@ void Charts::myMoveEvent(QMouseEvent *event) {
 void Charts::on_pushButton_clicked() {
     if (checked == 0) {
         //开启，不可以放缩和移动
-        qDebug() << "开始画图" << endl;
-        uiChart->pushButton->setText("关闭通道");
-        timerChart->start();//每200ms重绘一次折线图
-        uiChart->widget->setInteractions(QCP::iNone);
+        //qDebug() << "开始画图" << endl;
+        uiChart->pushButton->setText("暂停显示");
+        //timerChart->start();//每200ms重绘一次折线图
+        //uiChart->widget->setInteractions(QCP::iNone);
+        uiChart->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+        hide_flag=1;
         checked = 1;
     }
     else {
         //关闭，可以放缩和移动
-        uiChart->pushButton->setText("开启通道");
-        timerChart->stop();
+        uiChart->pushButton->setText("开始显示");
+        //timerChart->stop();
         uiChart->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+        hide_flag=0;
         checked = 0;
     }
 }
@@ -266,7 +275,7 @@ void Charts::on_pushButton_add_clicked() {
         {
 
             DataPairs[i].flag = 1;
-            uiChart->widget->graph(i)->setVisible(true);//显示
+            //uiChart->widget->graph(i)->setVisible(true);//显示
 
         }
 
@@ -279,25 +288,20 @@ void Charts::on_pushButton_add_clicked() {
  * 如果识别到就先提前加图层准备画图
  * 成功返回1，失败0
 *****/
-bool Charts::registerData(const QString& addname, const QVector<double>& addDate) {
+bool Charts::registerData(const QString& addname) {
     qDebug("注册变量 %s",qPrintable(addname));
-    int size = addDate.size();
+
     if ((DataPairs.size()) == 0)//如果是空链表
     {
         Datanode *temp = new Datanode;
         temp->name = addname;
-        temp->DataBuff = new double[size];
-        temp->flag = 0;
-        for (int i = 0; i < addDate.size(); i++) {
-            temp->DataBuff[i] = addDate.at(i);
-        }
-        temp->d_size = addDate.size();   //记录已经写了多少数据，方便实时加
-        temp->num = 0;
+        temp->DataBuff = new QVector<double>;
+        temp->flag = 1;
+
         DataPairs.append(*temp);//插入数据          //DataPairs是负责后台更新维护显示数据的，因为图标显示需要double数组。
         //Data_pools是中间数据池，用容器去维护。
 
-        //！！！数据池插入！！！
-        Data_pools.insert(addname, addDate);
+        Data_pools.insert(addname, *temp);
 
         uiChart->comboBox->addItem(addname);//combox插入项
         uiChart->widget->addGraph();//加图层准备画图
@@ -316,17 +320,13 @@ bool Charts::registerData(const QString& addname, const QVector<double>& addDate
             {
                 Datanode *temp = new Datanode;
                 temp->name = addname;
-                temp->DataBuff = new double[size];
-                temp->flag = 0;
-                for (int i = 0; i < addDate.size(); i++) {
-                    temp->DataBuff[i] = addDate.at(i);
-                }
-                temp->d_size = addDate.size();   //记录已经写了多少数据，方便实时加
-                temp->num = i;
+                temp->DataBuff = new QVector<double>;
+                temp->flag = 1;
+
                 DataPairs.append(*temp);//插入数据
 
                 //！！！数据池插入！！！
-                Data_pools.insert(addname, addDate);
+                Data_pools.insert(addname,*temp);
 
                 uiChart->comboBox->addItem(addname);//combox插入项
                 uiChart->widget->addGraph();//创建新画布
@@ -360,7 +360,7 @@ void Charts::on_pushButton_yincang_clicked() {
 bool Charts::antiRegisterData(QString addName) {
     qDebug() << "反注册变量 " << addName;
     //删除数据池里的数据和pair里的数据
-    QHash<QString, QVector<double>>::iterator i;
+    QHash<QString, DataNode>::iterator i;
 
     i = Data_pools.find(addName);
     if (i != Data_pools.end())   //如果找到了
@@ -397,9 +397,10 @@ bool Charts::antiRegisterData(QString addName) {
 *****/
 bool Charts::updateData(QString addname, double ChangeDate) {
     if (Data_pools.contains(addname)) {
-        Data_pools[addname].append(ChangeDate);
+        Data_pools[addname].DataBuff->append(ChangeDate);
 
-        qDebug() << "updateData: ok！" << endl;
+        qDebug() << "updateData0: ok" << endl;
+        //emit updataok();
         return 1;
     }
     else {
@@ -455,3 +456,37 @@ void Charts::selectionChanged() {
         }
     }
 }
+
+
+
+/****************************************************/
+DataReceiver *DataReceiver::getInstance()
+{
+    return s_DataReceiver;
+}
+
+DataReceiver::DataReceiver(QObject *parent) : QThread(parent)
+{}
+
+
+
+void DataReceiver::stop()
+{
+    this->requestInterruption();
+}
+
+void DataReceiver::run()
+{
+     while(!isInterruptionRequested()){
+
+        qDebug() << "xianchengrun"<< endl;
+        mutex.lock();
+                emit oneDataReady();
+        mutex.unlock();
+
+
+        //短暂睡眠让出线程
+        msleep(1000);//不加这句CPU占用率高达50%
+    }
+}
+

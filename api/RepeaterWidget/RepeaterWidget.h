@@ -14,10 +14,9 @@
 
 typedef struct DataNode {
     QString name;
-    double *DataBuff;
+    QVector<double> *DataBuff;
     int flag = 0;//判断是否画图不加数据,0——不画图，1——显示图，2——隐藏图但是会有数据
-    int num;//在graph里对应的名次，需要实时更新
-    long long d_size = 0;//记录数据存储大小
+    //long long d_size = 0;//记录数据存储大小
     long long count = 0;//记录每个数据已经画了多少个了。要注意防止溢出！！！
 } Datanode;
 
