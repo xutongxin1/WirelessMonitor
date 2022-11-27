@@ -69,19 +69,24 @@ DataCirculation::DataCirculation(int DeviceNum, int winNum, QSettings *cfg, ToNe
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             return;
         }
-
-        QByteArray allArray = file.readAll();
-        QString allStr = QString(allArray);
+        int i = 0;
+        while (!file.atEnd()) {
+            QByteArray line = file.readLine();
+            this->DoCirculation(line, chartWindow->startedTime.addSecs(i++));
+        }
+//        QByteArray allArray = file.readAll();
+//        QString allStr = QString(allArray);
         file.close();
-
-        qDebug("准备把以下数据注入文件 %s", qPrintable(allStr));
-        this->DoCirculation(allArray);
+//
+//        qDebug("准备把以下数据注入文件 %s", qPrintable(allStr));
+//        this->DoCirculation(allArray);
     });
 }
 
 DataCirculation::~DataCirculation() {
     delete ui;
 }
+
 ///数据过滤测试按钮
 void DataCirculation::TestCirculationMode() {
     bool bOk = false;
@@ -124,6 +129,7 @@ void DataCirculation::TestCirculationMode() {
     }
 
 }
+
 ///读取配置文件
 void DataCirculation::GetConstructConfig() {
     qDebug("读取DataCirculation配置文件");
@@ -146,6 +152,7 @@ void DataCirculation::SaveConstructConfig() {
     cfg->endGroup();
     RefreshBox();
 }
+
 ///刷新ui选项
 void DataCirculation::RefreshBox() {
     bool tmpBool = true;//为false就是想隐藏的
@@ -172,6 +179,7 @@ void DataCirculation::RefreshBox() {
     ui->labelOutputMode->setVisible(tmpBool);
 
 }
+
 ///启动数据流过滤，绑定通道
 void DataCirculation::StartCirculation() {
     //检查界面是否存在
@@ -193,7 +201,7 @@ void DataCirculation::StartCirculation() {
     for (int i = 0; i < row; i++) {
         struct value tmpValue{ui->tableWidget->item(i, 0)->text(), ""};
         values.emplace_back(tmpValue);
-        chartWindow->registerData(tmpValue.name,sys_time);
+        chartWindow->registerData(tmpValue.name);
     }
 
     //绑定数据进入过滤
@@ -217,11 +225,12 @@ void DataCirculation::StartCirculation() {
     ui->btnStart->setText("停止数据流处理");
     ui->btnStart->setEnabled(true);
 }
+
 ///对目标数据进行过滤
 /// \param data 过滤目标数据
-void DataCirculation::DoCirculation(const QByteArray &data) {
+void DataCirculation::DoCirculation(const QByteArray &data, QTime dataTime) {
     QString strtmp = data;
-    qDebug("准备解析数据%s", qPrintable(strtmp));
+    qDebug("准备解析数据%s,时间%s", qPrintable(strtmp), qPrintable(dataTime.toString("h:m:s")));
     QStringList buffer;
     if (strtmp.indexOf("\r\n") != -1) {
         buffer = strtmp.split("\r\n");
@@ -242,7 +251,7 @@ void DataCirculation::DoCirculation(const QByteArray &data) {
                 double num = circulationStr.toDouble(&ok);
                 if (ok) {
                     qDebug("解析成功 %f", num);
-                    chartWindow->updateData(ui->tableWidget->item(0, 0)->text(), num);
+                    chartWindow->updateData(ui->tableWidget->item(0, 0)->text(), dataTime, num);
                 }
                 else {
                     qCritical("%s 解析失败", qPrintable(circulationStr));

@@ -56,11 +56,11 @@ private:
 
     void StartCirculation();
 
-    void DoCirculation(const QByteArray &data);
+    void DoCirculation(const QByteArray &data, QTime dataTime = QTime());
 
     Charts *chartWindow;
 
-    struct value{
+    struct value {
         QString name;
         QString rule;
     };

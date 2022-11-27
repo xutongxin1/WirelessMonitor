@@ -34,14 +34,14 @@ namespace Ui {
 }
 
 
-class DataReceiver : public QThread
-{
-    Q_OBJECT
+class DataReceiver : public QThread {
+Q_OBJECT
 public:
     //获取DataReceiver单例实例
     static DataReceiver *getInstance(void);
 
     explicit DataReceiver(QObject *parent = nullptr);
+
     //~DataReceiver();
     void stop();
 
@@ -52,6 +52,7 @@ private:
     QMutex mutex;
 
 signals:
+
     void oneDataReady();
 };
 
@@ -82,7 +83,9 @@ Q_OBJECT
     friend class ChartThread;
 
 signals:
+
     void updataok();
+
     void monitor(const QVector<double> &addDate);
 
 public:
@@ -96,19 +99,18 @@ public:
     unsigned char CurrentData;
 
 
-
-
-
-
     //！！！公开函数！！！
-    bool registerData(const QString& addname , DataType datatype);
+    bool registerData(const QString &addName, DataType datatype = user_time);
 
     bool antiRegisterData(QString addName);
 
     bool checkRegister(QString addname);
 
-    bool updateData(QString addname, double ChangeData);
-    bool updateData(QString addname, double ChangeTime , double ChangeData);
+    bool updateData(const QString &addName, double data);
+
+    bool updateData(const QString &addName, double ChangeTime, double data);
+
+    bool updateData(const QString &addName, QTime ChangeTime, double data);
 
 //    bool updateData2(QString addname, double ChangeTime , double ChangeData);
 
@@ -116,12 +118,14 @@ public:
 
     void test(const QVector<double> &addDate);
 
-
+    QTime startedTime;
 
 public slots:
+
     void ShowLine(QCustomPlot *customPlot);//显示折线图
 
     void ReadyShowLine();
+
     void myMoveEvent(QMouseEvent *event);
     //本例中用于修改实时数据，并调用ShowLine函数
 
@@ -141,10 +145,11 @@ private:
     double timer_count = 0.0;
     bool checked = 1;
     QTimer *timerChart;
+
+    bool timeHasInit = false;
     //DataReceiver *thread;
 //    Thread *thread;
 };
-
 
 
 #endif // CHARTS_H

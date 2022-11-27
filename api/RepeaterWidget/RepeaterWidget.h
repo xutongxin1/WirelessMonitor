@@ -12,11 +12,14 @@
 #include <QDebug>
 #include "structH.h"
 
-enum DataType{ sys_time , user_time };
+enum DataType {
+    sys_time,
+    user_time
+};
 typedef struct DataNode {
     QString name;
     QList<double> *DoubleList;
-    QList<QPair<double,double>> *TimeDouble_List;
+    QList<QPair<double, double>> *TimeDouble_List;
     int flag = 0;//判断是否画图不加数据,0——不画图，1——显示图，2——隐藏图但是会有数据
     DataType DataNodeType;
     //long long d_size = 0;//记录数据存储大小
