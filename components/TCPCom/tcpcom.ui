@@ -46,7 +46,7 @@
            <bool>true</bool>
           </property>
           <property name="placeholderText">
-           <string>接收区</string>
+           <string>收发日志</string>
           </property>
          </widget>
          <widget class="QWidget" name="layoutWidget">

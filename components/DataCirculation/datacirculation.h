@@ -56,7 +56,7 @@ private:
 
     void StartCirculation();
 
-    void DoCirculation(const QByteArray &data, QTime dataTime = QTime());
+    void DoCirculation(const QByteArray &data, QTime dataTime = QTime::currentTime());
 
     Charts *chartWindow;
 

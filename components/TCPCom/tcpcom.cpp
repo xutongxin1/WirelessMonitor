@@ -31,7 +31,7 @@ TCPCom::TCPCom(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInf
     ui->setupUi(this);
 
     this->initForm();
-    this->initConfig();
+//    this->initConfig();
     QUIHelper::setFormInCenter(this);
 
     this->TCPCommandHandle = (*(parentInfo->DevicesInfo))[DeviceNum].TCPCommandHandler;//结构体这样用
@@ -86,9 +86,10 @@ TCPCom::TCPCom(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInf
 
 
 #if _DEBUG
+    //测试按钮绑定
     ui->btnStartTest->setHidden(false);
     connect(ui->btnStartTest, &QPushButton::clicked, this, [&] {
-
+        qDebug("工作在测试模式，发送通道的comboBox设置错误为正常现象");
         this->IP = "127.0.0.1";
         if (!TCPInfoHandler[1]->isConnected) {
             TCPInfoHandler[1]->connectToHost(IP, 1921, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
@@ -101,7 +102,7 @@ TCPCom::TCPCom(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInf
         }
 
         //默认设置模式
-        connect(TCPInfoHandler[1], &QTcpSocket::connected, this, [&] {
+        connect(TCPInfoHandler[3], &QTcpSocket::connected, this, [&] {
             TCPInfoHandler[1]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_IN);
             TCPInfoHandler[2]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_IN);
             TCPInfoHandler[3]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_OUT);
@@ -130,7 +131,7 @@ TCPCom::TCPCom(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInf
 TCPCom::~TCPCom() {
     delete ui;
 }
-
+///初始化统计
 void TCPCom::initForm() {
     sleepTime = 10;
     receiveCount = 0;
@@ -146,19 +147,14 @@ void TCPCom::initForm() {
 #endif
 }
 
-void TCPCom::initConfig() {
-
-
-}
-
-void TCPCom::saveConfig() {
-
-}
-
 void TCPCom::changeEnable(bool b) {
 
 }
 
+/// 往日志区添加数据
+/// \param type 数据类型
+/// \param data 数据
+/// \param clear 是否清空
 void TCPCom::append(int type, const QString &data, bool clear) {
     static int currentCount = 0;
     static int maxCount = 81920;
@@ -211,6 +207,9 @@ void TCPCom::append(int type, const QString &data, bool clear) {
     currentCount++;
 }
 
+/// 数据收入处理
+/// \param data 数据
+/// \param port 端口
 void TCPCom::getData(const QByteArray &data, int port) {
 
     QString buffer;
@@ -232,6 +231,7 @@ void TCPCom::getData(const QByteArray &data, int port) {
     ui->btnReceiveCount->setText(QString("接收 : %1 字节").arg(receiveCount));
 }
 
+///发送发送栏里的数据
 void TCPCom::sendData() {
     QString data = ui->SendDataEdit->toPlainText();
     if (data.isEmpty()) {

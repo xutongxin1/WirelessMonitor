@@ -67,11 +67,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-    DataCirculation *tmp = new DataCirculation(1,
-                                               5,
-                                               Cfg->configDeviceIni[1],
-                                               &parentInfo);
-    ui->FunctionWindow->setCurrentIndex(ui->FunctionWindow->addWidget(tmp));
+//    DataCirculation *tmp = new DataCirculation(1,
+//                                               5,
+//                                               Cfg->configDeviceIni[1],
+//                                               &parentInfo);
+//    ui->FunctionWindow->setCurrentIndex(ui->FunctionWindow->addWidget(tmp));
 
 
 
@@ -165,6 +165,17 @@ void MainWindow::DeviceWindowsInit() {
                     //test1->registerData("test",sys_time);
                     break;
                 }
+                case 52:
+                    DevicesWindowsInfo[DeviceNum][WinNum].type = Data_Circulation;//结构体初始化
+                    DevicesWindowsInfo[DeviceNum][WinNum].widget =
+                            new DataCirculation(DeviceNum,
+                                                WinNum,
+                                                Cfg->configDeviceIni[DeviceNum],
+                                                &parentInfo);
+                    DevicesWindowsInfo[DeviceNum][WinNum].index = ui->FunctionWindow->addWidget(
+                            DevicesWindowsInfo[DeviceNum][WinNum].widget);
+                    DevicesInfo[DeviceNum].TabWidget->addTab("数据流过滤器配置");//添加tab栏
+                    break;
                 case 201:
                     DevicesWindowsInfo[DeviceNum][WinNum].type = TCP_Bridge_Configuration;//结构体初始化
                     DevicesWindowsInfo[DeviceNum][WinNum].widget =
