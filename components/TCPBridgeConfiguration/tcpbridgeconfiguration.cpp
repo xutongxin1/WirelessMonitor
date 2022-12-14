@@ -432,9 +432,9 @@ void TCPBridgeConfiguration::SetUart() {
         if (mode1 == Input) { c1.insert("mode", 1); }
         else { c1.insert("mode", 3); }
         c1.insert("band", QString::number(BaudRate1));
-        c1.insert("stop", QString::number(StopBit1));
+        c1.insert("stop", StopBit1);
         c1.insert("parity", Parity1);
-        c1.insert("data", QString::number(DataBit1));
+        c1.insert("data", DataBit1);
     }
     QJsonObject c2;
     if (mode2 == Closed) {
@@ -461,9 +461,9 @@ void TCPBridgeConfiguration::SetUart() {
         if (mode3 == Output) { c3.insert("mode", 2); }
         else { c3.insert("mode", 4); }
         c3.insert("band", QString::number(BaudRate3));
-        c3.insert("stop", QString::number(StopBit3));
+        c3.insert("stop", StopBit3);
         c3.insert("parity", Parity3);
-        c3.insert("data", QString::number(DataBit3));
+        c3.insert("data", DataBit3);
     }
     QJsonObject all;
 
