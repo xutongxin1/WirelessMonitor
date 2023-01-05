@@ -1,9 +1,10 @@
 #ifndef QTMATERIALTABS_H
 #define QTMATERIALTABS_H
 
-#include "lib/qtmaterialtheme.h"
 #include <QIcon>
 #include <QtWidgets/QWidget>
+
+#include "lib/qtmaterialtheme.h"
 
 class QtMaterialTabsPrivate;
 class QtMaterialTab;
@@ -12,8 +13,8 @@ class QtMaterialTabs : public QWidget
 {
     Q_OBJECT
 
-public:
-    explicit QtMaterialTabs(QWidget *parent = 0);
+  public:
+    explicit QtMaterialTabs(QWidget* parent = 0);
     ~QtMaterialTabs();
 
     void setUseThemeColors(bool value);
@@ -25,34 +26,32 @@ public:
     void setRippleStyle(Material::RippleStyle style);
     Material::RippleStyle rippleStyle() const;
 
-    void setInkColor(const QColor &color);
+    void setInkColor(const QColor& color);
     QColor inkColor() const;
 
-    void setBackgroundColor(const QColor &color);
+    void setBackgroundColor(const QColor& color);
     QColor backgroundColor() const;
 
-    void setTextColor(const QColor &color);
+    void setTextColor(const QColor& color);
     QColor textColor() const;
 
-    void addTab(const QString &text, const QIcon &icon = QIcon());
+    void addTab(const QString& text, const QIcon& icon = QIcon());
 
-    void setCurrentTab(QtMaterialTab *tab);
-    void setCurrentTab(int index);
+    void setCurrentTab(QtMaterialTab* tab);
+    void setCurrentTab(int index, bool is_emit = true);  // 设置当前是在哪个tab
 
     int currentIndex() const;
 
-
-
-signals:
+  signals:
     void currentChanged(int);
 
-protected:
-    void setTabActive(int index, bool active = true);
+  protected:
+    void setTabActive(int index, bool active = true);  // 分别设置哪个tab亮起
     void updateTabs();
 
     const QScopedPointer<QtMaterialTabsPrivate> d_ptr;
 
-private:
+  private:
     Q_DISABLE_COPY(QtMaterialTabs)
     Q_DECLARE_PRIVATE(QtMaterialTabs)
 };

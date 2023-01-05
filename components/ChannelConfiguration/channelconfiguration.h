@@ -34,6 +34,8 @@ private:
 
     QString DeviceGroup;
 
+    bool hasGiveUp = false;
+
     QString ip;
     int port;
     int ConnectStep;

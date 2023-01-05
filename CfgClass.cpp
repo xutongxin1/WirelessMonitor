@@ -54,7 +54,7 @@ bool CfgClass::SaveMainCfg(const QString &key, const QString &value) {
  */
 QSettings *CfgClass::OpenCfg(const QString &path) {
     QSettings *config = new QSettings(path, QSettings::IniFormat);
-    config->setIniCodec("GBK");
+    config->setIniCodec("UTF-8");
     return config;
 }
 

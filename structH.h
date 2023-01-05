@@ -16,6 +16,7 @@ class RepeaterWidget;
 
 class Charts;
 
+//窗口类型泛型
 enum WindowsType {
     None = 0,
     Channel_Configuration = 1,
@@ -25,14 +26,16 @@ enum WindowsType {
     TCP_Bridge_Configuration = 201,
     TCP_Com = 202,
 };
-struct WindowsInfo//窗口配置信息结构体
-{
+
+//窗口配置信息结构体
+struct WindowsInfo {
     RepeaterWidget *widget;
     int index;
     WindowsType type;
 };
-struct DevicesInfo//设备配置信息结构体
-{
+
+//设备配置信息结构体
+struct DevicesInfo {
     int windowsNum;
     int TabIndex;
     QtMaterialTabs *TabWidget;
@@ -40,7 +43,11 @@ struct DevicesInfo//设备配置信息结构体
     TCPInfoHandle *TCPInfoHandler[4];
     bool hasChart = false;
     Charts *ChartsWindows;
+    int configStep = 1;
+    int current_window=1;
 };
+
+//传递给新建窗口的结构体
 struct ToNewWidget {
     std::vector<std::vector<WindowsInfo>> *DevicesWindowsInfo;//设备下窗口信息
     std::vector<DevicesInfo> *DevicesInfo;//设备信息
