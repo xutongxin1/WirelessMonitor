@@ -94,8 +94,8 @@ void QtMaterialAppBar::setForegroundColor(const QColor &color)
 
     d->foregroundColor = color;
 
-    if (d->useThemeColors == true) {
-        d->useThemeColors = false;
+    if (d->useThemeColors) {
+      d->useThemeColors = false;
     }
     update();
 }
@@ -117,9 +117,9 @@ void QtMaterialAppBar::setBackgroundColor(const QColor &color)
 
     d->backgroundColor = color;
 
-    if (d->useThemeColors == true) {
-        d->useThemeColors = false;
-    }
+  if (d->useThemeColors) {
+    d->useThemeColors = false;
+  }
     update();
 }
 

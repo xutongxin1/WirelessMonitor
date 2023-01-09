@@ -8,38 +8,33 @@
 #include "./ui_SideBarButton.h"
 #include <string>
 
-SideBarButton::SideBarButton(int num, CfgClass *MainCfg, RepeaterWidget *parent) :
-        RepeaterWidget(parent), ui(new Ui::SideBarButton) {
+SideBarButton::SideBarButton(int num, CfgClass *main_cfg, RepeaterWidget *parent) :
+    RepeaterWidget(parent), ui_(new Ui::SideBarButton) {
 
-    ui->setupUi(this);
+    ui_->setupUi(this);
     QString tmp = "/Device ";
     tmp.append(QString::number(num));
 
-    QString Note = MainCfg->GetMainCfg(QString(tmp + "/note"));
-    QString way = MainCfg->GetMainCfg(QString(tmp + "/WayToConnect"));
-    if(way=="1")
-    {
-        way="XMB无线调试器";
+    QString Note = main_cfg->GetMainCfg(QString(tmp + "/note"));
+    QString way = main_cfg->GetMainCfg(QString(tmp + "/WayToConnect"));
+    if (way == "1") {
+        way = "XMB无线调试器";
+    } else if (way == "2") {
+        way = "有线串口设备";
+    } else if (way == "3") {
+        way = "TCP连接";
     }
-    else if(way=="2")
-    {
-        way="有线串口设备";
-    }
-    else if(way=="3")
-    {
-        way="TCP连接";
-    }
-    ui->Button->setText(Note + "\n" + way);
-    Button=ui->Button;
+    ui_->button_->setText(Note + "\n" + way);
+    button_ = ui_->button_;
 }
 
 SideBarButton::~SideBarButton() {
-    delete ui;
+    delete ui_;
 }
 
-SideBarButton::SideBarButton(RepeaterWidget *parent)  :
-        RepeaterWidget(parent), ui(new Ui::SideBarButton) {
-    ui->setupUi(this);
-    ui->Button->setText("Main");
-    Button=ui->Button;
+SideBarButton::SideBarButton(RepeaterWidget *parent) :
+    RepeaterWidget(parent), ui_(new Ui::SideBarButton) {
+    ui_->setupUi(this);
+    ui_->button_->setText("Main");
+    button_ = ui_->button_;
 }

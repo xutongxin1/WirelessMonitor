@@ -104,7 +104,7 @@ public:
 
     bool antiRegisterData(QString addName);
 
-    bool checkRegister(QString addname);
+  [[maybe_unused]] bool checkRegister(QString addname);
 
     bool updateData(const QString &addName, double data);
 

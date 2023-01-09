@@ -2,8 +2,8 @@
 // Created by xtx on 2022/9/7.
 //
 
-#ifndef QT_SIDEBARBUTTON_H
-#define QT_SIDEBARBUTTON_H
+#ifndef MAIN_COMPONENTS_SIDEBARBUTTON_SIDEBARBUTTON_H_
+#define MAIN_COMPONENTS_SIDEBARBUTTON_SIDEBARBUTTON_H_
 
 #include <QWidget>
 #include "CfgClass.h"
@@ -14,20 +14,18 @@ namespace Ui { class SideBarButton; }
 QT_END_NAMESPACE
 
 class SideBarButton : public RepeaterWidget {
-Q_OBJECT
+ Q_OBJECT
 
-public:
+ public:
     explicit SideBarButton(RepeaterWidget *parent = nullptr);
-    explicit SideBarButton(int num, CfgClass *MainCfg, RepeaterWidget *parent = nullptr);
-    QPushButton *Button;
+    explicit SideBarButton(int num, CfgClass *main_cfg, RepeaterWidget *parent = nullptr);
+    QPushButton *button_;
 
     ~SideBarButton() override;
 
-private:
-    Ui::SideBarButton *ui;
-
+ private:
+    Ui::SideBarButton *ui_;
 
 };
 
-
-#endif //QT_SIDEBARBUTTON_H
+#endif //MAIN_COMPONENTS_SIDEBARBUTTON_SIDEBARBUTTON_H_

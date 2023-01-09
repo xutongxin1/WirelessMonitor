@@ -2,33 +2,32 @@
 // Created by xtx on 2022/9/7.
 //
 
-#ifndef QT_CFGCLASS_H
-#define QT_CFGCLASS_H
+#ifndef MAIN__CFGCLASS_H_
+#define MAIN__CFGCLASS_H_
 
 #include <QSettings>
 
 class CfgClass {
-public:
-    CfgClass();
+ public:
+  CfgClass();
 
-    QString GetMainCfg(const QString &key);
+  QString GetMainCfg(const QString &key);
 
-    bool SaveMainCfg(const QString &key, const QString &value);
+  bool SaveMainCfg(const QString &key, const QString &value);
 
-    QString GetDeviceCfg(int DeviceNum, const QString &key);
+  QString GetDeviceCfg(int device_num, const QString &key);
 
     bool SaveDeviceCfg(int num, const QString &key, const QString &value);
 
-    std::vector<QSettings*> configDeviceIni;
+  std::vector<QSettings *> config_device_ini_;
 
-    int DeviceNum;
+  int device_num_;
 private:
-    QSettings *configMainIni;
+  QSettings *config_main_ini_;
 
 
     static QSettings *OpenCfg(const QString &path);
 
 };
 
-
-#endif //QT_CFGCLASS_H
+#endif //MAIN__CFGCLASS_H_

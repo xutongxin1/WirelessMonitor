@@ -60,7 +60,7 @@ Thumbs.db
 *vcxproj.*
 
 # MinGW generated files
-*.Debug
+*.debug_
 *.Release
 
 # Python byte code

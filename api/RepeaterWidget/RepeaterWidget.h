@@ -39,7 +39,7 @@ struct RequestNewWidget {
 
 class RepeaterWidget : public QWidget {
 public:
-//    QPushButtonMap Button;
+//    QPushButtonMap button_;
     explicit RepeaterWidget(QWidget *parent = nullptr);
 
     ~RepeaterWidget();

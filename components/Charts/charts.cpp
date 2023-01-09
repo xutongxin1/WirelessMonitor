@@ -50,11 +50,10 @@ Charts::Charts(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInf
     this->GroupName = "Win" + QString::number(winNum);
     this->DeviceNum = DeviceNum;
     this->parentInfo = parentInfo;
-    startedTime= QTime::currentTime();
+    startedTime = QTime::currentTime();
 
-
-    (*(parentInfo->DevicesInfo))[DeviceNum].hasChart = true;
-    (*(parentInfo->DevicesInfo))[DeviceNum].ChartsWindows = this;
+    (*(parentInfo->devices_info))[DeviceNum].has_chart = true;
+    (*(parentInfo->devices_info))[DeviceNum].charts_windows = this;
 
     timerChart = new QTimer(this);
     timerChart->setInterval(500);
@@ -363,19 +362,19 @@ bool Charts::registerData(const QString &addName, DataType datatype) {
                 temp->DataNodeType = sys_time;
                 temp->DoubleList = new QList<double>;
             }
-                break;
+            break;
             case user_time: {
                 temp->DataNodeType = user_time;
                 temp->TimeDouble_List = new QList<QPair<double, double>>;
             }
-                break;
+            break;
             default: {
                 qDebug() << "addtype fail!" << endl;
                 return 0;
-            }
                 break;
-        }
+            }
 
+        }
 
         DataPairs.append(*temp);//插入数据          //DataPairs是负责后台更新维护显示数据的，因为图标显示需要double数组。
         //Data_pools是中间数据池，用容器去维护。
@@ -499,7 +498,7 @@ bool Charts::antiRegisterData(QString addName) {
 bool Charts::updateData(const QString &addName, double data) {
 //    if (Data_pools.contains(addName)) {
 //
-//        Data_pools[addName].DoubleList->append(ChangeData);
+//        Data_pools[addName].DoubleList->Append(ChangeData);
 //
 //        return true;
 //    }
@@ -538,17 +537,14 @@ bool Charts::updateData(const QString &addName, double ChangeTime, double data) 
  * 检测是否注册过的接口
  * 成功找到返回1，失败0
 *****/
-bool Charts::checkRegister(QString addname) {
+[[maybe_unused]] bool Charts::checkRegister(QString addname) {
     if (Data_pools.contains(addname)) {
         qDebug() << "check: find！" << endl;
-        return 1;
-    }
-    else {
+        return true;
+    } else {
         qDebug() << "check: find fail！" << endl;
-        return 0;
+        return false;
     }
-    qDebug() << "check: fail！" << endl;
-    return 0;
 }
 
 

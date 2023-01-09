@@ -2,46 +2,45 @@
 // Created by xtx on 2022/11/18.
 //
 
-#ifndef MAIN_DATACIRCULATION_H
-#define MAIN_DATACIRCULATION_H
+#ifndef MAIN_COMPONENTS_DATACIRCULATION_DATACIRCULATION_H_
+#define MAIN_COMPONENTS_DATACIRCULATION_DATACIRCULATION_H_
 
 #include "RepeaterWidget.h"
 #include "Charts/charts.h"
-
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class DataCirculation; }
 QT_END_NAMESPACE
 class DataCirculation : public RepeaterWidget {
-Q_OBJECT
+ Q_OBJECT
 
 public:
-    explicit DataCirculation(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInfo,
+    explicit DataCirculation(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info,
                              QWidget *parent = nullptr);
 
     ~DataCirculation() override;
 
     enum CirculationMode {
-        CirculationMode_Direction = 0,
-        CirculationMode_CommaSeparated,
-        CirculationMode_KeyValue,
-        CirculationMode_Scanf,
-        CirculationMode_Regularity,
-        CirculationMode_Python,
-    } circulationMode = CirculationMode_Direction;
+      CIRCULATION_MODE_DIRECTION = 0,
+      CIRCULATION_MODE_COMMA_SEPARATED,
+      CIRCULATION_MODE_KEY_VALUE,
+      CIRCULATION_MODE_SCANF,
+      CIRCULATION_MODE_REGULARITY,
+      CIRCULATION_MODE_PYTHON,
+    } circulation_mode_ = CIRCULATION_MODE_DIRECTION;
     enum ProcessMode {
-        ProcessMode_None = 0,
-        ProcessMode_Circulation,
-        ProcessMode_Output,
-    } processMode = ProcessMode_None;
+      PROCESS_MODE_NONE = 0,
+      PROCESS_MODE_CIRCULATION,
+      PROCESS_MODE_OUTPUT,
+    } process_mode_ = PROCESS_MODE_NONE;
     enum DateFlowMode {
-        DateFlowMode_Chart = 0,
-        DateFlowMode_Output,
-    } dateFlowMode = DateFlowMode_Chart;
+      DATE_FLOW_MODE_CHART = 0,
+      DATE_FLOW_MODE_OUTPUT,
+    } date_flow_mode_ = DATE_FLOW_MODE_CHART;
     enum OutputMode {
-        OutputMode_TCPServer = 0,
-        OutputMode_POST,
-    } outputMode = OutputMode_TCPServer;
+      OUTPUT_MODE_TCP_SERVER = 0,
+      OUTPUT_MODE_POST,
+    } output_mode_ = OUTPUT_MODE_TCP_SERVER;
 
     void GetConstructConfig() override;
 
@@ -50,23 +49,22 @@ public:
     void RefreshBox();
 
 private:
-    Ui::DataCirculation *ui;
+    Ui::DataCirculation *ui_;
 
     void TestCirculationMode();
 
     void StartCirculation();
 
-    void DoCirculation(const QByteArray &data, QTime dataTime = QTime::currentTime());
+    void DoCirculation(const QByteArray &data, QTime data_time = QTime::currentTime());
 
-    Charts *chartWindow;
+    Charts *chart_window_;
 
     struct value {
         QString name;
         QString rule;
     };
 
-    std::list<value> values;
+    std::list<value> values_;
 };
 
-
-#endif //MAIN_DATACIRCULATION_H
+#endif //MAIN_COMPONENTS_DATACIRCULATION_DATACIRCULATION_H_

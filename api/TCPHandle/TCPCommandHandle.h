@@ -37,7 +37,7 @@ public:
 
     void SendHeart();
 
-    bool isFinishWork();
+//    bool isFinishWork();
 
     void connectToHost(const QString &hostName, quint16 port, QIODevice::OpenMode protocol ,
                        QAbstractSocket::NetworkLayerProtocol mode) override;

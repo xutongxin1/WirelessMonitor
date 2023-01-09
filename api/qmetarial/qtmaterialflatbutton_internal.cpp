@@ -144,7 +144,7 @@ void QtMaterialFlatButtonStateMachine::startAnimations()
 
 void QtMaterialFlatButtonStateMachine::setupProperties()
 {
-    QColor overlayColor;
+  QColor overlayColor;
 
     if (Qt::TransparentMode == m_button->backgroundMode()) {
         overlayColor = m_button->backgroundColor();

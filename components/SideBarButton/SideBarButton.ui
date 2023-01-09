@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>stateButton</string>
   </property>
-  <widget class="QtMaterialFlatButton" name="Button">
+  <widget class="QtMaterialFlatButton" name="button_">
    <property name="geometry">
     <rect>
      <x>0</x>

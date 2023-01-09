@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAIN__MAINWINDOW_H_
+#define MAIN__MAINWINDOW_H_
 
 #include <QMainWindow>
 #include "qcustomplot.h"
@@ -18,42 +18,41 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-
 class MainWindow : public QMainWindow {
-Q_OBJECT
+ Q_OBJECT
 
-public:
+ public:
     MainWindow(QWidget *parent = nullptr);
 
     ~MainWindow();
 
-    vector<vector<WindowsInfo>> DevicesWindowsInfo;//设备下窗口信息
-    vector<DevicesInfo> DevicesInfo;//设备信息
-    int DeviceCount;//设备数量
+    vector<vector<WindowsInfo>> devices_windows_info_;//设备下窗口信息
+    vector<DevicesInfo> devices_info_;//设备信息
+    int device_count_;//设备数量
 
 
 
-private:
-    Ui::MainWindow *ui;
-    QCustomPlot *customPlot;
-    QtMaterialDrawer *m_drawer;
-    SideBarButton *DeviceSelect[100];//侧边栏设备按钮指针
-    CfgClass *Cfg;
-    QTimer *NewWindowCreateTimer = new QTimer(this);
-    ToNewWidget parentInfo;
+ private:
+    Ui::MainWindow *ui_;
+    QCustomPlot *custom_plot_;
+    QtMaterialDrawer *m_drawer_;
+    SideBarButton *device_select_[100];//侧边栏设备按钮指针
+    CfgClass *cfg_;
+    QTimer *new_window_create_timer_ = new QTimer(this);
+    ToNewWidget parent_info_;
 
 
-    void ErrorHandle(const QString &reason);
+//    void ErrorHandle(const QString &reason);
 
     void DeviceWindowsInit();
 
-    void DeviceExchange(int DeviceNum);
+    void DeviceExchange(int device_num);
 
-    void DeviceWindowsExchange(int DeviceNum, int WinNum);
+    void DeviceWindowsExchange(int device_num, int win_num);
 
     void NewWindowCreate();
 
 
 };
 
-#endif // MAINWINDOW_H
+#endif // MAIN__MAINWINDOW_H_
