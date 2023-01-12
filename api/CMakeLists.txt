@@ -1,5 +1,4 @@
 add_subdirectory(RepeaterWidget)
-add_subdirectory(qmetarial)
 add_subdirectory(TCPHandle)
 add_subdirectory(ComToolDepend)
 

@@ -5,44 +5,44 @@
 #define TIMEMS qPrintable(QTime::currentTime().toString("HH:mm:ss zzz"))
 int QuiHelper::GetScreenIndex() {
     //需要对多个屏幕进行处理
-    int screenIndex = 0;
+    int screen_index = 0;
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    int screenCount = qApp->screens().count();
+    int screen_count = qApp->screens().count();
 #else
-    int screenCount = qApp->desktop()->screenCount();
+    int screen_count = qApp->desktop()->screen_count();
 #endif
 
-    if (screenCount > 1) {
+    if (screen_count > 1) {
         //找到当前鼠标所在屏幕
         QPoint pos = QCursor::pos();
-        for (int i = 0; i < screenCount; ++i) {
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+        for (int i = 0; i < screen_count; ++i) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
             if (qApp->screens().at(i)->geometry().contains(pos)) {
 #else
-            if (qApp->desktop()->screenGeometry(i).contains(pos)) {
+                if (qApp->desktop()->screenGeometry(i).contains(pos)) {
 #endif
-                screenIndex = i;
+                screen_index = i;
                 break;
             }
         }
     }
-    return screenIndex;
+    return screen_index;
 }
 
 QRect QuiHelper::GetScreenRect(bool available) {
     QRect rect;
-    int screenIndex = QuiHelper::GetScreenIndex();
+    int screen_index = QuiHelper::GetScreenIndex();
     if (available) {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-        rect = qApp->screens().at(screenIndex)->availableGeometry();
+        rect = qApp->screens().at(screen_index)->availableGeometry();
 #else
-        rect = qApp->desktop()->availableGeometry(screenIndex);
+        rect = qApp->desktop()->availableGeometry(screen_index);
 #endif
     } else {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-        rect = qApp->screens().at(screenIndex)->geometry();
+        rect = qApp->screens().at(screen_index)->geometry();
 #else
-        rect = qApp->desktop()->screenGeometry(screenIndex);
+        rect = qApp->desktop()->screenGeometry(screen_index);
 #endif
     }
     return rect;
@@ -62,8 +62,8 @@ QSize QuiHelper::DeskSize() {
 
 QWidget *QuiHelper::center_base_form_ = 0;
 void QuiHelper::SetFormInCenter(QWidget *form) {
-    int formWidth = form->width();
-    int formHeight = form->height();
+    int form_width = form->width();
+    int form_height = form->height();
 
     //如果=0表示采用系统桌面屏幕为参照
     QRect rect;
@@ -73,9 +73,9 @@ void QuiHelper::SetFormInCenter(QWidget *form) {
         rect = center_base_form_->geometry();
     }
 
-    int deskWidth = rect.width();
-    int deskHeight = rect.height();
-    QPoint movePoint(deskWidth / 2 - formWidth / 2 + rect.x(), deskHeight / 2 - formHeight / 2 + rect.y());
+    int desk_width = rect.width();
+    int desk_height = rect.height();
+    QPoint movePoint(desk_width / 2 - form_width / 2 + rect.x(), desk_height / 2 - form_height / 2 + rect.y());
     form->move(movePoint);
 }
 

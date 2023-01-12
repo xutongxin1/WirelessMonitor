@@ -21,49 +21,49 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
   //    QVBoxLayout *layout = new QVBoxLayout;
   //    this->setLayout(layout);
   //    QWidget *widgetTmp = new QWidget;
-  //    layout->addWidget(widgetTmp);
-  //
-  //    QWidget *canvas = new QWidget;
-  //    canvas->setStyleSheet("QWidget { background: white; }");
-  //    layout->addWidget(canvas);
-  //
-  //    layout->setContentsMargins(20, 20, 20, 20);
-  //
-  //    layout = new QVBoxLayout;
-  //    canvas->setLayout(layout);
-  //    canvas->setMaximumHeight(300);
-  //
-  //
-  m_drawer_ = new QtMaterialDrawer;
-  cfg_ = new CfgClass;
-  m_drawer_->setParent(ui_->centralwidget);
-  m_drawer_->setClickOutsideToClose(true);
-  m_drawer_->setOverlayMode(true);
-  m_drawer_->setDrawerWidth(250);
+    //    layout->addWidget(widgetTmp);
+    //
+    //    QWidget *canvas = new QWidget;
+    //    canvas->setStyleSheet("QWidget { background: white; }");
+    //    layout->addWidget(canvas);
+    //
+    //    layout->setContentsMargins(20, 20, 20, 20);
+    //
+    //    layout = new QVBoxLayout;
+    //    canvas->setLayout(layout);
+    //    canvas->setMaximumHeight(300);
+    //
+    //
+    m_drawer_ = new QtMaterialDrawer;
+    cfg_ = new CfgClass;
+    m_drawer_->setParent(ui_->centralwidget);
+    m_drawer_->setClickOutsideToClose(true);
+    m_drawer_->setOverlayMode(true);
+    m_drawer_->setDrawerWidth(250);
 
-  auto *drawerLayout = new QVBoxLayout;
-  m_drawer_->setDrawerLayout(drawerLayout);
+    auto *drawer_layout = new QVBoxLayout;
+    m_drawer_->setDrawerLayout(drawer_layout);
 
-  device_select_[0] = new SideBarButton();
-  drawerLayout->addWidget(device_select_[0]);  // 初始化数据聚合窗口
+    device_select_[0] = new SideBarButton();
+    drawer_layout->addWidget(device_select_[0]);  // 初始化数据聚合窗口
 
-  device_count_ = cfg_->device_num_;
-  for (int i = 1; i <= device_count_; i++) {
-    device_select_[i] = new SideBarButton(i, cfg_);
-    drawerLayout->addWidget(device_select_[i]);
-    connect(device_select_[i]->button_, &QPushButton::pressed, this, [=] { MainWindow::DeviceExchange(i); });
-  }
-  connect(ui_->settingButton, SIGNAL(pressed()), m_drawer_, SLOT(openDrawer()));
+    device_count_ = cfg_->device_num_;
+    for (int i = 1; i <= device_count_; i++) {
+        device_select_[i] = new SideBarButton(i, cfg_);
+        drawer_layout->addWidget(device_select_[i]);
+        connect(device_select_[i]->button_, &QPushButton::pressed, this, [=] { MainWindow::DeviceExchange(i); });
+    }
+    connect(ui_->settingButton, SIGNAL(pressed()), m_drawer_, SLOT(openDrawer()));
 
-  DeviceWindowsInit();
+    DeviceWindowsInit();
 
-  DeviceExchange(1);
-  //    DeviceWindowsExchange(1, 1);
+    DeviceExchange(1);
+    //    DeviceWindowsExchange(1, 1);
 
-  //    DataCirculation *tmp = new DataCirculation(1,
-  //                                               5,
-  //                                               cfg_->config_device_ini_[1],
-  //                                               &parent_info_);
+    //    DataCirculation *tmp = new DataCirculation(1,
+    //                                               5,
+    //                                               cfg_->config_device_ini_[1],
+    //                                               &parent_info_);
   //    ui_->FunctionWindow->setCurrentIndex(ui_->FunctionWindow->addWidget(tmp));
 
   //    ui_->FunctionWindow->setCurrentIndex(2);
@@ -87,109 +87,113 @@ MainWindow::~MainWindow() {
  * 窗口结构体初始化
  */
 void MainWindow::DeviceWindowsInit() {
-  parent_info_.devices_info = &devices_info_;
-  parent_info_.devices_windows_info = &devices_windows_info_;
+    parent_info_.devices_info = &devices_info_;
+    parent_info_.devices_windows_info = &devices_windows_info_;
 
-  devices_windows_info_.emplace_back();  // 空占位
+    devices_windows_info_.emplace_back();  // 空占位
 
-  devices_info_.emplace_back();                                     // Main窗口
-  devices_info_[0].tab_index = 0;                                    // 在ui内默认创建,必定是0
-  for (int DeviceNum = 1; DeviceNum <= device_count_; DeviceNum++)  // 设备遍历初始化
-  {
-    // 创建Tab栏,初始化DevicesInfo内数据
-    auto *NewTab = new QtMaterialTabs();
-    struct DevicesInfo tmp
-        {
-            .windows_num = cfg_->GetMainCfg("/Device " + QString::number(DeviceNum) + "/win").toInt(),
-            .tab_index = ui_->TabStackedWidget->addWidget(NewTab), .tab_widget = NewTab
-        };
-    devices_info_.push_back(tmp);
-    devices_windows_info_.emplace_back();  // 创建行
-
-    // 创建socket对象
-    devices_info_[DeviceNum].tcp_info_handler[1] = new TCPInfoHandle;
-    devices_info_[DeviceNum].tcp_info_handler[2] = new TCPInfoHandle;
-    devices_info_[DeviceNum].tcp_info_handler[3] = new TCPInfoHandle;
-    devices_info_[DeviceNum].tcp_command_handler = new TCPCommandHandle;  // 都创建一个socket对象吧，防止空指针
-    for (int WinNum = 1; WinNum <= devices_info_[DeviceNum].windows_num; WinNum++)  // 窗口遍历初始化
+    devices_info_.emplace_back();                                     // Main窗口
+    devices_info_[0].tab_index = 0;                                    // 在ui内默认创建,必定是0
+    for (int device_num = 1; device_num <= device_count_; device_num++)  // 设备遍历初始化
     {
-      int WinType = cfg_->GetDeviceCfg(DeviceNum, "/Win" + QString::number(WinNum) + "/type").toInt();
-      if (WinType == 0) {
-        continue;
-      }
-      devices_windows_info_[DeviceNum].emplace_back();  // 0位置空占位
-      devices_windows_info_[DeviceNum].emplace_back();
-      switch (WinType) {
-        case 1:devices_windows_info_[DeviceNum][WinNum].type = CHANNEL_CONFIGURATION;  // 结构体初始化
-          devices_windows_info_[DeviceNum][WinNum].widget = new ChannelConfiguration(
-              DeviceNum, cfg_->config_device_ini_[0], cfg_->config_device_ini_[DeviceNum], &parent_info_);
-          devices_windows_info_[DeviceNum][WinNum].index =
-              ui_->FunctionWindow->addWidget(devices_windows_info_[DeviceNum][WinNum].widget);
-          devices_info_[DeviceNum].tab_widget->addTab("通道配置");  // 添加tab栏
-          break;
-        case 50:devices_windows_info_[DeviceNum][WinNum].type = XCOM;  // 结构体初始化
-          devices_windows_info_[DeviceNum][WinNum].widget =
-              new ComTool(DeviceNum, WinNum, cfg_->config_device_ini_[DeviceNum], &parent_info_);
-          devices_windows_info_[DeviceNum][WinNum].index =
-              ui_->FunctionWindow->addWidget(devices_windows_info_[DeviceNum][WinNum].widget);
-          devices_info_[DeviceNum].tab_widget->addTab("本地串口监视器");  // 添加tab栏
-          break;
-        case 51: {  // 记录下相应的变量，方便提取类的成员变量charts
-          record_DeviceNum = DeviceNum;
-          record_WinNum = WinNum;
+        // 创建Tab栏,初始化DevicesInfo内数据
+        auto *new_tab = new QtMaterialTabs();
+        struct DevicesInfo tmp
+            {
+                .windows_num = cfg_->GetMainCfg("/Device " + QString::number(device_num) + "/win").toInt(),
+                .tab_index = ui_->TabStackedWidget->addWidget(new_tab), .tab_widget = new_tab
+            };
+        devices_info_.push_back(tmp);
+        devices_windows_info_.emplace_back();  // 创建行
 
-          devices_windows_info_[DeviceNum][WinNum].type = MAIN_CHART;  // 结构体初始化
-          Charts *test1 = new Charts(DeviceNum, WinNum, cfg_->config_device_ini_[DeviceNum], &parent_info_);
-          devices_windows_info_[DeviceNum][WinNum].widget = test1;
-          devices_windows_info_[DeviceNum][WinNum].index =
-              ui_->FunctionWindow->addWidget(devices_windows_info_[DeviceNum][WinNum].widget);
-          devices_info_[DeviceNum].tab_widget->addTab("数据波形图");  // 添加tab栏
+        // 创建socket对象
+        devices_info_[device_num].tcp_info_handler[1] = new TCPInfoHandle;
+        devices_info_[device_num].tcp_info_handler[2] = new TCPInfoHandle;
+        devices_info_[device_num].tcp_info_handler[3] = new TCPInfoHandle;
+        devices_info_[device_num].tcp_command_handler = new TCPCommandHandle;  // 都创建一个socket对象吧，防止空指针
+        for (int win_num = 1; win_num <= devices_info_[device_num].windows_num; win_num++)  // 窗口遍历初始化
+        {
+            int win_type = cfg_->GetDeviceCfg(device_num, "/Win" + QString::number(win_num) + "/type").toInt();
+            if (win_type == 0) {
+                continue;
+            }
+            devices_windows_info_[device_num].emplace_back();  // 0位置空占位
+            devices_windows_info_[device_num].emplace_back();
+            switch (win_type) {
+                case 1:devices_windows_info_[device_num][win_num].type = CHANNEL_CONFIGURATION;  // 结构体初始化
+                    devices_windows_info_[device_num][win_num].widget = new ChannelConfiguration(
+                        device_num, cfg_->config_device_ini_[0], cfg_->config_device_ini_[device_num], &parent_info_);
+                    devices_windows_info_[device_num][win_num].index =
+                        ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
+                    devices_info_[device_num].tab_widget->addTab("通道配置");  // 添加tab栏
+                    break;
+                case 50:devices_windows_info_[device_num][win_num].type = XCOM;  // 结构体初始化
+                    devices_windows_info_[device_num][win_num].widget =
+                        new ComTool(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
+                    devices_windows_info_[device_num][win_num].index =
+                        ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
+                    devices_info_[device_num].tab_widget->addTab("本地串口监视器");  // 添加tab栏
+                    break;
+                case 51: {  // 记录下相应的变量，方便提取类的成员变量charts
+                    record_DeviceNum = device_num;
+                    record_WinNum = win_num;
 
-          // 测试数据添加
-          // lulu_test
-          QVector<double> a;
-          test1->registerData("test", user_time);
-          // test1->registerData("test",sys_time);
-          break;
+                    devices_windows_info_[device_num][win_num].type = MAIN_CHART;  // 结构体初始化
+                    Charts
+                        *test_1 = new Charts(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
+                    devices_windows_info_[device_num][win_num].widget = test_1;
+                    devices_windows_info_[device_num][win_num].index =
+                        ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
+                    devices_info_[device_num].tab_widget->addTab("数据波形图");  // 添加tab栏
+
+                    // 测试数据添加
+                    // lulu_test
+                    QVector<double> a;
+                    test_1->registerData("test", USER_TIME);
+                    // test_1->registerData("test",SYS_TIME);
+                    break;
+                }
+                case 52:devices_windows_info_[device_num][win_num].type = DATA_CIRCULATION;  // 结构体初始化
+                    devices_windows_info_[device_num][win_num].widget =
+                        new DataCirculation(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
+                    devices_windows_info_[device_num][win_num].index =
+                        ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
+                    devices_info_[device_num].tab_widget->addTab("数据流过滤器配置");  // 添加tab栏
+                    break;
+                case 201:devices_windows_info_[device_num][win_num].type = TCP_BRIDGE_CONFIGURATION;  // 结构体初始化
+                    devices_windows_info_[device_num][win_num].widget =
+                        new TCPBridgeConfiguration(device_num,
+                                                   win_num,
+                                                   cfg_->config_device_ini_[device_num],
+                                                   &parent_info_);
+                    devices_windows_info_[device_num][win_num].index =
+                        ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
+                    devices_info_[device_num].tab_widget->addTab("串口桥配置");  // 添加tab栏
+                    break;
+                case 202:devices_windows_info_[device_num][win_num].type = TCP_COM;  // 结构体初始化
+                    devices_windows_info_[device_num][win_num].widget =
+                        new TcpCom(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
+                    devices_windows_info_[device_num][win_num].index =
+                        ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
+                    devices_info_[device_num].tab_widget->addTab("串口桥数据监视器");  // 添加tab栏
+                    break;
+
+                default:break;
+            }
         }
-        case 52:devices_windows_info_[DeviceNum][WinNum].type = DATA_CIRCULATION;  // 结构体初始化
-          devices_windows_info_[DeviceNum][WinNum].widget =
-              new DataCirculation(DeviceNum, WinNum, cfg_->config_device_ini_[DeviceNum], &parent_info_);
-          devices_windows_info_[DeviceNum][WinNum].index =
-              ui_->FunctionWindow->addWidget(devices_windows_info_[DeviceNum][WinNum].widget);
-          devices_info_[DeviceNum].tab_widget->addTab("数据流过滤器配置");  // 添加tab栏
-          break;
-        case 201:devices_windows_info_[DeviceNum][WinNum].type = TCP_BRIDGE_CONFIGURATION;  // 结构体初始化
-          devices_windows_info_[DeviceNum][WinNum].widget =
-              new TcpBridgeConfiguration(DeviceNum, WinNum, cfg_->config_device_ini_[DeviceNum], &parent_info_);
-          devices_windows_info_[DeviceNum][WinNum].index =
-              ui_->FunctionWindow->addWidget(devices_windows_info_[DeviceNum][WinNum].widget);
-          devices_info_[DeviceNum].tab_widget->addTab("串口桥配置");  // 添加tab栏
-          break;
-        case 202:devices_windows_info_[DeviceNum][WinNum].type = TCP_COM;  // 结构体初始化
-          devices_windows_info_[DeviceNum][WinNum].widget =
-              new TcpCom(DeviceNum, WinNum, cfg_->config_device_ini_[DeviceNum], &parent_info_);
-          devices_windows_info_[DeviceNum][WinNum].index =
-              ui_->FunctionWindow->addWidget(devices_windows_info_[DeviceNum][WinNum].widget);
-          devices_info_[DeviceNum].tab_widget->addTab("串口桥数据监视器");  // 添加tab栏
-          break;
 
-        default:break;
-      }
+        //        Charts test;  //图标界面测试
+        //        test.show();
+        // tab栏绑定
+        connect(new_tab, &QtMaterialTabs::currentChanged, this, [=](int num) {
+          // 这里的num从0开始，所以要+1
+          DeviceWindowsExchange(device_num, num + 1);
+        });
+
+        connect(new_window_create_timer_, &QTimer::timeout, this, [=] {
+
+        });
     }
-
-    //        Charts test;  //图标界面测试
-    //        test.show();
-    // tab栏绑定
-    connect(NewTab, &QtMaterialTabs::currentChanged, this, [=](int num) {
-      // 这里的num从0开始，所以要+1
-      DeviceWindowsExchange(DeviceNum, num + 1);
-    });
-
-    connect(new_window_create_timer_, &QTimer::timeout, this, [=] {
-
-    });
-  }
 }
 
 /*!

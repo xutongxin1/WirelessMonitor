@@ -13,16 +13,16 @@
 
 #include "ui_TCPBridgeConfiguration.h"
 
-TcpBridgeConfiguration::TcpBridgeConfiguration(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info,
+TCPBridgeConfiguration::TCPBridgeConfiguration(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info,
                                                QWidget *parent)
-    : RepeaterWidget(parent), ui_(new Ui::TcpBridgeConfiguration) {
+    : RepeaterWidget(parent), ui_(new Ui::TCPBridgeConfiguration) {
     ui_->setupUi(this);
 
-    this->cfg = cfg;
-    this->GroupName = "Win" + QString::number(win_num);
-    TcpBridgeConfiguration::GetConstructConfig();
-    this->parentInfo = parent_info;
-    this->DeviceNum = device_num;
+    this->cfg_ = cfg;
+    this->group_name_ = "Win" + QString::number(win_num);
+    TCPBridgeConfiguration::GetConstructConfig();
+    this->parent_info_ = parent_info;
+    this->device_num_ = device_num;
     this->tcp_command_handle_ = (*(parent_info->devices_info))[device_num].tcp_command_handler;  // 结构体这样用
     this->tcp_info_handler_[1] = (*(parent_info->devices_info))[device_num].tcp_info_handler[1];
     this->tcp_info_handler_[2] = (*(parent_info->devices_info))[device_num].tcp_info_handler[2];
@@ -32,33 +32,33 @@ TcpBridgeConfiguration::TcpBridgeConfiguration(int device_num, int win_num, QSet
     void (QComboBox::*fp)(int) = &QComboBox::currentIndexChanged;
     connect(ui_->mode1, fp, this, [&](int num) {
       switch (ui_->mode1->currentIndex()) {
-          case 1:TcpBridgeConfiguration::mode_1_ = INPUT;
+          case 1:TCPBridgeConfiguration::mode_1_ = INPUT;
               break;
-          case 2:TcpBridgeConfiguration::mode_1_ = SINGLE_INPUT;
+          case 2:TCPBridgeConfiguration::mode_1_ = SINGLE_INPUT;
               break;
-          default:TcpBridgeConfiguration::mode_1_ = CLOSED;
+          default:TCPBridgeConfiguration::mode_1_ = CLOSED;
       }
       ChangeMode();
     });
 
     connect(ui_->mode2, fp, this, [&](int num) {
       switch (ui_->mode2->currentIndex()) {
-          case 1:TcpBridgeConfiguration::mode_2_ = FOLLOW_1_OUTPUT;
+          case 1:TCPBridgeConfiguration::mode_2_ = FOLLOW_1_OUTPUT;
               break;
-          case 2:TcpBridgeConfiguration::mode_2_ = FOLLOW_3_INPUT;
+          case 2:TCPBridgeConfiguration::mode_2_ = FOLLOW_3_INPUT;
               break;
-          default:TcpBridgeConfiguration::mode_2_ = CLOSED;
+          default:TCPBridgeConfiguration::mode_2_ = CLOSED;
       }
       ChangeMode();
     });
 
     connect(ui_->mode3, fp, this, [&](int num) {
       switch (ui_->mode3->currentIndex()) {
-          case 1:TcpBridgeConfiguration::mode_3_ = OUTPUT;
+          case 1:TCPBridgeConfiguration::mode_3_ = OUTPUT;
               break;
-          case 2:TcpBridgeConfiguration::mode_3_ = SINGLE_OUTPUT;
+          case 2:TCPBridgeConfiguration::mode_3_ = SINGLE_OUTPUT;
               break;
-          default:TcpBridgeConfiguration::mode_3_ = CLOSED;
+          default:TCPBridgeConfiguration::mode_3_ = CLOSED;
       }
       ChangeMode();
     });
@@ -66,27 +66,27 @@ TcpBridgeConfiguration::TcpBridgeConfiguration(int device_num, int win_num, QSet
     ChangeMode();  // 初始化模式选择器
 
     // 初始化波特率表
-    QStringList baudList;
-    baudList << QString::number(TcpBridgeConfiguration::baud_rate_1_)
-             << QString::number(TcpBridgeConfiguration::baud_rate_3_)
-             << "600"
-             << "1200"
-             << "1800"
-             << "2400"
-             << "4800"
-             << "9600"
-             << "14400"
-             << "19200"
-             << "38400"
-             << "56000"
-             << "57600"
-             << "76800"
-             << "115200"
-             << "128000"
-             << "256000";
+    QStringList baud_list;
+    baud_list << QString::number(TCPBridgeConfiguration::baud_rate_1_)
+              << QString::number(TCPBridgeConfiguration::baud_rate_3_)
+              << "600"
+              << "1200"
+              << "1800"
+              << "2400"
+              << "4800"
+              << "9600"
+              << "14400"
+              << "19200"
+              << "38400"
+              << "56000"
+              << "57600"
+              << "76800"
+              << "115200"
+              << "128000"
+              << "256000";
 
-    ui_->BaudRate1->addItems(baudList);
-    ui_->BaudRate3->addItems(baudList);
+    ui_->BaudRate1->addItems(baud_list);
+    ui_->BaudRate3->addItems(baud_list);
     //    connect(ui_->baud_rate_1_->lineEdit(), &QLineEdit::editingFinished, this, [=] {
     //        baud_rate_1_ = ui_->baud_rate_1_->lineEdit()->text().toInt();
     //        ChangeMode();
@@ -107,14 +107,14 @@ TcpBridgeConfiguration::TcpBridgeConfiguration(int device_num, int win_num, QSet
     });
 
     // 初始化数据位表
-    QStringList dataBitsList;
-    dataBitsList << "5"
-                 << "6"
-                 << "7"
-                 << "8";
+    QStringList data_bits_list;
+    data_bits_list << "5"
+                   << "6"
+                   << "7"
+                   << "8";
 
-    ui_->DataBit1->addItems(dataBitsList);
-    ui_->DataBit3->addItems(dataBitsList);
+    ui_->DataBit1->addItems(data_bits_list);
+    ui_->DataBit3->addItems(data_bits_list);
     connect(ui_->DataBit1, fp, this, [&](int num) {
       data_bit_1_ = ui_->DataBit1->currentText().toInt();
       ChangeMode();
@@ -125,12 +125,12 @@ TcpBridgeConfiguration::TcpBridgeConfiguration(int device_num, int win_num, QSet
     });
 
     // 初始化校验位表
-    QStringList parityList;
-    parityList << "无"
-               << "奇"
-               << "偶";
-    ui_->Parity1->addItems(parityList);
-    ui_->Parity3->addItems(parityList);
+    QStringList parity_list;
+    parity_list << "无"
+                << "奇"
+                << "偶";
+    ui_->Parity1->addItems(parity_list);
+    ui_->Parity3->addItems(parity_list);
     connect(ui_->Parity1, fp, this, [&](int num) {
       parity_1_ = ui_->Parity1->currentIndex();
       ChangeMode();
@@ -141,15 +141,15 @@ TcpBridgeConfiguration::TcpBridgeConfiguration(int device_num, int win_num, QSet
     });
 
     // 初始化停止位表
-    QStringList stopBitsList;
-    stopBitsList << "1";
+    QStringList stop_bits_list;
+    stop_bits_list << "1";
 #ifdef Q_OS_WIN
-    stopBitsList << "1.5";
+    stop_bits_list << "1.5";
 #endif
-    stopBitsList << "2";
+    stop_bits_list << "2";
 
-    ui_->StopBit1->addItems(stopBitsList);
-    ui_->StopBit3->addItems(stopBitsList);
+    ui_->StopBit1->addItems(stop_bits_list);
+    ui_->StopBit3->addItems(stop_bits_list);
     connect(ui_->StopBit1, fp, this, [&](int num) {
       stop_bit_1_ = ui_->StopBit1->currentText().toDouble();
       ChangeMode();
@@ -171,43 +171,43 @@ TcpBridgeConfiguration::TcpBridgeConfiguration(int device_num, int win_num, QSet
  * @description: 获取配置文件
  * @return {*}
  */
-void TcpBridgeConfiguration::GetConstructConfig() {
-    cfg->beginGroup(GroupName);
-    TcpBridgeConfiguration::mode_1_ = IoMode(cfg->value("mode_1_", TcpBridgeConfiguration::mode_1_).toInt());
-    TcpBridgeConfiguration::mode_2_ = IoMode(cfg->value("mode_2_", TcpBridgeConfiguration::mode_2_).toInt());
-    TcpBridgeConfiguration::mode_3_ = IoMode(cfg->value("mode_3_", TcpBridgeConfiguration::mode_3_).toInt());
-    TcpBridgeConfiguration::baud_rate_1_ = cfg->value("baud_rate_1_", TcpBridgeConfiguration::baud_rate_1_).toInt();
-    TcpBridgeConfiguration::data_bit_1_ = cfg->value("data_bit_1_", TcpBridgeConfiguration::data_bit_1_).toInt();
-    TcpBridgeConfiguration::parity_1_ = cfg->value("parity_1_", TcpBridgeConfiguration::parity_1_).toInt();
-    TcpBridgeConfiguration::stop_bit_1_ = cfg->value("stop_bit_1_", TcpBridgeConfiguration::stop_bit_1_).toDouble();
-    TcpBridgeConfiguration::baud_rate_3_ = cfg->value("baud_rate_3_", TcpBridgeConfiguration::baud_rate_3_).toInt();
-    TcpBridgeConfiguration::data_bit_3_ = cfg->value("data_bit_3_", TcpBridgeConfiguration::data_bit_3_).toInt();
-    TcpBridgeConfiguration::parity_3_ = cfg->value("parity_3_", TcpBridgeConfiguration::parity_3_).toInt();
-    TcpBridgeConfiguration::stop_bit_3_ = cfg->value("stop_bit_3_", TcpBridgeConfiguration::stop_bit_3_).toDouble();
-    cfg->endGroup();
+void TCPBridgeConfiguration::GetConstructConfig() {
+    cfg_->beginGroup(group_name_);
+    TCPBridgeConfiguration::mode_1_ = IoMode(cfg_->value("mode_1_", TCPBridgeConfiguration::mode_1_).toInt());
+    TCPBridgeConfiguration::mode_2_ = IoMode(cfg_->value("mode_2_", TCPBridgeConfiguration::mode_2_).toInt());
+    TCPBridgeConfiguration::mode_3_ = IoMode(cfg_->value("mode_3_", TCPBridgeConfiguration::mode_3_).toInt());
+    TCPBridgeConfiguration::baud_rate_1_ = cfg_->value("baud_rate_1_", TCPBridgeConfiguration::baud_rate_1_).toInt();
+    TCPBridgeConfiguration::data_bit_1_ = cfg_->value("data_bit_1_", TCPBridgeConfiguration::data_bit_1_).toInt();
+    TCPBridgeConfiguration::parity_1_ = cfg_->value("parity_1_", TCPBridgeConfiguration::parity_1_).toInt();
+    TCPBridgeConfiguration::stop_bit_1_ = cfg_->value("stop_bit_1_", TCPBridgeConfiguration::stop_bit_1_).toDouble();
+    TCPBridgeConfiguration::baud_rate_3_ = cfg_->value("baud_rate_3_", TCPBridgeConfiguration::baud_rate_3_).toInt();
+    TCPBridgeConfiguration::data_bit_3_ = cfg_->value("data_bit_3_", TCPBridgeConfiguration::data_bit_3_).toInt();
+    TCPBridgeConfiguration::parity_3_ = cfg_->value("parity_3_", TCPBridgeConfiguration::parity_3_).toInt();
+    TCPBridgeConfiguration::stop_bit_3_ = cfg_->value("stop_bit_3_", TCPBridgeConfiguration::stop_bit_3_).toDouble();
+    cfg_->endGroup();
 }
 
 /**
  * @description: 保存配置文件
  * @return {*}
  */
-void TcpBridgeConfiguration::SaveConstructConfig() {
-    cfg->beginGroup(GroupName);
-    cfg->setValue("mode_1_", TcpBridgeConfiguration::mode_1_);
-    cfg->setValue("mode_2_", TcpBridgeConfiguration::mode_2_);
-    cfg->setValue("mode_3_", TcpBridgeConfiguration::mode_3_);
-    cfg->setValue("baud_rate_1_", TcpBridgeConfiguration::baud_rate_1_);
-    cfg->setValue("data_bit_1_", TcpBridgeConfiguration::data_bit_1_);
-    cfg->setValue("parity_1_", TcpBridgeConfiguration::parity_1_);
-    cfg->setValue("stop_bit_1_", TcpBridgeConfiguration::stop_bit_1_);
-    cfg->setValue("baud_rate_3_", TcpBridgeConfiguration::baud_rate_3_);
-    cfg->setValue("data_bit_3_", TcpBridgeConfiguration::data_bit_3_);
-    cfg->setValue("parity_3_", TcpBridgeConfiguration::parity_3_);
-    cfg->setValue("stop_bit_3_", TcpBridgeConfiguration::stop_bit_3_);
-    cfg->endGroup();
+void TCPBridgeConfiguration::SaveConstructConfig() {
+    cfg_->beginGroup(group_name_);
+    cfg_->setValue("mode_1_", TCPBridgeConfiguration::mode_1_);
+    cfg_->setValue("mode_2_", TCPBridgeConfiguration::mode_2_);
+    cfg_->setValue("mode_3_", TCPBridgeConfiguration::mode_3_);
+    cfg_->setValue("baud_rate_1_", TCPBridgeConfiguration::baud_rate_1_);
+    cfg_->setValue("data_bit_1_", TCPBridgeConfiguration::data_bit_1_);
+    cfg_->setValue("parity_1_", TCPBridgeConfiguration::parity_1_);
+    cfg_->setValue("stop_bit_1_", TCPBridgeConfiguration::stop_bit_1_);
+    cfg_->setValue("baud_rate_3_", TCPBridgeConfiguration::baud_rate_3_);
+    cfg_->setValue("data_bit_3_", TCPBridgeConfiguration::data_bit_3_);
+    cfg_->setValue("parity_3_", TCPBridgeConfiguration::parity_3_);
+    cfg_->setValue("stop_bit_3_", TCPBridgeConfiguration::stop_bit_3_);
+    cfg_->endGroup();
 }
 
-TcpBridgeConfiguration::~TcpBridgeConfiguration()
+TCPBridgeConfiguration::~TCPBridgeConfiguration()
 {
     delete ui_;
 }
@@ -216,7 +216,7 @@ TcpBridgeConfiguration::~TcpBridgeConfiguration()
  * @description: 切换通道模式的显示处理（不是应用）
  * @return {*}
  */
-void TcpBridgeConfiguration::ChangeMode() {
+void TCPBridgeConfiguration::ChangeMode() {
     // 独占模式对中间选项的处理
     if (mode_1_ == SINGLE_INPUT || mode_3_ == SINGLE_OUTPUT) {
         ui_->mode2->setItemData(1, 0, Qt::UserRole - 1);
@@ -353,7 +353,7 @@ void TcpBridgeConfiguration::ChangeMode() {
  * @description: 刷新Ui通道选项
  * @return {*}
  */
-void TcpBridgeConfiguration::RefreshBox() {
+void TCPBridgeConfiguration::RefreshBox() {
     switch (mode_1_) {
         case INPUT:ui_->mode1->setCurrentIndex(1);
             break;
@@ -375,118 +375,118 @@ void TcpBridgeConfiguration::RefreshBox() {
             break;
         default:ui_->mode3->setCurrentIndex(0);
     }
-    ui_->BaudRate1->setCurrentIndex(ui_->BaudRate1->findText(QString::number(TcpBridgeConfiguration::baud_rate_1_)));
-    ui_->BaudRate3->setCurrentIndex(ui_->BaudRate3->findText(QString::number(TcpBridgeConfiguration::baud_rate_3_)));
-    ui_->StopBit1->setCurrentIndex(ui_->StopBit1->findText(QString::number(TcpBridgeConfiguration::stop_bit_1_)));
-    ui_->StopBit3->setCurrentIndex(ui_->StopBit3->findText(QString::number(TcpBridgeConfiguration::stop_bit_3_)));
+    ui_->BaudRate1->setCurrentIndex(ui_->BaudRate1->findText(QString::number(TCPBridgeConfiguration::baud_rate_1_)));
+    ui_->BaudRate3->setCurrentIndex(ui_->BaudRate3->findText(QString::number(TCPBridgeConfiguration::baud_rate_3_)));
+    ui_->StopBit1->setCurrentIndex(ui_->StopBit1->findText(QString::number(TCPBridgeConfiguration::stop_bit_1_)));
+    ui_->StopBit3->setCurrentIndex(ui_->StopBit3->findText(QString::number(TCPBridgeConfiguration::stop_bit_3_)));
     ui_->Parity1->setCurrentIndex(parity_1_);
     ui_->Parity3->setCurrentIndex(parity_3_);
-    ui_->DataBit1->setCurrentIndex(ui_->DataBit1->findText(QString::number(TcpBridgeConfiguration::data_bit_1_)));
-    ui_->DataBit3->setCurrentIndex(ui_->DataBit3->findText(QString::number(TcpBridgeConfiguration::data_bit_3_)));
+    ui_->DataBit1->setCurrentIndex(ui_->DataBit1->findText(QString::number(TCPBridgeConfiguration::data_bit_1_)));
+    ui_->DataBit3->setCurrentIndex(ui_->DataBit3->findText(QString::number(TCPBridgeConfiguration::data_bit_3_)));
 }
 
 /**
  * @description: 应用设置
  * @return {*}
  */
-void TcpBridgeConfiguration::SetUart() {
-    if (!tcp_command_handle_->getConnectionState()) {
+void TCPBridgeConfiguration::SetUart() {
+    if (!tcp_command_handle_->GetConnectionState()) {
         qDebug() << "No connection found";
         return;
     }
-    this->ip_ = tcp_command_handle_->IP;
+    this->ip_ = tcp_command_handle_->ip_;
 
     // 连接信号服务器
-    if (!tcp_info_handler_[1]->isConnected) {
+    if (!tcp_info_handler_[1]->is_connected_) {
         tcp_info_handler_[1]->connectToHost(ip_, 1921, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
     }
-    if (!tcp_info_handler_[2]->isConnected) {
+    if (!tcp_info_handler_[2]->is_connected_) {
         tcp_info_handler_[2]->connectToHost(ip_, 1922, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
     }
-    if (!tcp_info_handler_[3]->isConnected) {
+    if (!tcp_info_handler_[3]->is_connected_) {
         tcp_info_handler_[3]->connectToHost(ip_, 1923, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
     }
 
     // 构造配置文件
-    QJsonObject c1;
+    QJsonObject c_1;
     if (mode_1_ == CLOSED) {
-        tcp_info_handler_[1]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_None);
-        c1.insert("mode", 0);
+        tcp_info_handler_[1]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_NONE);
+        c_1.insert("mode", 0);
     } else {
-        tcp_info_handler_[1]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_IN);
+        tcp_info_handler_[1]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_IN);
         if (mode_1_ == INPUT) {
-            c1.insert("mode", 1);
+            c_1.insert("mode", 1);
         } else {
-            c1.insert("mode", 3);
+            c_1.insert("mode", 3);
         }
-        c1.insert("band", QString::number(baud_rate_1_));
-        c1.insert("stop", stop_bit_1_);
-        c1.insert("parity", parity_1_);
-        c1.insert("data", data_bit_1_);
+        c_1.insert("band", QString::number(baud_rate_1_));
+        c_1.insert("stop", stop_bit_1_);
+        c_1.insert("parity", parity_1_);
+        c_1.insert("data", data_bit_1_);
     }
-    QJsonObject c2;
+    QJsonObject c_2;
     if (mode_2_ == CLOSED) {
-        c2.insert("mode", 0);
-        tcp_info_handler_[2]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_None);
+        c_2.insert("mode", 0);
+        tcp_info_handler_[2]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_NONE);
     } else {
         if (mode_2_ == FOLLOW_1_OUTPUT) {
-            c2.insert("mode", 5);
-            tcp_info_handler_[2]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_OUT);
+            c_2.insert("mode", 5);
+            tcp_info_handler_[2]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_OUT);
         } else {
-            c2.insert("mode", 6);
-            tcp_info_handler_[2]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_IN);
+            c_2.insert("mode", 6);
+            tcp_info_handler_[2]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_IN);
         }
     }
-    QJsonObject c3;
+    QJsonObject c_3;
     if (mode_3_ == CLOSED) {
-        c3.insert("mode", 0);
-        tcp_info_handler_[3]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_None);
+        c_3.insert("mode", 0);
+        tcp_info_handler_[3]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_NONE);
     } else {
-        tcp_info_handler_[3]->changeTCPInfoMode(TCPInfoHandle::TCPInfoMode_OUT);
+        tcp_info_handler_[3]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_OUT);
         if (mode_3_ == OUTPUT) {
-            c3.insert("mode", 2);
+            c_3.insert("mode", 2);
         } else {
-            c3.insert("mode", 4);
+            c_3.insert("mode", 4);
         }
-        c3.insert("band", QString::number(baud_rate_3_));
-        c3.insert("stop", stop_bit_3_);
-        c3.insert("parity", parity_3_);
-        c3.insert("data", data_bit_3_);
+        c_3.insert("band", QString::number(baud_rate_3_));
+        c_3.insert("stop", stop_bit_3_);
+        c_3.insert("parity", parity_3_);
+        c_3.insert("data", data_bit_3_);
     }
     QJsonObject all;
 
-    all.insert("c1", c1);
-    all.insert("c2", c2);
-    all.insert("c3", c3);
+    all.insert("c_1", c_1);
+    all.insert("c_2", c_2);
+    all.insert("c_3", c_3);
 
     ui_->save->setEnabled(false);
     ui_->save->setText("正在设置");
 
-    connect(tcp_command_handle_, &TCPCommandHandle::sendCommandError, this, [=] {
-      disconnect(tcp_command_handle_, &TCPCommandHandle::sendCommandSuccess, 0, 0);
-      disconnect(tcp_command_handle_, &TCPCommandHandle::sendCommandError, 0, 0);
+    connect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, this, [=] {
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, 0, 0);
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, 0, 0);
       QMessageBox::critical(this, tr("错误"), tr("设置串口失败"));
       ui_->save->setEnabled(true);
       ui_->save->setText("保存并应用");
     });
-    connect(tcp_command_handle_, &TCPCommandHandle::sendCommandSuccess, this, [=] {
-      disconnect(tcp_command_handle_, &TCPCommandHandle::sendCommandSuccess, 0, 0);
-      disconnect(tcp_command_handle_, &TCPCommandHandle::sendCommandError, 0, 0);
+    connect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, this, [=] {
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, 0, 0);
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, 0, 0);
       QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
                                QMessageBox::Ok);
       ui_->save->setEnabled(true);
       ui_->save->setText("保存并应用");
-      (*(parentInfo->devices_info))[DeviceNum].config_step = 4;
+      (*(parent_info_->devices_info))[device_num_].config_step = 4;
     });
 
     tcp_command_handle_->SendCommand(all, "OK!\r\n");
 
     // 超时设置
     QTimer::singleShot(1000, this, [&] {
-      if (!(tcp_info_handler_[1]->isConnected && tcp_info_handler_[2]->isConnected
-          && tcp_info_handler_[3]->isConnected)) {
+      if (!(tcp_info_handler_[1]->is_connected_ && tcp_info_handler_[2]->is_connected_
+          && tcp_info_handler_[3]->is_connected_)) {
           QMessageBox::critical(this, tr("错误"), tr("设置通信链路失败"));
-          (*(parentInfo->devices_info))[DeviceNum].config_step = 2;
+          (*(parent_info_->devices_info))[device_num_].config_step = 2;
       }
     });
 }

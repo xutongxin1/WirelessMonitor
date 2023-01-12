@@ -58,7 +58,7 @@ class TcpCom : public RepeaterWidget {
     QTimer *timer_send_;          //定时发送串口数据
     QTimer *timer_save_;          //定时保存串口数据
 
-    int sleep_time_rec;              //接收延时时间
+    int sleep_time_rec_;              //接收延时时间
     int send_count_;              //发送数据计数
     int receive_count_;           //接收数据计数
     bool is_show_;                //是否显示数据

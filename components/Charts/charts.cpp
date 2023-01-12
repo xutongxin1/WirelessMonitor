@@ -46,10 +46,10 @@ Charts::Charts(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInf
     uiChart->setupUi(this);
 
     //需要接入统一的设置文件系统
-    this->cfg = cfg;
-    this->GroupName = "Win" + QString::number(winNum);
-    this->DeviceNum = DeviceNum;
-    this->parentInfo = parentInfo;
+    this->cfg_ = cfg;
+    this->group_name_ = "Win" + QString::number(winNum);
+    this->device_num_ = DeviceNum;
+    this->parent_info_ = parentInfo;
     startedTime = QTime::currentTime();
 
     (*(parentInfo->devices_info))[DeviceNum].has_chart = true;
@@ -112,10 +112,10 @@ void Charts::ShowLine(QCustomPlot *customPlot) {
         for (int i = 0; i < (DataPairs.size()); i++) {
             //记录每个变量的画图次数
             if ((DataPairs.at(i).flag) == 1) {//显示
-                //qDebug() << "showline:" << DataPairs.at(i).DataNodeType <<endl;
-                switch (DataPairs.at(i).DataNodeType) {
-                    case sys_time: {
-                        while (!(DataPairs.at(i).DoubleList->isEmpty()))    //如果需要更新去画
+                //qDebug() << "showline:" << DataPairs.at(i).data_node_type <<endl;
+                switch (DataPairs.at(i).data_node_type) {
+                    case SYS_TIME: {
+                        while (!(DataPairs.at(i).double_list->isEmpty()))    //如果需要更新去画
                         {
                             //可以后期设置
                             QPen pen;
@@ -125,7 +125,7 @@ void Charts::ShowLine(QCustomPlot *customPlot) {
                             customPlot->graph(i)->setName(DataPairs.at(i).name);
                             customPlot->graph(i)->setPen(pen);
 
-                            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DoubleList->takeFirst()));
+                            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).double_list->takeFirst()));
 
                             customPlot->graph(i)->setVisible(true);
                             customPlot->graph(i)->rescaleAxes(true); //自动调成范围，只能放大。想要缩小把true去掉
@@ -134,10 +134,10 @@ void Charts::ShowLine(QCustomPlot *customPlot) {
                         }
                     }
                         break;
-                    case user_time: {
-                        while (!(DataPairs.at(i).TimeDouble_List->isEmpty()))    //如果需要更新去画
+                    case USER_TIME: {
+                        while (!(DataPairs.at(i).time_double_list->isEmpty()))    //如果需要更新去画
                         {
-                            QPair<double, double> chartpair = DataPairs.at(i).TimeDouble_List->takeFirst();
+                            QPair<double, double> chartpair = DataPairs.at(i).time_double_list->takeFirst();
                             //可以后期设置
                             QPen pen;
                             pen.setWidth(2);//设置线宽,默认是2
@@ -160,12 +160,12 @@ void Charts::ShowLine(QCustomPlot *customPlot) {
 
             }
             else if ((DataPairs.at(i).flag) == 2) {
-                switch (DataPairs.at(i).DataNodeType) {
-                    case sys_time: {
-                        while (!(DataPairs.at(i).DoubleList->isEmpty()))    //如果需要更新去画
+                switch (DataPairs.at(i).data_node_type) {
+                    case SYS_TIME: {
+                        while (!(DataPairs.at(i).double_list->isEmpty()))    //如果需要更新去画
                         {
 
-                            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DoubleList->takeFirst()));
+                            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).double_list->takeFirst()));
 
                             customPlot->graph(i)->setVisible(false);
 
@@ -174,10 +174,10 @@ void Charts::ShowLine(QCustomPlot *customPlot) {
                         }
                     }
                         break;
-                    case user_time: {
-                        while (!(DataPairs.at(i).TimeDouble_List->isEmpty()))    //如果需要更新去画
+                    case USER_TIME: {
+                        while (!(DataPairs.at(i).time_double_list->isEmpty()))    //如果需要更新去画
                         {
-                            QPair<double, double> chartpair = DataPairs.at(i).TimeDouble_List->takeFirst();
+                            QPair<double, double> chartpair = DataPairs.at(i).time_double_list->takeFirst();
                             customPlot->graph(i)->addData(chartpair.first, chartpair.second);
 
                             customPlot->graph(i)->setVisible(true);
@@ -200,12 +200,12 @@ void Charts::ShowLine(QCustomPlot *customPlot) {
             //记录每个变量的画图次数
             {
 
-                switch (DataPairs.at(i).DataNodeType) {
-                    case sys_time: {
-                        while (!(DataPairs.at(i).DoubleList->isEmpty()))    //如果需要更新去画
+                switch (DataPairs.at(i).data_node_type) {
+                    case SYS_TIME: {
+                        while (!(DataPairs.at(i).double_list->isEmpty()))    //如果需要更新去画
                         {
 
-                            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).DoubleList->takeFirst()));
+                            customPlot->graph(i)->addData(timer_count, (DataPairs.at(i).double_list->takeFirst()));
 
                             customPlot->graph(i)->setVisible(false);
 
@@ -214,10 +214,10 @@ void Charts::ShowLine(QCustomPlot *customPlot) {
                         }
                     }
                         break;
-                    case user_time: {
-                        while (!(DataPairs.at(i).TimeDouble_List->isEmpty()))    //如果需要更新去画
+                    case USER_TIME: {
+                        while (!(DataPairs.at(i).time_double_list->isEmpty()))    //如果需要更新去画
                         {
-                            QPair<double, double> chartpair = DataPairs.at(i).TimeDouble_List->takeFirst();
+                            QPair<double, double> chartpair = DataPairs.at(i).time_double_list->takeFirst();
                             customPlot->graph(i)->addData(chartpair.first, chartpair.second);
 
                             customPlot->graph(i)->setVisible(true);
@@ -358,14 +358,14 @@ bool Charts::registerData(const QString &addName, DataType datatype) {
 
         temp->flag = 1;
         switch (datatype) {
-            case sys_time: {
-                temp->DataNodeType = sys_time;
-                temp->DoubleList = new QList<double>;
+            case SYS_TIME: {
+                temp->data_node_type = SYS_TIME;
+                temp->double_list = new QList<double>;
             }
             break;
-            case user_time: {
-                temp->DataNodeType = user_time;
-                temp->TimeDouble_List = new QList<QPair<double, double>>;
+            case USER_TIME: {
+                temp->data_node_type = USER_TIME;
+                temp->time_double_list = new QList<QPair<double, double>>;
             }
             break;
             default: {
@@ -401,14 +401,14 @@ bool Charts::registerData(const QString &addName, DataType datatype) {
 
                 temp->flag = 1;
                 switch (datatype) {
-                    case sys_time: {
-                        temp->DataNodeType = sys_time;
-                        temp->DoubleList = new QList<double>;
+                    case SYS_TIME: {
+                        temp->data_node_type = SYS_TIME;
+                        temp->double_list = new QList<double>;
                     }
                         break;
-                    case user_time: {
-                        temp->DataNodeType = user_time;
-                        temp->TimeDouble_List = new QList<QPair<double, double>>;
+                    case USER_TIME: {
+                        temp->data_node_type = USER_TIME;
+                        temp->time_double_list = new QList<QPair<double, double>>;
                     }
                         break;
                     default: {
@@ -472,7 +472,7 @@ bool Charts::antiRegisterData(QString addName) {
                 DataPairs.removeAt(i);//减少list
                 //delete Data_pools[addName].DataBuff;
                 Data_pools.remove(addName);
-                delete Data_pools[addName].DoubleList;
+                delete Data_pools[addName].double_list;
 
                 qDebug() << "antiRegisterData: ok！" << endl;
                 return 1;
@@ -498,7 +498,7 @@ bool Charts::antiRegisterData(QString addName) {
 bool Charts::updateData(const QString &addName, double data) {
 //    if (Data_pools.contains(addName)) {
 //
-//        Data_pools[addName].DoubleList->Append(ChangeData);
+//        Data_pools[addName].double_list->Append(ChangeData);
 //
 //        return true;
 //    }
@@ -522,7 +522,7 @@ bool Charts::updateData(const QString &addName, double ChangeTime, double data) 
         QPair<double, double> *temppair = new QPair<double, double>;
         temppair->first = ChangeTime;
         temppair->second = data;
-        Data_pools[addName].TimeDouble_List->append(*temppair);
+        Data_pools[addName].time_double_list->append(*temppair);
         qDebug("添加数据%s,时间%.2f", qPrintable(addName), ChangeTime);
         return true;
     }

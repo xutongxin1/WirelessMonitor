@@ -10,17 +10,17 @@
 #include "structH.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class TcpBridgeConfiguration; }
+namespace Ui { class TCPBridgeConfiguration; }
 QT_END_NAMESPACE
 
-class TcpBridgeConfiguration : public RepeaterWidget {
+class TCPBridgeConfiguration : public RepeaterWidget {
  Q_OBJECT
 
  public:
-    explicit TcpBridgeConfiguration(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info,
+    explicit TCPBridgeConfiguration(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info,
                                     QWidget *parent = nullptr);
 
-    ~TcpBridgeConfiguration() override;
+    ~TCPBridgeConfiguration() override;
 
     void GetConstructConfig() override;
 
@@ -37,7 +37,7 @@ class TcpBridgeConfiguration : public RepeaterWidget {
     };
 
  private:
-    Ui::TcpBridgeConfiguration *ui_;
+    Ui::TCPBridgeConfiguration *ui_;
     IoMode mode_1_ = CLOSED;
     IoMode mode_2_ = CLOSED;
     IoMode mode_3_ = CLOSED;

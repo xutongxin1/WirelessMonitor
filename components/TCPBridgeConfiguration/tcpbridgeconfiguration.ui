@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TcpBridgeConfiguration</class>
- <widget class="RepeaterWidget" name="TcpBridgeConfiguration">
+ <class>TCPBridgeConfiguration</class>
+ <widget class="RepeaterWidget" name="TCPBridgeConfiguration">
   <property name="geometry">
    <rect>
     <x>0</x>

@@ -19,18 +19,18 @@ ChannelConfiguration::ChannelConfiguration(int device_num, QSettings *main_cfg, 
     : RepeaterWidget(parent), ui_(new Ui::ChannelConfiguration) {
     ui_->setupUi(this);
 
-    this->cfg = device_cfg;
+    this->cfg_ = device_cfg;
     this->main_cfg_ = main_cfg;
 
     ui_->ESPButton->setChecked(true);
     ui_->Disconnect->setEnabled(false);
     ui_->progressBar->hide();
     ui_->connectionTip->hide();
-    this->DeviceNum = device_num;
-    this->parentInfo = parent_info;
+    this->device_num_ = device_num;
+    this->parent_info_ = parent_info;
     this->device_group_ = "Device " + QString::number(device_num);
-    this->TCPCommandHandle = (*(parent_info->devices_info))[device_num].tcp_command_handler;  // 结构体这样用
-    this->GroupName = "Win1";
+    this->tcp_command_handle_ = (*(parent_info->devices_info))[device_num].tcp_command_handler;  // 结构体这样用
+    this->group_name_ = "Win1";
     ChannelConfiguration::GetConstructConfig();
 
     //    ui_->note->setText(MainCfg->GetMainCfg(cfgText + "note"));
@@ -57,7 +57,7 @@ ChannelConfiguration::ChannelConfiguration(int device_num, QSettings *main_cfg, 
 
     connect(ui_->Connect, &QPushButton::clicked, this, &ChannelConfiguration::OnConnect);
     connect(ui_->Disconnect, &QPushButton::clicked, this, [&] {
-      TCPCommandHandle->disconnectFromHost();
+      tcp_command_handle_->disconnectFromHost();
       ChannelConfiguration::OnDisconnect();
     });
 
@@ -87,9 +87,9 @@ void ChannelConfiguration::GetConstructConfig() {
     ui_->note->setText(main_cfg_->value("note").toString());
     main_cfg_->endGroup();
 
-    cfg->beginGroup(GroupName);
-    ui_->FuncitonComboBox->setCurrentIndex(cfg->value("mode").toInt());
-    cfg->endGroup();
+    cfg_->beginGroup(group_name_);
+    ui_->FuncitonComboBox->setCurrentIndex(cfg_->value("mode").toInt());
+    cfg_->endGroup();
 }
 
 /**
@@ -107,9 +107,9 @@ void ChannelConfiguration::SaveConstructConfig() {
     main_cfg_->setValue("ip_", ui_->IP->text());
     main_cfg_->endGroup();
 
-    cfg->beginGroup(GroupName);
-    cfg->setValue("mode", ui_->FuncitonComboBox->currentIndex());
-    cfg->endGroup();
+    cfg_->beginGroup(group_name_);
+    cfg_->setValue("mode", ui_->FuncitonComboBox->currentIndex());
+    cfg_->endGroup();
 }
 
 /**
@@ -143,87 +143,87 @@ void ChannelConfiguration::OnConnect() {
     //    port_ = list[1].toInt();
 
     // 断开可能的连接逻辑
-    disconnect(TCPCommandHandle, &TCPCommandHandle::hasDisconnected, 0, 0);
-    disconnect(TCPCommandHandle, &TCPCommandHandle::receiveFirstHeart, 0, 0);
-    disconnect(TCPCommandHandle, &TCPCommandHandle::readyReboot, 0, 0);
-    disconnect(TCPCommandHandle, &TCPCommandHandle::ModeChangeSuccess, 0, 0);
-    disconnect(TCPCommandHandle, &TCPCommandHandle::hasDisconnected, 0, 0);
-    disconnect(TCPCommandHandle, &TCPCommandHandle::heartError, 0, 0);
-    disconnect(TCPCommandHandle, &TCPCommandHandle::setModeError, 0, 0);
-    disconnect(TCPCommandHandle, &TCPCommandHandle::sendCommandSuccess, 0, 0);
-    disconnect(TCPCommandHandle, &TCPCommandHandle::sendCommandError, 0, 0);
+    disconnect(tcp_command_handle_, &TCPCommandHandle::HasDisconnected, 0, 0);
+    disconnect(tcp_command_handle_, &TCPCommandHandle::ReceiveFirstHeart, 0, 0);
+    disconnect(tcp_command_handle_, &TCPCommandHandle::ReadyReboot, 0, 0);
+    disconnect(tcp_command_handle_, &TCPCommandHandle::ModeChangeSuccess, 0, 0);
+    disconnect(tcp_command_handle_, &TCPCommandHandle::HasDisconnected, 0, 0);
+    disconnect(tcp_command_handle_, &TCPCommandHandle::HeartError, 0, 0);
+    disconnect(tcp_command_handle_, &TCPCommandHandle::SetModeError, 0, 0);
+    disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, 0, 0);
+    disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, 0, 0);
 
     // 是否已经终止连接
     has_give_up_ = false;
 
     // 启动连接流程
-    connect(TCPCommandHandle, &TCPCommandHandle::hasDisconnected, this, [&] {
-      //        disconnect(tcp_command_handle_, &tcp_command_handle_::hasDisconnected,
+    connect(tcp_command_handle_, &TCPCommandHandle::HasDisconnected, this, [&] {
+      //        disconnect(tcp_command_handle_, &tcp_command_handle_::HasDisconnected,
       //        0, 0);
       ChannelConfiguration::OnDisconnect();
       has_give_up_ = true;
     });
     // 心跳错误
-    connect(TCPCommandHandle, &TCPCommandHandle::heartError, this, [&] {
+    connect(tcp_command_handle_, &TCPCommandHandle::HeartError, this, [&] {
       has_give_up_ = true;
       QMessageBox::critical(this, tr("错误"), tr("心跳包返回失败"));
       ChannelConfiguration::OnDisconnect();
     });
     // 模式设置时错误
-    connect(TCPCommandHandle, &TCPCommandHandle::setModeError, this, [&] {
+    connect(tcp_command_handle_, &TCPCommandHandle::SetModeError, this, [&] {
       has_give_up_ = true;
       QMessageBox::critical(this, tr("错误"), tr("设置模式失败"));
       ChannelConfiguration::OnDisconnect();
     });
 
     // 如果连接上服务器
-    connect(TCPCommandHandle, &TCPCommandHandle::hasConnected, this, [&] {
-      disconnect(TCPCommandHandle, &TCPCommandHandle::hasConnected, 0, 0);
+    connect(tcp_command_handle_, &TCPCommandHandle::HasConnected, this, [&] {
+      disconnect(tcp_command_handle_, &TCPCommandHandle::HasConnected, 0, 0);
       ui_->progressBar->setValue(25);
       ui_->connectionTip->setText("正在验证调试器状态");
-      TCPCommandHandle->SendHeart();
+      tcp_command_handle_->SendHeart();
       qInfo("等待第一个心跳包");
     });
     // 开始TCP连接
-    TCPCommandHandle->connectToHost(ip_, 1920, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+    tcp_command_handle_->connectToHost(ip_, 1920, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
     ui_->Connect->setEnabled(false);
     // 如果收到第一个心跳包
-    connect(TCPCommandHandle, &TCPCommandHandle::receiveFirstHeart, this, [&] {
+    connect(tcp_command_handle_, &TCPCommandHandle::ReceiveFirstHeart, this, [&] {
       // 第一次收到是检查模块状态
-      disconnect(TCPCommandHandle, &TCPCommandHandle::receiveFirstHeart, 0, 0);
+      disconnect(tcp_command_handle_, &TCPCommandHandle::ReceiveFirstHeart, 0, 0);
       ui_->progressBar->setValue(45);
       ui_->connectionTip->setText("正在设置调试器模式");
 
-      connect(TCPCommandHandle, &TCPCommandHandle::receiveFirstHeart, this,
+      connect(tcp_command_handle_, &TCPCommandHandle::ReceiveFirstHeart, this,
               [&] {  // 第二次收到，证明模式切换全部完成
                 ui_->progressBar->setValue(100);
                 ui_->connectionTip->setText("调试器模式设置完成，请进行下一步配置");
-                disconnect(TCPCommandHandle, &TCPCommandHandle::receiveFirstHeart, 0, 0);
-                (*(parentInfo->devices_info))[DeviceNum].config_step = 2;
+                disconnect(tcp_command_handle_, &TCPCommandHandle::ReceiveFirstHeart, 0, 0);
+                (*(parent_info_->devices_info))[device_num_].config_step = 2;
                 ui_->Disconnect->setEnabled(true);
 
               });
-      TCPCommandHandle->setMode(ui_->FuncitonComboBox->currentIndex());
+      tcp_command_handle_->SetMode(ui_->FuncitonComboBox->currentIndex());
     });
   // 设备重启
-  connect(TCPCommandHandle, &TCPCommandHandle::readyReboot, this, [&] {
+  connect(tcp_command_handle_, &TCPCommandHandle::ReadyReboot, this, [&] {
     ui_->progressBar->setValue(65);
     ui_->connectionTip->setText("设置完成，等待重启");
     qInfo("等待RF返回包");
-    disconnect(TCPCommandHandle, &TCPCommandHandle::readyReboot, 0, 0);
+    disconnect(tcp_command_handle_, &TCPCommandHandle::ReadyReboot, 0, 0);
   });
   // 模式设置成功
-  connect(TCPCommandHandle, &TCPCommandHandle::ModeChangeSuccess, this, [&] {
+  connect(tcp_command_handle_, &TCPCommandHandle::ModeChangeSuccess, this, [&] {
     ui_->progressBar->setValue(85);
     ui_->connectionTip->setText("模式设置成功，检查模块状态");
     qInfo("等待重启后的心跳包应答");
-    disconnect(TCPCommandHandle, &TCPCommandHandle::ModeChangeSuccess, 0, 0);
+    disconnect(tcp_command_handle_, &TCPCommandHandle::ModeChangeSuccess, 0, 0);
   });
 
   // 超时管理
   QTimer::singleShot(45000, this, [&] {
     if (ui_->progressBar->value() != 100 && !has_give_up_) {
-        TCPCommandHandle->disconnectFromHost();
+        tcp_command_handle_->disconnectFromHost();
         QMessageBox::critical(this, tr("错误"), tr("连接流程超时"));
         //            ui_->connectionTip->setText(ui_->connectionTip->text() +
         //            "\n错误:操作超时");
@@ -262,7 +262,7 @@ void ChannelConfiguration::OnDisconnect() {
     ui_->ESPButton->setEnabled(true);
     ui_->COMButton->setEnabled(true);
     ui_->Connect->setEnabled(true);
-    (*(parentInfo->devices_info))[DeviceNum].config_step = 1;
+    (*(parent_info_->devices_info))[device_num_].config_step = 1;
 }
 
 /// Ui刷新

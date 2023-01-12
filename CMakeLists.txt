@@ -28,7 +28,7 @@ file(GLOB HEADER "*.h")
 file(GLOB RSOURCE "*.cpp")
 file(GLOB UI "*.ui")
 file(GLOB QRC "*.qrc")
-file(GLOB_RECURSE Resource "./api/qmetarial/resources.qrc")
+file(GLOB_RECURSE Resource "./thirdLib/qmetarial/resources.qrc")
 file(GLOB_RECURSE SOURCES ${SOURCES} "./config/*.ini")
 
 #if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux") #XXX平台可以是“Linux”等
@@ -41,6 +41,7 @@ file(GLOB_RECURSE SOURCES ${SOURCES} "./config/*.ini")
 add_executable(${PROJECT_NAME} ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
 add_subdirectory(api)
 add_subdirectory(components)
+add_subdirectory(thirdLib)
 add_library(whatever STATIC ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ./components)

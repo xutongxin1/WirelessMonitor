@@ -15,7 +15,7 @@ SideBarButton::SideBarButton(int num, CfgClass *main_cfg, RepeaterWidget *parent
     QString tmp = "/Device ";
     tmp.append(QString::number(num));
 
-    QString Note = main_cfg->GetMainCfg(QString(tmp + "/note"));
+    QString note = main_cfg->GetMainCfg(QString(tmp + "/note"));
     QString way = main_cfg->GetMainCfg(QString(tmp + "/WayToConnect"));
     if (way == "1") {
         way = "XMB无线调试器";
@@ -24,7 +24,7 @@ SideBarButton::SideBarButton(int num, CfgClass *main_cfg, RepeaterWidget *parent
     } else if (way == "3") {
         way = "TCP连接";
     }
-    ui_->button_->setText(Note + "\n" + way);
+    ui_->button_->setText(note + "\n" + way);
     button_ = ui_->button_;
 }
 

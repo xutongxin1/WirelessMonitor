@@ -5,14 +5,14 @@
 #include "CfgClass.h"
 
 CfgClass::CfgClass() {
-  config_main_ini_ = OpenCfg("./config/main.ini");
-  QString Note = this->GetMainCfg(QString("/Device/Num"));
-  device_num_ = Note.toInt();//获取设备数量
+    config_main_ini_ = OpenCfg("./config/main.ini");
+    QString note = this->GetMainCfg(QString("/Device/Num"));
+    device_num_ = note.toInt();//获取设备数量
 
-  config_device_ini_.push_back(config_main_ini_);
-  for (int i = 1; i <= device_num_; i++) {
-    config_device_ini_.push_back(OpenCfg("./config/Device" + QString::number(i) + ".ini"));
-  }
+    config_device_ini_.push_back(config_main_ini_);
+    for (int i = 1; i <= device_num_; i++) {
+        config_device_ini_.push_back(OpenCfg("./config/Device" + QString::number(i) + ".ini"));
+    }
 
 }
 

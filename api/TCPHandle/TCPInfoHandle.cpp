@@ -12,95 +12,89 @@ TCPInfoHandle::TCPInfoHandle(QObject *parent) : QTcpSocket(parent) {
 ///断开服务器重写
 void TCPInfoHandle::disconnectFromHost() {
     connect(this, &QTcpSocket::disconnected, this, [=] {
-        qInfo("从服务器断开%s", qPrintable(this->IP));
-        disconnect(this, &QTcpSocket::disconnected, 0, 0);
-        isConnected = false;
-        TCPMode = TCPInfoMode_None;
-        emit(hasDisconnected());
+      qInfo("从服务器断开%s", qPrintable(this->ip_));
+      disconnect(this, &QTcpSocket::disconnected, 0, 0);
+      is_connected_ = false;
+      tcp_mode_ = TCP_INFO_MODE_NONE;
+      emit(HasDisconnected());
     });
     QAbstractSocket::disconnectFromHost();
 }
 
 /// 连接服务器重写
-void TCPInfoHandle::connectToHost(const QString &hostName, quint16 port, QIODevice::OpenMode protocol = ReadWrite,
+void TCPInfoHandle::connectToHost(const QString &host_name, quint16 port, QIODevice::OpenMode protocol = ReadWrite,
                                   QAbstractSocket::NetworkLayerProtocol mode = AnyIPProtocol) {
     connect(this, &QTcpSocket::connected, this, [=] {
-        qInfo("已连接到服务器%s:%d", qPrintable(hostName), port);
-        disconnect(this, &QTcpSocket::connected, this, 0);
-        isConnected = true;
-        emit(hasConnected());
+      qInfo("已连接到服务器%s:%d", qPrintable(host_name), port);
+      disconnect(this, &QTcpSocket::connected, this, 0);
+      is_connected_ = true;
+      emit(HasConnected());
     });
-    this->IP = hostName;
-    this->IOPort = port - 1920;
-    this->QAbstractSocket::connectToHost(hostName, port, protocol, mode);
+    this->ip_ = host_name;
+    this->io_port_ = port - 1920;
+    this->QAbstractSocket::connectToHost(host_name, port, protocol, mode);
 
 }
 
 /// 启动监听的connect
 /// \return
-bool TCPInfoHandle::enableRecEmit() {
-    if (this->isConnected && this->TCPMode == TCPInfoMode_IN) {
+bool TCPInfoHandle::EnableRecEmit() {
+    if (this->is_connected_ && this->tcp_mode_ == TCP_INFO_MODE_IN) {
         disconnect(this, &QTcpSocket::readyRead, 0, 0);
         connect(this, &QTcpSocket::readyRead, this, [&] {
-            QByteArray buffer = this->readAll();
-            emit(RecNewData(buffer, IP, IOPort, QTime::currentTime()));
+          QByteArray buffer = this->readAll();
+          emit(RecNewData(buffer, ip_, io_port_, QTime::currentTime()));
         });
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 }
 
 ///修改该通道的运行模式
 /// \param mode
-void TCPInfoHandle::changeTCPInfoMode(TCPInfoHandle::TCPInfoMode mode) {
-    TCPMode = mode;
-    if (mode == TCPInfoMode_IN) {
-        this->enableRecEmit();
-    }
-    else {
+void TCPInfoHandle::ChangeTCPInfoMode(TCPInfoHandle::TCPInfoMode mode) {
+    tcp_mode_ = mode;
+    if (mode == TCP_INFO_MODE_IN) {
+        this->EnableRecEmit();
+    } else {
         disconnect(this, &QTcpSocket::readyRead, 0, 0);
     }
 }
 
 //以下为保护性重写
 qint64 TCPInfoHandle::write(const QString &data) {
-    if (TCPMode == TCPInfoMode_OUT) {
+    if (tcp_mode_ == TCP_INFO_MODE_OUT) {
         qDebug("send %s", qPrintable(data));
         return QIODevice::write(data.toUtf8());
-    }
-    else {
+    } else {
         return -1;
     }
 }
 
 qint64 TCPInfoHandle::write(const char *data, qint64 len) {
-    if (TCPMode == TCPInfoMode_OUT) {
+    if (tcp_mode_ == TCP_INFO_MODE_OUT) {
         qDebug("send %s", qPrintable(data));
         return QIODevice::write(data, len);
-    }
-    else {
+    } else {
         return -1;
     }
 }
 
 qint64 TCPInfoHandle::write(const char *data) {
-    if (TCPMode == TCPInfoMode_OUT) {
+    if (tcp_mode_ == TCP_INFO_MODE_OUT) {
         qDebug("send %s", qPrintable(data));
         return QIODevice::write(data);
-    }
-    else {
+    } else {
         return -1;
     }
 }
 
 qint64 TCPInfoHandle::write(const QByteArray &data) {
-    if (TCPMode == TCPInfoMode_OUT) {
+    if (tcp_mode_ == TCP_INFO_MODE_OUT) {
         qDebug("send %s", qPrintable(data));
         return QIODevice::write(data);
-    }
-    else {
+    } else {
         return -1;
     }
 }
