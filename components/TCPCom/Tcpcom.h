@@ -67,9 +67,9 @@ class TcpCom : public RepeaterWidget {
 
 
 
-    void GetConstructConfig();
+    void GetConstructConfig() override;
 
-    void SaveConstructConfig();
+    void SaveConstructConfig() override;
 
     QString ip_;
 
