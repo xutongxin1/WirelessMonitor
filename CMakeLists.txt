@@ -28,7 +28,7 @@ file(GLOB HEADER "*.h")
 file(GLOB RSOURCE "*.cpp")
 file(GLOB UI "*.ui")
 file(GLOB QRC "*.qrc")
-file(GLOB_RECURSE Resource "./thirdLib/qmetarial/resources.qrc")
+#file(GLOB_RECURSE Resource "./thirdLib/qmetarial/resources.qrc")
 file(GLOB_RECURSE SOURCES ${SOURCES} "./config/*.ini")
 
 #if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux") #XXX平台可以是“Linux”等
@@ -53,12 +53,12 @@ target_link_libraries(
                           Qt${QT_VERSION_MAJOR}::Core Qt5::PrintSupport Qt5::SerialPort Qt5::Network components)
 
 set_target_properties(
-  ${PROJECT_NAME}
-  PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
-             MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-             MACOSX_BUNDLE_SHORT_VERSION_STRING
-             ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-             MACOSX_BUNDLE TRUE)
+        ${PROJECT_NAME}
+        PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
+        MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+        MACOSX_BUNDLE_SHORT_VERSION_STRING
+        ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+        MACOSX_BUNDLE TRUE)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND cp -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/Debug
@@ -67,3 +67,19 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND cp -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}
         )#QTCreator或者linux环境使用
+
+if (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/Debug/resource")
+    message(STATUS "resource exists")
+
+else ()
+    message(STATUS "resource does not exist")
+    file(COPY ./thirdLib/qmetarial/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug/resource FOLLOW_SYMLINK_CHAIN)
+endif ()
+
+if (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/resource")
+    message(STATUS "resource exists")
+
+else ()
+    message(STATUS "resource does not exist")
+    file(COPY ./thirdLib/qmetarial/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/resource FOLLOW_SYMLINK_CHAIN)
+endif ()

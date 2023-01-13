@@ -193,6 +193,9 @@ void MainWindow::DeviceWindowsInit() {
         connect(new_window_create_timer_, &QTimer::timeout, this, [=] {
 
         });
+        connect(new_window_create_timer_, &QTimer::timeout, this, [=] {
+
+        });
     }
 }
 
