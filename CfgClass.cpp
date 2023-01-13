@@ -5,13 +5,13 @@
 #include "CfgClass.h"
 
 CfgClass::CfgClass() {
-    configMainIni = OpenCfg("./config/main.ini");
-    QString Note = this->GetMainCfg(QString("/Device/Num"));
-    DeviceNum = Note.toInt();//获取设备数量
+    config_main_ini_ = OpenCfg("./config/main.ini");
+    QString note = this->GetMainCfg(QString("/Device/Num"));
+    device_num_ = note.toInt();//获取设备数量
 
-    configDeviceIni.push_back(configMainIni);
-    for (int i = 1; i <= DeviceNum; i++) {
-        configDeviceIni.push_back(OpenCfg("./config/Device" + QString::number(i) + ".ini"));
+    config_device_ini_.push_back(config_main_ini_);
+    for (int i = 1; i <= device_num_; i++) {
+        config_device_ini_.push_back(OpenCfg("./config/Device" + QString::number(i) + ".ini"));
     }
 
 }
@@ -22,13 +22,12 @@ CfgClass::CfgClass() {
  * @return 值
  */
 QString CfgClass::GetMainCfg(const QString &key) {
-    if (configMainIni->contains(key)) {
-        QString result = configMainIni->value(key).toString();
-        return result;
-    }
-    else {
-        return nullptr;
-    }
+  if (config_main_ini_->contains(key)) {
+    QString result = config_main_ini_->value(key).toString();
+    return result;
+  } else {
+    return nullptr;
+  }
 }
 
 /*!
@@ -38,13 +37,12 @@ QString CfgClass::GetMainCfg(const QString &key) {
  * @return 写入是否成功
  */
 bool CfgClass::SaveMainCfg(const QString &key, const QString &value) {
-    if (configMainIni->isWritable()) {
-        configMainIni->setValue(key, value);
-        return true;
-    }
-    else {
-        return false;
-    }
+  if (config_main_ini_->isWritable()) {
+    config_main_ini_->setValue(key, value);
+    return true;
+  } else {
+    return false;
+  }
 }
 
 /*!
@@ -60,18 +58,17 @@ QSettings *CfgClass::OpenCfg(const QString &path) {
 
 /*!
  * 获取一个设备配置文件内的键值
- * @param num 设备号
+ * @param device_num 设备号
  * @param key 键
  * @return 值
  */
-QString CfgClass::GetDeviceCfg(int num, const QString &key) {
-    if (configDeviceIni[num]->contains(key)) {
-        QString result = configDeviceIni[num]->value(key).toString();
-        return result;
-    }
-    else {
-        return nullptr;
-    }
+QString CfgClass::GetDeviceCfg(int device_num, const QString &key) {
+  if (config_device_ini_[device_num]->contains(key)) {
+    QString result = config_device_ini_[device_num]->value(key).toString();
+    return result;
+  } else {
+    return nullptr;
+  }
 }
 
 /*!
@@ -82,11 +79,10 @@ QString CfgClass::GetDeviceCfg(int num, const QString &key) {
  * @return 写入是否成功
  */
 bool CfgClass::SaveDeviceCfg(int num, const QString &key, const QString &value) {
-    if (configDeviceIni[num]->isWritable()) {
-        configDeviceIni[num]->setValue(key, value);
-        return true;
-    }
-    else {
-        return false;
-    }
+  if (config_device_ini_[num]->isWritable()) {
+    config_device_ini_[num]->setValue(key, value);
+    return true;
+  } else {
+    return false;
+  }
 }

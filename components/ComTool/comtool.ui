@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>comtool</class>
- <widget class="RepeaterWidget" name="comtool">
+ <class>Comtool</class>
+ <widget class="RepeaterWidget" name="Comtool">
   <property name="geometry">
    <rect>
     <x>0</x>

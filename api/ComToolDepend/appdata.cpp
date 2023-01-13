@@ -1,18 +1,17 @@
 ﻿#include "appdata.h"
 #include "quihelper.h"
 
-QStringList AppData::Intervals = QStringList();
-QStringList AppData::Datas = QStringList();
-QStringList AppData::Keys = QStringList();
-QStringList AppData::Values = QStringList();
+QStringList AppData::intervals_ = QStringList();
+QStringList AppData::datas_ = QStringList();
+QStringList AppData::keys_ = QStringList();
+QStringList AppData::values_ = QStringList();
 
-QString AppData::SendFileName = "send.txt";
-void AppData::readSendData()
-{
+QString AppData::send_file_name_ = "send.txt";
+void AppData::ReadSendData() {
     //读取发送数据列表
-    AppData::Datas.clear();
-    QString fileName = QString("%1/%2").arg(QUIHelper::appPath()).arg(AppData::SendFileName);
-    QFile file(fileName);
+    AppData::datas_.clear();
+    QString file_name = QString("%1/%2").arg(QuiHelper::AppPath()).arg(AppData::send_file_name_);
+    QFile file(file_name);
     if (file.size() > 0 && file.open(QFile::ReadOnly | QIODevice::Text)) {
         while (!file.atEnd()) {
             QString line = file.readLine();
@@ -20,7 +19,7 @@ void AppData::readSendData()
             line = line.replace("\r", "");
             line = line.replace("\n", "");
             if (!line.isEmpty()) {
-                AppData::Datas.append(line);
+                AppData::datas_.append(line);
             }
         }
 
@@ -28,19 +27,18 @@ void AppData::readSendData()
     }
 
     //没有的时候主动添加点免得太空
-    if (AppData::Datas.count() == 0) {
-        AppData::Datas << "Hello";
+    if (AppData::datas_.count() == 0) {
+        AppData::datas_ << "Hello";
     }
 }
 
-QString AppData::DeviceFileName = "device.txt";
-void AppData::readDeviceData()
-{
+QString AppData::device_file_name_ = "device.txt";
+void AppData::ReadDeviceData() {
     //读取转发数据列表
-    AppData::Keys.clear();
-    AppData::Values.clear();
-    QString fileName = QString("%1/%2").arg(QUIHelper::appPath()).arg(AppData::DeviceFileName);
-    QFile file(fileName);
+    AppData::keys_.clear();
+    AppData::values_.clear();
+    QString file_name = QString("%1/%2").arg(QuiHelper::AppPath()).arg(AppData::device_file_name_);
+    QFile file(file_name);
     if (file.size() > 0 && file.open(QFile::ReadOnly | QIODevice::Text)) {
         while (!file.atEnd()) {
             QString line = file.readLine();
@@ -57,8 +55,8 @@ void AppData::readDeviceData()
 
                 //去掉末尾分号
                 value = value.mid(0, value.length() - 1);
-                AppData::Keys.append(key);
-                AppData::Values.append(value);
+                AppData::keys_.append(key);
+                AppData::values_.append(value);
             }
         }
 
@@ -66,51 +64,52 @@ void AppData::readDeviceData()
     }
 }
 
-void AppData::saveData(const QString &data)
-{
+void AppData::SaveData(const QString &data) {
     if (data.length() <= 0) {
         return;
     }
 
-    QString fileName = QString("%1/%2.txt").arg(QUIHelper::appPath()).arg(STRDATETIME);
-    QFile file(fileName);
+    QString file_name = QString("%1/%2.txt").arg(QuiHelper::AppPath()).arg(STRDATETIME);
+    QFile file(file_name);
     if (file.open(QFile::WriteOnly | QFile::Text)) {
         file.write(data.toUtf8());
         file.close();
     }
 }
 
-void AppData::loadIP(QComboBox *cbox)
-{
+void AppData::LoadIp(QComboBox *cbox) {
     //获取本机所有IP
     static QStringList ips;
     if (ips.count() == 0) {
 #ifdef emsdk
         ips << "127.0.0.1";
 #else
-        QList<QNetworkInterface> netInterfaces = QNetworkInterface::allInterfaces();
-        foreach (const QNetworkInterface  &netInterface, netInterfaces) {
-            //移除虚拟机和抓包工具的虚拟网卡
-            QString humanReadableName = netInterface.humanReadableName().toLower();
-            if (humanReadableName.startsWith("vmware network adapter") || humanReadableName.startsWith("npcap loopback adapter")) {
-                continue;
-            }
+        QList<QNetworkInterface> net_interfaces = QNetworkInterface::allInterfaces();
+            foreach (const QNetworkInterface &net_interface, net_interfaces) {
+                //移除虚拟机和抓包工具的虚拟网卡
+                QString human_readable_name = net_interface.humanReadableName().toLower();
+                if (human_readable_name.startsWith("vmware network adapter")
+                    || human_readable_name.startsWith("npcap loopback adapter")) {
+                    continue;
+                }
 
-            //过滤当前网络接口
-            bool flag = (netInterface.flags() == (QNetworkInterface::IsUp | QNetworkInterface::IsRunning | QNetworkInterface::CanBroadcast | QNetworkInterface::CanMulticast));
-            if (flag) {
-                QList<QNetworkAddressEntry> addrs = netInterface.addressEntries();
-                foreach (QNetworkAddressEntry addr, addrs) {
-                    //只取出IPV4的地址
-                    if (addr.ip().protocol() == QAbstractSocket::IPv4Protocol) {
-                        QString ip4 = addr.ip().toString();
-                        if (ip4 != "127.0.0.1") {
-                            ips << ip4;
+                //过滤当前网络接口
+                bool flag = (net_interface.flags()
+                    == (QNetworkInterface::IsUp | QNetworkInterface::IsRunning | QNetworkInterface::CanBroadcast
+                        | QNetworkInterface::CanMulticast));
+                if (flag) {
+                    QList<QNetworkAddressEntry> addrs = net_interface.addressEntries();
+                        foreach (QNetworkAddressEntry addr, addrs) {
+                            //只取出IPV4的地址
+                            if (addr.ip().protocol() == QAbstractSocket::IPv4Protocol) {
+                                QString ip_4 = addr.ip().toString();
+                                if (ip_4 != "127.0.0.1") {
+                                    ips << ip_4;
+                                }
+                            }
                         }
-                    }
                 }
             }
-        }
 #endif
     }
 

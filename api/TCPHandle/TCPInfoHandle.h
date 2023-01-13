@@ -2,28 +2,27 @@
 // Created by xtx on 2022/11/1.
 //
 
-#ifndef MAIN_TCPINFOHANDLE_H
-#define MAIN_TCPINFOHANDLE_H
-
+#ifndef MAIN_API_TCPHANDLE_TCPINFOHANDLE_H_
+#define MAIN_API_TCPHANDLE_TCPINFOHANDLE_H_
 
 #include <QTcpSocket>
 #include <QTime>
 
 class TCPInfoHandle : public QTcpSocket {
-Q_OBJECT
-signals:
+ Q_OBJECT
+ signals:
 
-    void hasConnected();//防止与原生方法冲突
-    void hasDisconnected();
+    void HasConnected();//防止与原生方法冲突
+    void HasDisconnected();
 
     void RecNewData(QByteArray data, QString ip, int port, QTime time);
 
-public:
+ public:
     TCPInfoHandle(QObject *parent = nullptr);
 
-    bool isConnected;
+    bool is_connected_;
 
-    void connectToHost(const QString &hostName, quint16 port, QIODevice::OpenMode protocol,
+    void connectToHost(const QString &host_name, quint16 port, QIODevice::OpenMode protocol,
                        QAbstractSocket::NetworkLayerProtocol mode) override;
 
     void disconnectFromHost() override;
@@ -41,20 +40,18 @@ public:
     virtual QByteArray readAll();
 
     enum TCPInfoMode {
-        TCPInfoMode_None = 0,
-        TCPInfoMode_IN,
-        TCPInfoMode_OUT
-    }TCPMode=TCPInfoMode_None;
+      TCP_INFO_MODE_NONE = 0,
+      TCP_INFO_MODE_IN,
+      TCP_INFO_MODE_OUT
+    } tcp_mode_ = TCP_INFO_MODE_NONE;
 
-    void changeTCPInfoMode(TCPInfoMode mode);
+    void ChangeTCPInfoMode(TCPInfoMode mode);
 
+    bool EnableRecEmit();
 
-    bool enableRecEmit();
-
-private:
-    QString IP;
-    int IOPort;
+ private:
+    QString ip_;
+    int io_port_;
 };
 
-
-#endif //MAIN_TCPINFOHANDLE_H
+#endif //MAIN_API_TCPHANDLE_TCPINFOHANDLE_H_

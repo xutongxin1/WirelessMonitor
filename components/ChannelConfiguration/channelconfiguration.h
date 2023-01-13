@@ -2,56 +2,53 @@
 // Created by xtx on 2022/9/8.
 //
 
-#ifndef QT_CHANNELCONFIGURATION_H
-#define QT_CHANNELCONFIGURATION_H
+#ifndef MAIN_COMPONENTS_CHANNELCONFIGURATION_CHANNELCONFIGURATION_H_
+#define MAIN_COMPONENTS_CHANNELCONFIGURATION_CHANNELCONFIGURATION_H_
 
 #include <QWidget>
 #include "CfgClass.h"
 #include "RepeaterWidget.h"
 #include "structH.h"
 
-
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChannelConfiguration; }
 QT_END_NAMESPACE
 
 class ChannelConfiguration : public RepeaterWidget {
-Q_OBJECT
+ Q_OBJECT
 
-public:
-    explicit ChannelConfiguration(int DeviceNum,  QSettings *MainCFG,QSettings *DeviceCFG, ToNewWidget *parentInfo,
-                                  RepeaterWidget *parent = nullptr);
+ public:
+  explicit ChannelConfiguration(int device_num, QSettings *main_cfg, QSettings *device_cfg, ToNewWidget *parent_info,
+                                RepeaterWidget *parent = nullptr);
 
-    ~ChannelConfiguration() override;
+  ~ChannelConfiguration() override;
 
-    void GetConstructConfig() override;
+  void GetConstructConfig() override;
 
-    void SaveConstructConfig() override;
+  void SaveConstructConfig() override;
 
+ private:
+  Ui::ChannelConfiguration *ui_;
 
-private:
-    Ui::ChannelConfiguration *ui;
+  QString device_group_;
 
-    QString DeviceGroup;
+  bool has_give_up_ = false;
 
-    bool hasGiveUp = false;
+  QString ip_;
+  int port_;
+  int connect_step_;
 
-    QString ip;
-    int port;
-    int ConnectStep;
+  QSettings *main_cfg_;
 
-    QSettings* MainCFG;
+  void OnConnect();
 
-    void onConnect();
+  void OnDisconnect();
 
-    void onDisconnect();
+  void ReflashUi(bool is_xmb);
 
-    void reflashUi(bool isXMB);
-
-    void SendModePackage();
-
-    void SecondConnect();
+//    void SendModePackage();
+//
+//    void SecondConnect();
 };
 
-
-#endif //QT_CHANNELCONFIGURATION_H
+#endif //MAIN_COMPONENTS_CHANNELCONFIGURATION_CHANNELCONFIGURATION_H_

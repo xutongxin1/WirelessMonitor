@@ -31,9 +31,10 @@ void QtMaterialCheckablePrivate::init()
     Q_Q(QtMaterialCheckable);
 
     rippleOverlay = new QtMaterialRippleOverlay;
-    checkedIcon = new QtMaterialCheckableIcon(QIcon(":/icons/icons/toggle/svg/production/ic_check_box_24px.svg"), q);
+    checkedIcon = new QtMaterialCheckableIcon(QIcon("./resource/icons/toggle/svg/production/ic_check_box_24px.svg"), q);
     uncheckedIcon =
-        new QtMaterialCheckableIcon(QIcon(":/icons/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg"), q);
+        new QtMaterialCheckableIcon(QIcon("./resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg"),
+                                    q);
     stateMachine = new QStateMachine(q);
     uncheckedState = new QState;
     checkedState = new QState;

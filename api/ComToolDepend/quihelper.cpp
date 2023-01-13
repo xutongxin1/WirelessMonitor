@@ -3,102 +3,94 @@
 #include "qnetworkproxy.h"
 
 #define TIMEMS qPrintable(QTime::currentTime().toString("HH:mm:ss zzz"))
-int QUIHelper::getScreenIndex()
-{
+int QuiHelper::GetScreenIndex() {
     //需要对多个屏幕进行处理
-    int screenIndex = 0;
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
-    int screenCount = qApp->screens().count();
+    int screen_index = 0;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    int screen_count = qApp->screens().count();
 #else
-    int screenCount = qApp->desktop()->screenCount();
+    int screen_count = qApp->desktop()->screen_count();
 #endif
 
-    if (screenCount > 1) {
+    if (screen_count > 1) {
         //找到当前鼠标所在屏幕
         QPoint pos = QCursor::pos();
-        for (int i = 0; i < screenCount; ++i) {
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+        for (int i = 0; i < screen_count; ++i) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
             if (qApp->screens().at(i)->geometry().contains(pos)) {
 #else
-            if (qApp->desktop()->screenGeometry(i).contains(pos)) {
+                if (qApp->desktop()->screenGeometry(i).contains(pos)) {
 #endif
-                screenIndex = i;
+                screen_index = i;
                 break;
             }
         }
     }
-    return screenIndex;
+    return screen_index;
 }
 
-QRect QUIHelper::getScreenRect(bool available)
-{
+QRect QuiHelper::GetScreenRect(bool available) {
     QRect rect;
-    int screenIndex = QUIHelper::getScreenIndex();
+    int screen_index = QuiHelper::GetScreenIndex();
     if (available) {
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
-        rect = qApp->screens().at(screenIndex)->availableGeometry();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+        rect = qApp->screens().at(screen_index)->availableGeometry();
 #else
-        rect = qApp->desktop()->availableGeometry(screenIndex);
+        rect = qApp->desktop()->availableGeometry(screen_index);
 #endif
     } else {
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
-        rect = qApp->screens().at(screenIndex)->geometry();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+        rect = qApp->screens().at(screen_index)->geometry();
 #else
-        rect = qApp->desktop()->screenGeometry(screenIndex);
+        rect = qApp->desktop()->screenGeometry(screen_index);
 #endif
     }
     return rect;
 }
 
-int QUIHelper::deskWidth()
-{
-    return getScreenRect().width();
+int QuiHelper::DeskWidth() {
+    return GetScreenRect().width();
 }
 
-int QUIHelper::deskHeight()
-{
-    return getScreenRect().height();
+int QuiHelper::DeskHeight() {
+    return GetScreenRect().height();
 }
 
-QSize QUIHelper::deskSize()
-{
-    return getScreenRect().size();
+QSize QuiHelper::DeskSize() {
+    return GetScreenRect().size();
 }
 
-QWidget *QUIHelper::centerBaseForm = 0;
-void QUIHelper::setFormInCenter(QWidget *form)
-{
-    int formWidth = form->width();
-    int formHeight = form->height();
+QWidget *QuiHelper::center_base_form_ = 0;
+void QuiHelper::SetFormInCenter(QWidget *form) {
+    int form_width = form->width();
+    int form_height = form->height();
 
     //如果=0表示采用系统桌面屏幕为参照
     QRect rect;
-    if (centerBaseForm == 0) {
-        rect = getScreenRect();
+    if (center_base_form_ == 0) {
+        rect = GetScreenRect();
     } else {
-        rect = centerBaseForm->geometry();
+        rect = center_base_form_->geometry();
     }
 
-    int deskWidth = rect.width();
-    int deskHeight = rect.height();
-    QPoint movePoint(deskWidth / 2 - formWidth / 2 + rect.x(), deskHeight / 2 - formHeight / 2 + rect.y());
+    int desk_width = rect.width();
+    int desk_height = rect.height();
+    QPoint movePoint(desk_width / 2 - form_width / 2 + rect.x(), desk_height / 2 - form_height / 2 + rect.y());
     form->move(movePoint);
 }
 
-void QUIHelper::showForm(QWidget *form)
-{
-    setFormInCenter(form);
+void QuiHelper::ShowForm(QWidget *form) {
+    SetFormInCenter(form);
     form->show();
 
     //判断宽高是否超过了屏幕分辨率,超过了则最大化显示
-    //qDebug() << TIMEMS << form->size() << deskSize();
-    if (form->width() + 20 > deskWidth() || form->height() + 50 > deskHeight()) {
+    //qDebug() << TIMEMS << form->size() << DeskSize();
+    if (form->width() + 20 > DeskWidth() || form->height() + 50 > DeskHeight()) {
         QMetaObject::invokeMethod(form, "showMaximized", Qt::QueuedConnection);
     }
 }
 
-QString QUIHelper::appName()
-{
+QString QuiHelper::AppName() {
     //没有必要每次都获取,只有当变量为空时才去获取一次
     static QString name;
     if (name.isEmpty()) {
@@ -112,8 +104,7 @@ QString QUIHelper::appName()
     return name;
 }
 
-QString QUIHelper::appPath()
-{
+QString QuiHelper::AppPath() {
     static QString path;
     if (path.isEmpty()) {
 #ifdef Q_OS_ANDROID
@@ -123,127 +114,123 @@ QString QUIHelper::appPath()
         path = path + "/0" + appName();
 #else
         path = qApp->applicationDirPath();
-#endif        
+#endif
     }
 
     return path;
 }
 
-QStringList QUIHelper::getLocalIPs()
-{
+QStringList QuiHelper::GetLocalIPs() {
     static QStringList ips;
     if (ips.count() == 0) {
 #ifdef Q_OS_WASM
         ips << "127.0.0.1";
 #else
         QList<QNetworkInterface> netInterfaces = QNetworkInterface::allInterfaces();
-        foreach (const QNetworkInterface  &netInterface, netInterfaces) {
-            //移除虚拟机和抓包工具的虚拟网卡
-            QString humanReadableName = netInterface.humanReadableName().toLower();
-            if (humanReadableName.startsWith("vmware network adapter") || humanReadableName.startsWith("npcap loopback adapter")) {
-                continue;
-            }
-
-            //过滤当前网络接口
-            bool flag = (netInterface.flags() == (QNetworkInterface::IsUp | QNetworkInterface::IsRunning | QNetworkInterface::CanBroadcast | QNetworkInterface::CanMulticast));
-            if (!flag) {
-                continue;
-            }
-
-            QList<QNetworkAddressEntry> addrs = netInterface.addressEntries();
-            foreach (QNetworkAddressEntry addr, addrs) {
-                //只取出IPV4的地址
-                if (addr.ip().protocol() != QAbstractSocket::IPv4Protocol) {
+            foreach (const QNetworkInterface &netInterface, netInterfaces) {
+                //移除虚拟机和抓包工具的虚拟网卡
+                QString humanReadableName = netInterface.humanReadableName().toLower();
+                if (humanReadableName.startsWith("vmware network adapter")
+                    || humanReadableName.startsWith("npcap loopback adapter")) {
                     continue;
                 }
 
-                QString ip4 = addr.ip().toString();
-                if (ip4 != "127.0.0.1") {
-                    ips << ip4;
+                //过滤当前网络接口
+                bool flag = (netInterface.flags()
+                    == (QNetworkInterface::IsUp | QNetworkInterface::IsRunning | QNetworkInterface::CanBroadcast
+                        | QNetworkInterface::CanMulticast));
+                if (!flag) {
+                    continue;
                 }
+
+                QList<QNetworkAddressEntry> addrs = netInterface.addressEntries();
+                    foreach (QNetworkAddressEntry addr, addrs) {
+                        //只取出IPV4的地址
+                        if (addr.ip().protocol() != QAbstractSocket::IPv4Protocol) {
+                            continue;
+                        }
+
+                        QString ip4 = addr.ip().toString();
+                        if (ip4 != "127.0.0.1") {
+                            ips << ip4;
+                        }
+                    }
             }
-        }
 #endif
     }
 
     return ips;
 }
 
-QList<QColor> QUIHelper::colors = QList<QColor>();
-QList<QColor> QUIHelper::getColorList()
-{
+QList<QColor> QuiHelper::colors_ = QList<QColor>();
+QList<QColor> QuiHelper::GetColorList() {
     //备用颜色集合 可以自行添加
-    if (colors.count() == 0) {
-        colors << QColor(0, 176, 180) << QColor(0, 113, 193) << QColor(255, 192, 0);
-        colors << QColor(72, 103, 149) << QColor(185, 87, 86) << QColor(0, 177, 125);
-        colors << QColor(214, 77, 84) << QColor(71, 164, 233) << QColor(34, 163, 169);
-        colors << QColor(59, 123, 156) << QColor(162, 121, 197) << QColor(72, 202, 245);
-        colors << QColor(0, 150, 121) << QColor(111, 9, 176) << QColor(250, 170, 20);
+    if (colors_.count() == 0) {
+        colors_ << QColor(0, 176, 180) << QColor(0, 113, 193) << QColor(255, 192, 0);
+        colors_ << QColor(72, 103, 149) << QColor(185, 87, 86) << QColor(0, 177, 125);
+        colors_ << QColor(214, 77, 84) << QColor(71, 164, 233) << QColor(34, 163, 169);
+        colors_ << QColor(59, 123, 156) << QColor(162, 121, 197) << QColor(72, 202, 245);
+        colors_ << QColor(0, 150, 121) << QColor(111, 9, 176) << QColor(250, 170, 20);
     }
 
-    return colors;
+    return colors_;
 }
 
-QStringList QUIHelper::getColorNames()
-{
-    QList<QColor> colors = getColorList();
+QStringList QuiHelper::GetColorNames() {
+    QList<QColor> colors = GetColorList();
     QStringList colorNames;
-    foreach (QColor color, colors) {
-        colorNames << color.name();
-    }
+        foreach (QColor color, colors) {
+            colorNames << color.name();
+        }
     return colorNames;
 }
 
-QColor QUIHelper::getRandColor()
-{
-    QList<QColor> colors = getColorList();
-    int index = getRandValue(0, colors.count(), true);
+QColor QuiHelper::GetRandColor() {
+    QList<QColor> colors = GetColorList();
+    int index = GetRandValue(0, colors.count(), true);
     return colors.at(index);
 }
 
-void QUIHelper::initRand()
-{
+void QuiHelper::InitRand() {
     //初始化随机数种子
     QTime t = QTime::currentTime();
     srand(t.msec() + t.second() * 1000);
 }
 
-float QUIHelper::getRandFloat(float min, float max)
-{
+float QuiHelper::GetRandFloat(float min, float max) {
     double diff = fabs(max - min);
-    double value = (double)(rand() % 100) / 100;
+    double value = (double) (rand() % 100) / 100;
     value = min + value * diff;
     return value;
 }
 
-double QUIHelper::getRandValue(int min, int max, bool contansMin, bool contansMax)
-{
+double QuiHelper::GetRandValue(int min, int max, bool contans_min, bool contans_max) {
     int value;
-#if (QT_VERSION <= QT_VERSION_CHECK(5,10,0))
+#if (QT_VERSION <= QT_VERSION_CHECK(5, 10, 0))
     //通用公式 a是起始值,n是整数的范围
     //int value = a + rand() % n;
-    if (contansMin) {
-        if (contansMax) {
+    if (contans_min) {
+        if (contans_max) {
             value = min + 0 + (rand() % (max - min + 1));
         } else {
             value = min + 0 + (rand() % (max - min + 0));
         }
     } else {
-        if (contansMax) {
+        if (contans_max) {
             value = min + 1 + (rand() % (max - min + 0));
         } else {
             value = min + 1 + (rand() % (max - min - 1));
         }
     }
 #else
-    if (contansMin) {
-        if (contansMax) {
+    if (contans_min) {
+        if (contans_max) {
             value = QRandomGenerator::global()->bounded(min + 0, max + 1);
         } else {
             value = QRandomGenerator::global()->bounded(min + 0, max + 0);
         }
     } else {
-        if (contansMax) {
+        if (contans_max) {
             value = QRandomGenerator::global()->bounded(min + 1, max + 1);
         } else {
             value = QRandomGenerator::global()->bounded(min + 1, max + 0);
@@ -253,22 +240,21 @@ double QUIHelper::getRandValue(int min, int max, bool contansMin, bool contansMa
     return value;
 }
 
-QStringList QUIHelper::getRandPoint(int count, float mainLng, float mainLat, float dotLng, float dotLat)
-{
+QStringList QuiHelper::GetRandPoint(int count, float main_lng, float main_lat, float dot_lng, float dot_lat) {
     //随机生成点坐标
     QStringList points;
     for (int i = 0; i < count; ++i) {
         //0.00881415 0.000442928
-#if (QT_VERSION >= QT_VERSION_CHECK(5,10,0))
-        float lngx = QRandomGenerator::global()->bounded(dotLng);
-        float latx = QRandomGenerator::global()->bounded(dotLat);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+        float lngx = QRandomGenerator::global()->bounded(dot_lng);
+        float latx = QRandomGenerator::global()->bounded(dot_lat);
 #else
-        float lngx = getRandFloat(dotLng / 10, dotLng);
-        float latx = getRandFloat(dotLat / 10, dotLat);
+        float lngx = getRandFloat(dot_lng / 10, dot_lng);
+        float latx = getRandFloat(dot_lat / 10, dot_lat);
 #endif
         //需要先用精度转换成字符串
-        QString lng2 = QString::number(mainLng + lngx, 'f', 8);
-        QString lat2 = QString::number(mainLat + latx, 'f', 8);
+        QString lng2 = QString::number(main_lng + lngx, 'f', 8);
+        QString lat2 = QString::number(main_lat + latx, 'f', 8);
         QString point = QString("%1,%2").arg(lng2).arg(lat2);
         points << point;
     }
@@ -276,22 +262,20 @@ QStringList QUIHelper::getRandPoint(int count, float mainLng, float mainLat, flo
     return points;
 }
 
-QString QUIHelper::getUuid()
-{
+QString QuiHelper::GetUuid() {
     QString uuid = QUuid::createUuid().toString();
     uuid.replace("{", "");
     uuid.replace("}", "");
     return uuid;
 }
 
-void QUIHelper::newDir(const QString &dirName)
-{
-    QString strDir = dirName;
+void QuiHelper::NewDir(const QString &dir_name) {
+    QString strDir = dir_name;
 
     //如果路径中包含斜杠字符则说明是绝对路径
     //linux系统路径字符带有 /  windows系统 路径字符带有 :/
     if (!strDir.startsWith("/") && !strDir.contains(":/")) {
-        strDir = QString("%1/%2").arg(QUIHelper::appPath()).arg(strDir);
+        strDir = QString("%1/%2").arg(QuiHelper::AppPath()).arg(strDir);
     }
 
     QDir dir(strDir);
@@ -300,13 +284,12 @@ void QUIHelper::newDir(const QString &dirName)
     }
 }
 
-void QUIHelper::sleep(int msec)
-{
+void QuiHelper::Sleep(int msec) {
     if (msec <= 0) {
         return;
     }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     QThread::msleep(msec);
 #else
     QTime endTime = QTime::currentTime().addMSecs(msec);
@@ -316,12 +299,11 @@ void QUIHelper::sleep(int msec)
 #endif
 }
 
-void QUIHelper::setStyle()
-{
+void QuiHelper::SetStyle() {
     //打印下所有内置风格的名字
     qDebug() << TIMEMS << "QStyleFactory::keys" << QStyleFactory::keys();
     //设置内置风格
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     qApp->setStyle(QStyleFactory::create("Fusion"));
 #else
     qApp->setStyle(QStyleFactory::create("Cleanlooks"));
@@ -333,23 +315,22 @@ void QUIHelper::setStyle()
     qApp->setPalette(palette);
 }
 
-QFont QUIHelper::addFont(const QString &fontFile, const QString &fontName)
-{
+QFont QuiHelper::AddFont(const QString &font_file, const QString &font_name) {
     //判断图形字体是否存在,不存在则加入
     QFontDatabase fontDb;
-    if (!fontDb.families().contains(fontName)) {
-        int fontId = fontDb.addApplicationFont(fontFile);
+    if (!fontDb.families().contains(font_name)) {
+        int fontId = fontDb.addApplicationFont(font_file);
         QStringList listName = fontDb.applicationFontFamilies(fontId);
         if (listName.count() == 0) {
-            qDebug() << QString("load %1 error").arg(fontName);
+            qDebug() << QString("load %1 error").arg(font_name);
         }
     }
 
     //再次判断是否包含字体名称防止加载失败
     QFont font;
-    if (fontDb.families().contains(fontName)) {
-        font = QFont(fontName);
-#if (QT_VERSION >= QT_VERSION_CHECK(4,8,0))
+    if (fontDb.families().contains(font_name)) {
+        font = QFont(font_name);
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 8, 0))
         font.setHintingPreference(QFont::PreferNoHinting);
 #endif
     }
@@ -357,8 +338,7 @@ QFont QUIHelper::addFont(const QString &fontFile, const QString &fontName)
     return font;
 }
 
-void QUIHelper::setFont(int fontSize)
-{
+void QuiHelper::SetFont(int font_size) {
 #ifdef rk3399
     return;
 #endif
@@ -372,23 +352,22 @@ void QUIHelper::setFont(int fontSize)
 #endif
 
 #ifdef __arm__
-    fontSize = 25;
+    font_size = 25;
 #endif
 #ifdef Q_OS_ANDROID
-    fontSize = 15;
+    font_size = 15;
 #endif
 
     QFont font;
     font.setFamily("MicroSoft Yahei");
-    font.setPixelSize(fontSize);
+    font.setPixelSize(font_size);
     qApp->setFont(font);
 }
 
-void QUIHelper::setCode(bool utf8)
-{
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+void QuiHelper::SetCode(bool utf_8) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     //如果想要控制台打印信息中文正常就注释掉这个设置
-    if (utf8) {
+    if (utf_8) {
         QTextCodec *codec = QTextCodec::codecForName("utf-8");
         QTextCodec::setCodecForLocale(codec);
     }
@@ -404,41 +383,38 @@ void QUIHelper::setCode(bool utf8)
 #endif
 }
 
-void QUIHelper::setTranslator(const QString &qmFile)
-{
+void QuiHelper::SetTranslator(const QString &qm_file) {
     //过滤下不存在的就不用设置了
-    if (!QFile(qmFile).exists()) {
+    if (!QFile(qm_file).exists()) {
         return;
     }
 
     QTranslator *translator = new QTranslator(qApp);
-    if (translator->load(qmFile)) {
+    if (translator->load(qm_file)) {
         qApp->installTranslator(translator);
     }
 }
 
-void QUIHelper::initAll(bool utf8, bool style, int fontSize)
-{
+void QuiHelper::InitAll(bool utf_8, bool style, int font_size) {
     //初始化随机数种子
-    QUIHelper::initRand();
+    QuiHelper::InitRand();
     //设置编码
-    QUIHelper::setCode(utf8);
+    QuiHelper::SetCode(utf_8);
     //设置样式风格
     if (style) {
-        QUIHelper::setStyle();
+        QuiHelper::SetStyle();
     }
     //设置字体
-    QUIHelper::setFont(fontSize);
+    QuiHelper::SetFont(font_size);
     //设置翻译文件支持多个
-    QUIHelper::setTranslator(":/qm/widgets.qm");
-    QUIHelper::setTranslator(":/qm/qt_zh_CN.qm");
-    QUIHelper::setTranslator(":/qm/designer_zh_CN.qm");
+    QuiHelper::SetTranslator(":/qm/widgets.qm");
+    QuiHelper::SetTranslator(":/qm/qt_zh_CN.qm");
+    QuiHelper::SetTranslator(":/qm/designer_zh_CN.qm");
     //设置不使用本地系统环境代理配置
     QNetworkProxyFactory::setUseSystemConfiguration(false);
 }
 
-void QUIHelper::initMain(bool on)
-{
+void QuiHelper::InitMain(bool on) {
     //设置是否应用操作系统设置比如字体
     QApplication::setDesktopSettingsAware(on);
 
@@ -448,7 +424,7 @@ void QUIHelper::initMain(bool on)
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 #else
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     //不应用任何缩放
     QApplication::setAttribute(Qt::AA_Use96Dpi);
 #endif
@@ -459,7 +435,7 @@ void QUIHelper::initMain(bool on)
     QApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Floor);
 #endif
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5,4,0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
     //设置opengl模式 AA_UseDesktopOpenGL(默认) AA_UseOpenGLES AA_UseSoftwareOpenGL
     //在一些很旧的设备上或者对opengl支持很低的设备上需要使用AA_UseOpenGLES表示禁用硬件加速
     //如果开启的是AA_UseOpenGLES则无法使用硬件加速比如ffmpeg的dxva2
@@ -469,14 +445,21 @@ void QUIHelper::initMain(bool on)
 #endif
 }
 
-QVector<int> QUIHelper::msgTypes = QVector<int>() << 0 << 1 << 2 << 3 << 4;
-QVector<QString> QUIHelper::msgKeys = QVector<QString>() << "发送" << "接收" << "解析" << "错误" << "提示";
-QVector<QColor> QUIHelper::msgColors = QVector<QColor>() << QColor("#3BA372") << QColor("#EE6668") << QColor("#9861B4") << QColor("#FA8359") << QColor("#22A3A9");
-QString QUIHelper::appendMsg(QTextEdit *textEdit, int type, const QString &data, int maxCount, int &currentCount, bool clear, bool pause)
-{
+QVector<int> QuiHelper::msg_types_ = QVector<int>() << 0 << 1 << 2 << 3 << 4;
+QVector<QString> QuiHelper::msg_keys_ = QVector<QString>() << "发送" << "接收" << "解析" << "错误" << "提示";
+QVector<QColor>QuiHelper::msg_colors_ =
+    QVector<QColor>() << QColor("#3BA372") << QColor("#EE6668") << QColor("#9861B4") << QColor("#FA8359")
+                      << QColor("#22A3A9");
+QString QuiHelper::AppendMsg(QTextEdit *text_edit,
+                             int type,
+                             const QString &data,
+                             int max_count,
+                             int &current_count,
+                             bool clear,
+                             bool pause) {
     if (clear) {
-        textEdit->clear();
-        currentCount = 0;
+        text_edit->clear();
+        current_count = 0;
         return QString();
     }
 
@@ -484,17 +467,17 @@ QString QUIHelper::appendMsg(QTextEdit *textEdit, int type, const QString &data,
         return QString();
     }
 
-    if (currentCount >= maxCount) {
-        textEdit->clear();
-        currentCount = 0;
+    if (current_count >= max_count) {
+        text_edit->clear();
+        current_count = 0;
     }
 
     //不同类型不同颜色显示
     QString strType;
-    int index = msgTypes.indexOf(type);
+    int index = msg_types_.indexOf(type);
     if (index >= 0) {
-        strType = msgKeys.at(index);
-        textEdit->setTextColor(msgColors.at(index));
+        strType = msg_keys_.at(index);
+        text_edit->setTextColor(msg_colors_.at(index));
     }
 
     //过滤回车换行符
@@ -502,52 +485,50 @@ QString QUIHelper::appendMsg(QTextEdit *textEdit, int type, const QString &data,
     strData.replace("\r", "");
     strData.replace("\n", "");
     strData = QString("时间[%1] %2: %3").arg(TIMEMS).arg(strType).arg(strData);
-    textEdit->append(strData);
-    currentCount++;
+    text_edit->append(strData);
+    current_count++;
     return strData;
 }
 
-void QUIHelper::setFramelessForm(QWidget *widgetMain, bool tool, bool top, bool menu)
-{
-    widgetMain->setProperty("form", true);
-    widgetMain->setProperty("canMove", true);
+void QuiHelper::SetFramelessForm(QWidget *widget_main, bool tool, bool top, bool menu) {
+    widget_main->setProperty("form", true);
+    widget_main->setProperty("canMove", true);
 
     //根据设定逐个追加属性
 #ifdef __arm__
-    widgetMain->setWindowFlags(Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
+    widget_main->setWindowFlags(Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
 #else
-    widgetMain->setWindowFlags(Qt::FramelessWindowHint);
+    widget_main->setWindowFlags(Qt::FramelessWindowHint);
 #endif
     if (tool) {
-        widgetMain->setWindowFlags(widgetMain->windowFlags() | Qt::Tool);
+        widget_main->setWindowFlags(widget_main->windowFlags() | Qt::Tool);
     }
     if (top) {
-        widgetMain->setWindowFlags(widgetMain->windowFlags() | Qt::WindowStaysOnTopHint);
+        widget_main->setWindowFlags(widget_main->windowFlags() | Qt::WindowStaysOnTopHint);
     }
     if (menu) {
         //如果是其他系统比如neokylin会产生系统边框
 #ifdef Q_OS_WIN
-        widgetMain->setWindowFlags(widgetMain->windowFlags() | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint);
+        widget_main->setWindowFlags(
+            widget_main->windowFlags() | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint);
 #endif
     }
 }
 
-int QUIHelper::showMessageBox(const QString &info, int type, int closeSec, bool exec)
-{
+int QuiHelper::ShowMessageBox(const QString &info, int type, int close_sec, bool exec) {
     int result = 0;
     if (type == 0) {
-        showMessageBoxInfo(info, closeSec, exec);
+        ShowMessageBoxInfo(info, close_sec, exec);
     } else if (type == 1) {
-        showMessageBoxError(info, closeSec, exec);
+        ShowMessageBoxError(info, close_sec, exec);
     } else if (type == 2) {
-        result = showMessageBoxQuestion(info);
+        result = ShowMessageBoxQuestion(info);
     }
 
     return result;
 }
 
-void QUIHelper::showMessageBoxInfo(const QString &info, int closeSec, bool exec)
-{
+void QuiHelper::ShowMessageBoxInfo(const QString &info, int close_sec, bool exec) {
     QMessageBox box(QMessageBox::Information, "提示", info);
     box.setStandardButtons(QMessageBox::Yes);
     box.setButtonText(QMessageBox::Yes, QString("确 定"));
@@ -555,8 +536,7 @@ void QUIHelper::showMessageBoxInfo(const QString &info, int closeSec, bool exec)
     //QMessageBox::information(0, "提示", info, QMessageBox::Yes);
 }
 
-void QUIHelper::showMessageBoxError(const QString &info, int closeSec, bool exec)
-{
+void QuiHelper::ShowMessageBoxError(const QString &info, int close_sec, bool exec) {
     QMessageBox box(QMessageBox::Critical, "错误", info);
     box.setStandardButtons(QMessageBox::Yes);
     box.setButtonText(QMessageBox::Yes, QString("确 定"));
@@ -564,8 +544,7 @@ void QUIHelper::showMessageBoxError(const QString &info, int closeSec, bool exec
     //QMessageBox::critical(0, "错误", info, QMessageBox::Yes);
 }
 
-int QUIHelper::showMessageBoxQuestion(const QString &info)
-{
+int QuiHelper::ShowMessageBoxQuestion(const QString &info) {
     QMessageBox box(QMessageBox::Question, "询问", info);
     box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     box.setButtonText(QMessageBox::Yes, QString("确 定"));
@@ -574,33 +553,32 @@ int QUIHelper::showMessageBoxQuestion(const QString &info)
     //return QMessageBox::question(0, "询问", info, QMessageBox::Yes | QMessageBox::No);
 }
 
-void QUIHelper::initDialog(QFileDialog *dialog, const QString &title, const QString &acceptName,
-                           const QString &dirName, bool native, int width, int height)
-{
+void QuiHelper::InitDialog(QFileDialog *dialog, const QString &title, const QString &accept_name,
+                           const QString &dir_name, bool native, int width, int height) {
     //设置标题
     dialog->setWindowTitle(title);
     //设置标签文本
-    dialog->setLabelText(QFileDialog::Accept, acceptName);
+    dialog->setLabelText(QFileDialog::Accept, accept_name);
     dialog->setLabelText(QFileDialog::Reject, "取消(&C)");
     dialog->setLabelText(QFileDialog::LookIn, "查看");
     dialog->setLabelText(QFileDialog::FileName, "名称");
     dialog->setLabelText(QFileDialog::FileType, "类型");
 
     //设置默认显示目录
-    if (!dirName.isEmpty()) {
-        dialog->setDirectory(dirName);
+    if (!dir_name.isEmpty()) {
+        dialog->setDirectory(dir_name);
     }
 
     //设置对话框宽高
     if (width > 0 && height > 0) {
 #ifdef Q_OS_ANDROID
-        bool horizontal = (QUIHelper::deskWidth() > QUIHelper::deskHeight());
+        bool horizontal = (QuiHelper::deskWidth() > QuiHelper::deskHeight());
         if (horizontal) {
-            width = QUIHelper::deskWidth() / 2;
-            height = QUIHelper::deskHeight() - 50;
+            width = QuiHelper::deskWidth() / 2;
+            height = QuiHelper::deskHeight() - 50;
         } else {
-            width = QUIHelper::deskWidth() - 10;
-            height = QUIHelper::deskHeight() / 2;
+            width = QuiHelper::deskWidth() - 10;
+            height = QuiHelper::deskHeight() / 2;
         }
 #endif
         dialog->setFixedSize(width, height);
@@ -612,8 +590,7 @@ void QUIHelper::initDialog(QFileDialog *dialog, const QString &title, const QStr
     //dialog->setReadOnly(true);
 }
 
-QString QUIHelper::getDialogResult(QFileDialog *dialog)
-{
+QString QuiHelper::GetDialogResult(QFileDialog *dialog) {
     QString result;
     if (dialog->exec() == QFileDialog::Accepted) {
         result = dialog->selectedFiles().first();
@@ -621,11 +598,10 @@ QString QUIHelper::getDialogResult(QFileDialog *dialog)
     return result;
 }
 
-QString QUIHelper::getOpenFileName(const QString &filter, const QString &dirName, const QString &fileName,
-                                   bool native, int width, int height)
-{
+QString QuiHelper::GetSavedFileName(const QString &filter, const QString &dir_name, const QString &file_name,
+                                    bool native, int width, int height) {
     QFileDialog dialog;
-    initDialog(&dialog, "打开文件", "选择(&S)", dirName, native, width, height);
+    InitDialog(&dialog, "打开文件", "选择(&S)", dir_name, native, width, height);
 
     //设置文件类型
     if (!filter.isEmpty()) {
@@ -633,15 +609,14 @@ QString QUIHelper::getOpenFileName(const QString &filter, const QString &dirName
     }
 
     //设置默认文件名称
-    dialog.selectFile(fileName);
-    return getDialogResult(&dialog);
+    dialog.selectFile(file_name);
+    return GetDialogResult(&dialog);
 }
 
-QString QUIHelper::getSaveFileName(const QString &filter, const QString &dirName, const QString &fileName,
-                                   bool native, int width, int height)
-{
+QString QuiHelper::GetSelectFileName(const QString &filter, const QString &dir_name, const QString &file_name,
+                                     bool native, int width, int height) {
     QFileDialog dialog;
-    initDialog(&dialog, "保存文件", "保存(&S)", dirName, native, width, height);
+    InitDialog(&dialog, "保存文件", "保存(&S)", dir_name, native, width, height);
 
     //设置文件类型
     if (!filter.isEmpty()) {
@@ -649,29 +624,27 @@ QString QUIHelper::getSaveFileName(const QString &filter, const QString &dirName
     }
 
     //设置默认文件名称
-    dialog.selectFile(fileName);
+    dialog.selectFile(file_name);
     //设置模态类型允许输入
     dialog.setWindowModality(Qt::WindowModal);
     //设置置顶显示
     dialog.setWindowFlags(dialog.windowFlags() | Qt::WindowStaysOnTopHint);
-    return getDialogResult(&dialog);
+    return GetDialogResult(&dialog);
 }
 
-QString QUIHelper::getExistingDirectory(const QString &dirName, bool native, int width, int height)
-{
+QString QuiHelper::GetExistingDirectory(const QString &dir_name, bool native, int width, int height) {
     QFileDialog dialog;
-    initDialog(&dialog, "选择目录", "选择(&S)", dirName, native, width, height);
+    InitDialog(&dialog, "选择目录", "选择(&S)", dir_name, native, width, height);
     dialog.setOption(QFileDialog::ReadOnly);
     //设置只显示目录
-#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     dialog.setFileMode(QFileDialog::DirectoryOnly);
 #endif
     dialog.setOption(QFileDialog::ShowDirsOnly);
-    return getDialogResult(&dialog);
+    return GetDialogResult(&dialog);
 }
 
-QString QUIHelper::getXorEncryptDecrypt(const QString &value, char key)
-{
+QString QuiHelper::GetXorEncryptDecrypt(const QString &value, char key) {
     //矫正范围外的数据
     if (key < 0 || key >= 127) {
         key = 127;
@@ -690,8 +663,7 @@ QString QUIHelper::getXorEncryptDecrypt(const QString &value, char key)
     return result;
 }
 
-uchar QUIHelper::getOrCode(const QByteArray &data)
-{
+uchar QuiHelper::GetOrCode(const QByteArray &data) {
     int len = data.length();
     uchar result = 0;
     for (int i = 0; i < len; ++i) {
@@ -701,8 +673,7 @@ uchar QUIHelper::getOrCode(const QByteArray &data)
     return result;
 }
 
-uchar QUIHelper::getCheckCode(const QByteArray &data)
-{
+uchar QuiHelper::GetCheckCode(const QByteArray &data) {
     int len = data.length();
     uchar temp = 0;
     for (uchar i = 0; i < len; ++i) {
@@ -712,8 +683,7 @@ uchar QUIHelper::getCheckCode(const QByteArray &data)
     return temp % 256;
 }
 
-void QUIHelper::initTableView(QTableView *tableView, int rowHeight, bool headVisible, bool edit, bool stretchLast)
-{
+void QuiHelper::InitTableView(QTableView *tableView, int rowHeight, bool headVisible, bool edit, bool stretchLast) {
     //设置弱属性用于应用qss特殊样式
     tableView->setProperty("model", true);
     //取消自动换行
@@ -754,23 +724,21 @@ void QUIHelper::initTableView(QTableView *tableView, int rowHeight, bool headVis
     }
 }
 
-void QUIHelper::openFile(const QString &fileName, const QString &msg)
-{
+void QuiHelper::OpenFile(const QString &file_name, const QString &msg) {
 #ifdef __arm__
     return;
 #endif
     //文件不存在则不用处理
-    if (!QFile(fileName).exists()) {
+    if (!QFile(file_name).exists()) {
         return;
     }
-    if (QUIHelper::showMessageBoxQuestion(msg + "成功, 确定现在就打开吗?") == QMessageBox::Yes) {
-        QString url = QString("file:///%1").arg(fileName);
+    if (QuiHelper::ShowMessageBoxQuestion(msg + "成功, 确定现在就打开吗?") == QMessageBox::Yes) {
+        QString url = QString("file:///%1").arg(file_name);
         QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode));
     }
 }
 
-bool QUIHelper::checkIniFile(const QString &iniFile)
-{
+bool QuiHelper::CheckIniFile(const QString &iniFile) {
     //如果配置文件大小为0,则以初始值继续运行,并生成配置文件
     QFile file(iniFile);
     if (file.size() == 0) {
@@ -807,8 +775,7 @@ bool QUIHelper::checkIniFile(const QString &iniFile)
     return true;
 }
 
-QString QUIHelper::cutString(const QString &text, int len, int left, int right, const QString &mid)
-{
+QString QuiHelper::CutString(const QString &text, int len, int left, int right, const QString &mid) {
     //如果是文件名则取文件名的前字符+末尾字符+去掉拓展名
     QString result = text.split(".").first();
     if (result.length() > len) {

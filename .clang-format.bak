@@ -9,7 +9,7 @@ TabWidth:        4
 UseTab:          Never
 AccessModifierOffset: -2
 ConstructorInitializerIndentWidth: 2
-NamespaceIndentation: None
+NamespaceIndentation: NONE
 ContinuationIndentWidth: 4
 IndentCaseLabels: true
 IndentFunctionDeclarationAfterType: false
@@ -25,12 +25,12 @@ Cpp11BracedListStyle: false
 AllowShortBlocksOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: None
+AllowShortFunctionsOnASingleLine: NONE
 AllowShortCaseLabelsOnASingleLine: false
 
 AlwaysBreakTemplateDeclarations: Yes
 AlwaysBreakBeforeMultilineStrings: false
-BreakBeforeBinaryOperators: None
+BreakBeforeBinaryOperators: NONE
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializersBeforeComma: true
 

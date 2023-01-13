@@ -7,7 +7,7 @@
 
 TCPThreadController::TCPThreadController(QObject *parent) : QObject(parent) {
     auto *handler = new TCPCommandHandle;
-    handler->moveToThread(&WorkThread);
+    handler->moveToThread(&work_thread_);
 
 
 }

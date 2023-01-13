@@ -14,66 +14,65 @@
 
 #include "ui_DataCirculation.h"
 
-DataCirculation::DataCirculation(int DeviceNum, int winNum, QSettings* cfg, ToNewWidget* parentInfo, QWidget* parent)
-  : RepeaterWidget(parent), ui(new Ui::DataCirculation)
-{
-    ui->setupUi(this);
+DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent)
+    : RepeaterWidget(parent), ui_(new Ui::DataCirculation) {
+    ui_->setupUi(this);
 
-    this->cfg = cfg;
-    this->GroupName = "Win" + QString::number(winNum);
-    this->DeviceNum = DeviceNum;
-    this->parentInfo = parentInfo;
+    this->cfg_ = cfg;
+    this->group_name_ = "Win" + QString::number(win_num);
+    this->device_num_ = device_num;
+    this->parent_info_ = parent_info;
 
-    this->TCPCommandHandle = (*(parentInfo->DevicesInfo))[DeviceNum].TCPCommandHandler;  // 结构体这样用
-    this->TCPInfoHandler[1] = (*(parentInfo->DevicesInfo))[DeviceNum].TCPInfoHandler[1];
-    this->TCPInfoHandler[2] = (*(parentInfo->DevicesInfo))[DeviceNum].TCPInfoHandler[2];
-    this->TCPInfoHandler[3] = (*(parentInfo->DevicesInfo))[DeviceNum].TCPInfoHandler[3];
+    this->tcp_command_handle_ = (*(parent_info->devices_info))[device_num].tcp_command_handler;  // 结构体这样用
+    this->tcp_info_handler_[1] = (*(parent_info->devices_info))[device_num].tcp_info_handler[1];
+    this->tcp_info_handler_[2] = (*(parent_info->devices_info))[device_num].tcp_info_handler[2];
+    this->tcp_info_handler_[3] = (*(parent_info->devices_info))[device_num].tcp_info_handler[3];
 
     DataCirculation::GetConstructConfig();
-    ui->comProcessMode->setCurrentIndex(processMode);
-    ui->comCirculationMode->setCurrentIndex(circulationMode);
-    ui->comDateFlowMode->setCurrentIndex(dateFlowMode);
-    ui->comOutputMode->setCurrentIndex(outputMode);
+    ui_->comProcessMode->setCurrentIndex(process_mode_);
+    ui_->comCirculationMode->setCurrentIndex(circulation_mode_);
+    ui_->comDateFlowMode->setCurrentIndex(date_flow_mode_);
+    ui_->comOutputMode->setCurrentIndex(output_mode_);
     RefreshBox();
 
     // 绑定测试按钮
-    connect(ui->btnTest, &QPushButton::clicked, this, [&] { TestCirculationMode(); });
+    connect(ui_->btnTest, &QPushButton::clicked, this, [&] { TestCirculationMode(); });
     // 设置表格列平分
-    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui_->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     // combox更改逻辑
     void (QComboBox::*fp)(int) = &QComboBox::currentIndexChanged;
-    connect(ui->comProcessMode, fp, this, [&](int num) {
-        processMode = ProcessMode(num);
-        SaveConstructConfig();
+    connect(ui_->comProcessMode, fp, this, [&](int num) {
+      process_mode_ = ProcessMode(num);
+      SaveConstructConfig();
     });
-    connect(ui->comCirculationMode, fp, this, [&](int num) {
-        circulationMode = CirculationMode(num);
-        SaveConstructConfig();
+    connect(ui_->comCirculationMode, fp, this, [&](int num) {
+      circulation_mode_ = CirculationMode(num);
+      SaveConstructConfig();
     });
-    connect(ui->comDateFlowMode, fp, this, [&](int num) {
-        dateFlowMode = DateFlowMode(num);
-        SaveConstructConfig();
+    connect(ui_->comDateFlowMode, fp, this, [&](int num) {
+      date_flow_mode_ = DateFlowMode(num);
+      SaveConstructConfig();
     });
-    connect(ui->comOutputMode, fp, this, [&](int num) {
-        outputMode = OutputMode(num);
-        SaveConstructConfig();
+    connect(ui_->comOutputMode, fp, this, [&](int num) {
+      output_mode_ = OutputMode(num);
+      SaveConstructConfig();
     });
 
-    connect(ui->btnStart, &QPushButton::clicked, this, [&] { StartCirculation(); });
+    connect(ui_->btnStart, &QPushButton::clicked, this, [&] { StartCirculation(); });
 
-    connect(ui->btnTestFlow, &QPushButton::clicked, this, [&] {
-        //        QString path = QFileDialog::getOpenFileName(this, "打开文件", "D:\\OneDriveFile\\bird\\OneDrive -
-        //        xutongxin\\Competition\\xmbDebugTools\\QT\\thirdPartyTool");
-        QFile file(
-            "D:\\OneDriveFile\\bird\\OneDrive - xutongxin\\Competition\\xmbDebugTools\\QT\\thirdPartyTool\\result.txt");
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            return;
-        }
-        int i = 0;
-        while (!file.atEnd()) {
-            QByteArray line = file.readLine();
-            this->DoCirculation(line, chartWindow->startedTime.addSecs(i++));
+    connect(ui_->btnTestFlow, &QPushButton::clicked, this, [&] {
+      //        QString path = QFileDialog::GetOpenFileName(this, "打开文件", "D:\\OneDriveFile\\bird\\OneDrive -
+      //        xutongxin\\Competition\\xmbDebugTools\\QT\\thirdPartyTool");
+      QFile file(
+          "D:\\OneDriveFile\\bird\\OneDrive - xutongxin\\Competition\\xmbDebugTools\\QT\\thirdPartyTool\\result.txt");
+      if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+          return;
+      }
+      int i = 0;
+      while (!file.atEnd()) {
+          QByteArray line = file.readLine();
+          this->DoCirculation(line, chart_window_->startedTime.addSecs(i++));
         }
         //        QByteArray allArray = file.readAll();
         //        QString allStr = QString(allArray);
@@ -86,200 +85,186 @@ DataCirculation::DataCirculation(int DeviceNum, int winNum, QSettings* cfg, ToNe
 
 DataCirculation::~DataCirculation()
 {
-    delete ui;
+    delete ui_;
 }
 
 /// 数据过滤测试按钮
 void DataCirculation::TestCirculationMode()
 {
-    bool bOk = false;
-    QString TestData =
+    bool b_ok = false;
+    QString test_data =
         QInputDialog::getMultiLineText(this, "QInputDialog_Intro", "请输入测试数据",
-                                       "填写一项测试数据,不需要以\\r\\n结尾", &bOk, Qt::MSWindowsFixedSizeDialogHint);
-    if (bOk && !TestData.isEmpty()) {
-        if (TestData.right(2) == "\r\n")
-            TestData.remove(TestData.length() - 2, 2);
-        if (TestData.right(1) == "\n")
-            TestData.remove(TestData.length() - 1, 1);
-        qDebug() << "测试内容:" << TestData << " 模式:" << circulationMode;
-        switch (circulationMode) {
-            case CirculationMode_Direction:
-                if (TestData == "0") {
-                    ui->tableWidget->setItem(0, 0, new QTableWidgetItem(0));
-                }
-                else {
-                    if (TestData.toDouble() != 0) {
-                        ui->tableWidget->setItem(0, 1, new QTableWidgetItem(QString::number(TestData.toDouble())));
-                    }
-                    else {
-                        qCritical("%s 解析失败", qPrintable(TestData));
+                                       "填写一项测试数据,不需要以\\r\\n结尾", &b_ok, Qt::MSWindowsFixedSizeDialogHint);
+    if (b_ok && !test_data.isEmpty()) {
+        if (test_data.right(2) == "\r\n") {
+            test_data.remove(test_data.length() - 2, 2);
+        }
+        if (test_data.right(1) == "\n") {
+            test_data.remove(test_data.length() - 1, 1);
+        }
+        qDebug() << "测试内容:" << test_data << " 模式:" << circulation_mode_;
+        switch (circulation_mode_) {
+            case CIRCULATION_MODE_DIRECTION:
+                if (test_data == "0") {
+                    ui_->tableWidget->setItem(0, 0, new QTableWidgetItem(0));
+                } else {
+                    if (test_data.toDouble() != 0) {
+                        ui_->tableWidget->setItem(0, 1, new QTableWidgetItem(QString::number(test_data.toDouble())));
+                    } else {
+                        qCritical("%s 解析失败", qPrintable(test_data));
                         QMessageBox::critical(this, tr("错误"), tr("解析错误"));
                     }
                 }
                 break;
-            case CirculationMode_CommaSeparated:
-                break;
-            case CirculationMode_KeyValue:
-                break;
-            case CirculationMode_Scanf:
-                break;
-            case CirculationMode_Regularity:
-                break;
-            case CirculationMode_Python:
-                break;
+            case CIRCULATION_MODE_COMMA_SEPARATED:break;
+            case CIRCULATION_MODE_KEY_VALUE:break;
+            case CIRCULATION_MODE_SCANF:break;
+            case CIRCULATION_MODE_REGULARITY:break;
+            case CIRCULATION_MODE_PYTHON:break;
         }
     }
 }
 
 /// 读取配置文件
-void DataCirculation::GetConstructConfig()
-{
+void DataCirculation::GetConstructConfig() {
     qDebug("读取DataCirculation配置文件");
-    cfg->beginGroup(GroupName);
-    circulationMode = CirculationMode(cfg->value("circulationMode", circulationMode).toInt());
-    processMode = ProcessMode(cfg->value("processMode", processMode).toInt());
-    dateFlowMode = DateFlowMode(cfg->value("dateFlowMode", dateFlowMode).toInt());
-    outputMode = OutputMode(cfg->value("outputMode", outputMode).toInt());
-    cfg->endGroup();
+    cfg_->beginGroup(group_name_);
+    circulation_mode_ = CirculationMode(cfg_->value("circulation_mode_", circulation_mode_).toInt());
+    process_mode_ = ProcessMode(cfg_->value("process_mode_", process_mode_).toInt());
+    date_flow_mode_ = DateFlowMode(cfg_->value("date_flow_mode_", date_flow_mode_).toInt());
+    output_mode_ = OutputMode(cfg_->value("output_mode_", output_mode_).toInt());
+    cfg_->endGroup();
 }
 
 /// 保存配置文件
-void DataCirculation::SaveConstructConfig()
-{
+void DataCirculation::SaveConstructConfig() {
     qDebug("写入DataCirculation配置文件");
-    cfg->beginGroup(GroupName);
-    cfg->setValue("circulationMode", circulationMode);
-    cfg->setValue("processMode", processMode);
-    cfg->setValue("dateFlowMode", dateFlowMode);
-    cfg->setValue("outputMode", outputMode);
-    cfg->endGroup();
+    cfg_->beginGroup(group_name_);
+    cfg_->setValue("circulation_mode_", circulation_mode_);
+    cfg_->setValue("process_mode_", process_mode_);
+    cfg_->setValue("date_flow_mode_", date_flow_mode_);
+    cfg_->setValue("output_mode_", output_mode_);
+    cfg_->endGroup();
     RefreshBox();
 }
 
 /// 刷新ui选项
-void DataCirculation::RefreshBox()
-{
-    bool tmpBool = true;  // 为false就是想隐藏的
+void DataCirculation::RefreshBox() {
+    bool tmp_bool = true;  // 为false就是想隐藏的
     // 模式为无时隐藏选项
-    if (processMode == ProcessMode_None)
-        tmpBool = false;
-    //    ui->labelCirculationMode->setVisible(tmpBool);
-    //    ui->comCirculationMode->setVisible(tmpBool);
-    //    ui->comDateFlowMode->setVisible(tmpBool);
-    //    ui->labelDateFlowMode->setVisible(tmpBool);
-    ui->comOutputMode->setVisible(tmpBool);
-    ui->labelOutputMode->setVisible(tmpBool);
-    ui->btnStart->setEnabled(tmpBool);
-    tmpBool = true;
+    if (process_mode_ == PROCESS_MODE_NONE) {
+        tmp_bool = false;
+    }
+    //    ui_->labelCirculationMode->setVisible(tmp_bool);
+    //    ui_->comCirculationMode->setVisible(tmp_bool);
+    //    ui_->comDateFlowMode->setVisible(tmp_bool);
+    //    ui_->labelDateFlowMode->setVisible(tmp_bool);
+    ui_->comOutputMode->setVisible(tmp_bool);
+    ui_->labelOutputMode->setVisible(tmp_bool);
+    ui_->btnStart->setEnabled(tmp_bool);
+    tmp_bool = true;
     // 当直接外部输出时隐藏选项
-    if (processMode == ProcessMode_Output || processMode == ProcessMode_None)
-        tmpBool = false;
-    ui->labelCirculationMode->setVisible(tmpBool);
-    ui->comCirculationMode->setVisible(tmpBool);
-    ui->comDateFlowMode->setVisible(tmpBool);
-    ui->labelDateFlowMode->setVisible(tmpBool);
-    tmpBool = true;
-    if (dateFlowMode != DateFlowMode_Output && processMode != ProcessMode_Output)
-        tmpBool = false;
+    if (process_mode_ == PROCESS_MODE_OUTPUT || process_mode_ == PROCESS_MODE_NONE) {
+        tmp_bool = false;
+    }
+    ui_->labelCirculationMode->setVisible(tmp_bool);
+    ui_->comCirculationMode->setVisible(tmp_bool);
+    ui_->comDateFlowMode->setVisible(tmp_bool);
+    ui_->labelDateFlowMode->setVisible(tmp_bool);
+    tmp_bool = true;
+    if (date_flow_mode_ != DATE_FLOW_MODE_OUTPUT && process_mode_ != PROCESS_MODE_OUTPUT) {
+        tmp_bool = false;
+    }
     // 当不需要输出模式时关闭选项
-    ui->comOutputMode->setVisible(tmpBool);
-    ui->labelOutputMode->setVisible(tmpBool);
+    ui_->comOutputMode->setVisible(tmp_bool);
+    ui_->labelOutputMode->setVisible(tmp_bool);
 }
 
 /// 启动数据流过滤，绑定通道
 void DataCirculation::StartCirculation()
 {
     // 检查界面是否存在
-    if (!(*(parentInfo->DevicesInfo))[DeviceNum].hasChart) {
+    if (!(*(parent_info_->devices_info))[device_num_].has_chart) {
         qCritical("不存在绘图界面");
     }
-    (*(parentInfo->DevicesInfo))[DeviceNum].configStep = 4;
+    (*(parent_info_->devices_info))[device_num_].config_step = 4;
 
     qDebug() << "开始绑定数据流";
-    chartWindow = (*(parentInfo->DevicesInfo))[DeviceNum].ChartsWindows;
+    chart_window_ = (*(parent_info_->devices_info))[device_num_].charts_windows;
 
-    ui->btnStart->setEnabled(false);
+    ui_->btnStart->setEnabled(false);
     // 检查变量组
 
-    for (auto& value : values) {
-        chartWindow->antiRegisterData(value.name);
+    for (auto &value : values_) {
+        chart_window_->antiRegisterData(value.name);
     }
-    values.clear();
-    int row = ui->tableWidget->rowCount();
+    values_.clear();
+    int row = ui_->tableWidget->rowCount();
     for (int i = 0; i < row; i++) {
-        struct value tmpValue
-        {
-            ui->tableWidget->item(i, 0)->text(), ""
-        };
-        values.emplace_back(tmpValue);
-        chartWindow->registerData(tmpValue.name);
+        struct value tmp_value
+            {
+                ui_->tableWidget->item(i, 0)->text(), ""
+            };
+        values_.emplace_back(tmp_value);
+        chart_window_->registerData(tmp_value.name);
     }
 
     // 绑定数据进入过滤
-    if (TCPInfoHandler[1]->TCPMode == TCPInfoHandle::TCPInfoMode_IN && TCPInfoHandler[1]->isConnected) {
+    if (tcp_info_handler_[1]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN && tcp_info_handler_[1]->is_connected_) {
         qDebug() << "绑定一号通道进入解析";
-        connect(TCPInfoHandler[1], &TCPInfoHandle::RecNewData, this,
-                [&](const QByteArray& data, const QString& ip, int port, QTime time) { this->DoCirculation(data); });
+        connect(tcp_info_handler_[1], &TCPInfoHandle::RecNewData, this,
+                [&](const QByteArray &data, const QString &ip, int port, QTime time) { this->DoCirculation(data); });
     }
-    if (TCPInfoHandler[2]->TCPMode == TCPInfoHandle::TCPInfoMode_IN && TCPInfoHandler[2]->isConnected) {
+    if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN && tcp_info_handler_[2]->is_connected_) {
         qDebug() << "绑定二号通道进入解析";
-        connect(TCPInfoHandler[2], &TCPInfoHandle::RecNewData, this,
-                [&](const QByteArray& data, const QString& ip, int port, QTime time) { this->DoCirculation(data); });
+        connect(tcp_info_handler_[2], &TCPInfoHandle::RecNewData, this,
+                [&](const QByteArray &data, const QString &ip, int port, QTime time) { this->DoCirculation(data); });
     }
 
     // 完成绑定
     qDebug() << "完成数据流绑定";
-    (*(parentInfo->DevicesInfo))[DeviceNum].configStep = 5;
-    ui->btnStart->setText("停止数据流处理");
-    ui->btnStart->setEnabled(true);
+    (*(parent_info_->devices_info))[device_num_].config_step = 5;
+    ui_->btnStart->setText("停止数据流处理");
+    ui_->btnStart->setEnabled(true);
 }
 
 /// 对目标数据进行过滤
 ///  \param data 过滤目标数据
-void DataCirculation::DoCirculation(const QByteArray& data, QTime dataTime)
-{
+void DataCirculation::DoCirculation(const QByteArray &data, QTime data_time) {
     QString strtmp = data;
-    qDebug("准备解析数据%s,时间%s", qPrintable(strtmp), qPrintable(dataTime.toString("h:m:s")));
+    qDebug("准备解析数据%s,时间%s", qPrintable(strtmp), qPrintable(data_time.toString("h:m:s")));
     QStringList buffer;
     if (strtmp.indexOf("\r\n") != -1) {
         buffer = strtmp.split("\r\n");
-    }
-    else if (strtmp.indexOf("\n") != -1) {
+    } else if (strtmp.indexOf("\n") != -1) {
         buffer = strtmp.split("\n");
-    }
-    else {
+    } else {
         qCritical("解析数据时出错，没有找到\n符号");
         return;
     }
     for (int i = 0; i < buffer.size(); i++) {
-        QString circulationStr = buffer[i];
-        if (circulationStr == "")
+        QString circulation_str = buffer[i];
+        if (circulation_str == "") {
             continue;
-        switch (circulationMode) {
-            case CirculationMode_Direction:
-            {
+        }
+        switch (circulation_mode_) {
+            case CIRCULATION_MODE_DIRECTION: {
                 bool ok;
-                double num = circulationStr.toDouble(&ok);
+                double num = circulation_str.toDouble(&ok);
                 if (ok) {
                     qDebug("解析成功 %f", num);
-                    chartWindow->updateData(ui->tableWidget->item(0, 0)->text(), dataTime, num);
-                }
-                else {
-                    qCritical("%s 解析失败", qPrintable(circulationStr));
+                    chart_window_->updateData(ui_->tableWidget->item(0, 0)->text(), data_time, num);
+                } else {
+                    qCritical("%s 解析失败", qPrintable(circulation_str));
                     QMessageBox::critical(this, tr("错误"), tr("解析错误"));
                 }
                 break;
             }
-            case CirculationMode_CommaSeparated:
-                break;
-            case CirculationMode_KeyValue:
-                break;
-            case CirculationMode_Scanf:
-                break;
-            case CirculationMode_Regularity:
-                break;
-            case CirculationMode_Python:
-                break;
+            case CIRCULATION_MODE_COMMA_SEPARATED:break;
+            case CIRCULATION_MODE_KEY_VALUE:break;
+            case CIRCULATION_MODE_SCANF:break;
+            case CIRCULATION_MODE_REGULARITY:break;
+            case CIRCULATION_MODE_PYTHON:break;
         }
     }
 }
