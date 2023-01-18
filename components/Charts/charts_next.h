@@ -1,5 +1,5 @@
-#ifndef CHARTS_H
-#define CHARTS_H
+#ifndef ChartsNext_H
+#define ChartsNext_H
 
 #include <QWidget>
 #include "qcustomplot.h"
@@ -30,28 +30,27 @@ QHash<QString,Datanode> Data_pools;是中间数据池，用容器去维护。
 
 
 namespace Ui {
-    class Charts;
+class charts_next;
 }
 
+class DataReceiverNext : public QThread {
+ Q_OBJECT
+ public:
+    //获取DataReceiverNext单例实例
+    static DataReceiverNext *getInstance(void);
 
-class DataReceiver : public QThread {
-Q_OBJECT
-public:
-    //获取DataReceiver单例实例
-    static DataReceiver *getInstance(void);
+    explicit DataReceiverNext(QObject *parent = nullptr);
 
-    explicit DataReceiver(QObject *parent = nullptr);
-
-    //~DataReceiver();
+    //~DataReceiverNext();
     void stop();
 
-protected:
+ protected:
     void run() override;
 
-private:
+ private:
     QMutex mutex;
 
-signals:
+ signals:
 
     void oneDataReady();
 };
@@ -74,37 +73,36 @@ signals:
 };
 */
 
-class Charts : public RepeaterWidget {
-Q_OBJECT
+class ChartsNext : public RepeaterWidget {
+ Q_OBJECT
 
-//friend bool AddDate(QString addname, const QVector<double> &addDate, Charts *Chart);
+//friend bool AddDate(QString addname, const QVector<double> &addDate, ChartsNext *Chart);
     friend class MainWindow;
 
     friend class ChartThread;
 
-signals:
+ signals:
 
     void updataok();
 
     void monitor(const QVector<double> &addDate);
 
-public:
-    explicit Charts(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInfo, QWidget *parent = nullptr);
+ public:
+    explicit ChartsNext(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInfo, QWidget *parent = nullptr);
 
-    ~Charts();
+    ~ChartsNext();
 
     double Buff[100];    //数据缓冲数组
 
     //实时数据，嵌入式系统中，可将下位机传上来的数据存于此变量中
     unsigned char CurrentData;
 
-
     //！！！公开函数！！！
     bool registerData(const QString &addName, DataType datatype = USER_TIME);
 
     bool antiRegisterData(QString addName);
 
-  [[maybe_unused]] bool checkRegister(QString addname);
+    [[maybe_unused]] bool checkRegister(QString addname);
 
     bool updateData(const QString &addName, double data);
 
@@ -120,7 +118,7 @@ public:
 
     QTime startedTime;
 
-public slots:
+ public slots:
 
     void ShowLine(QCustomPlot *customPlot);//显示折线图
 
@@ -141,7 +139,7 @@ public slots:
     void selectionChanged();
 
  private:
-    Ui::Charts *uiChart;
+    Ui::charts_next *uiChart;
 
     int flag;
     double timer_count = 0.0;
@@ -149,9 +147,8 @@ public slots:
     QTimer *timerChart;
 
     bool timeHasInit = false;
-    //DataReceiver *thread;
+    //DataReceiverNext *thread;
 //    Thread *thread;
 };
 
-
-#endif // CHARTS_H
+#endif // ChartsNext_H
