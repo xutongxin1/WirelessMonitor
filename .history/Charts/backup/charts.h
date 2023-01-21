@@ -14,7 +14,7 @@ enum DataType{ SYS_TIME , USER_TIME };
 typedef struct DataNode {
     QString name;
     QList<double> *double_list;
-    QList<QPair<double,double>> *time_double_list;
+    QList<QPair<double,double>> *data_list;
     int flag = 0;//判断是否画图不加数据,0——不画图，1——显示图，2——隐藏图但是会有数据
     DataType data_node_type;
     //long long d_size = 0;//记录数据存储大小
@@ -114,7 +114,7 @@ public:
 
 //    bool updateData2(QString addname, double ChangeTime , double ChangeData);
 
-    void selectionChanged();
+
 
     void test(const QVector<double> &addDate);
 
@@ -129,7 +129,7 @@ public slots:
     void myMoveEvent(QMouseEvent *event);
     //本例中用于修改实时数据，并调用ShowLine函数
 
-private slots:
+ private slots:
 
     void on_pushButton_clicked();
 
@@ -138,7 +138,9 @@ private slots:
     void on_pushButton_yincang_clicked();
 //    void keep_monitor();
 
-private:
+    void selectionChanged();
+
+ private:
     Ui::Charts *uiChart;
 
     int flag;

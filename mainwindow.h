@@ -9,7 +9,6 @@
 #include "SideBarButton/SideBarButton.h"
 #include <string>
 #include <QTcpSocket>
-#include "Charts/charts.h"
 #include "structH.h"
 
 using namespace std;
@@ -22,9 +21,9 @@ class MainWindow : public QMainWindow {
  Q_OBJECT
 
  public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
 
-    ~MainWindow();
+    ~MainWindow() override;
 
     vector<vector<WindowsInfo>> devices_windows_info_;//设备下窗口信息
     vector<DevicesInfo> devices_info_;//设备信息

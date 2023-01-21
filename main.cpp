@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "iostream"
 #include <QApplication>
-#include "Charts/charts.h"
 
 ///日志消息的处理函数
 void LogMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message) {
@@ -50,7 +49,7 @@ void LogMessageHandler(QtMsgType type, const QMessageLogContext &context, const 
 
 int main(int argc, char *argv[]) {
     qSetMessagePattern(
-        "%{time yyyy-MM-dd hh:mm:ss} [%{type}]%{if-warning}[%{function}]%{endif}%{if-fatal}[%{function}--%{line}]%{endif}:%{message}");
+        "%{time_ yyyy-MM-dd hh:mm:ss} [%{type}]%{if-warning}[%{function}]%{endif}%{if-fatal}[%{function}--%{line}]%{endif}:%{message}");
     qInstallMessageHandler(LogMessageHandler);//安装日志驱动
     QApplication a(argc, argv);
     MainWindow w;

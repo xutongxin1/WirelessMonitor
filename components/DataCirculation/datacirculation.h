@@ -6,7 +6,7 @@
 #define MAIN_COMPONENTS_DATACIRCULATION_DATACIRCULATION_H_
 
 #include "RepeaterWidget.h"
-#include "Charts/charts.h"
+#include "Charts/charts_next.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class DataCirculation; }
@@ -55,9 +55,9 @@ private:
 
     void StartCirculation();
 
-    void DoCirculation(const QByteArray &data, QTime data_time = QTime::currentTime());
+    void DoCirculation(const QByteArray &data, const QDateTime &data_time = QDateTime::currentDateTime());
 
-    Charts *chart_window_;
+    ChartsNext *chart_window_;
 
     struct value {
         QString name;
