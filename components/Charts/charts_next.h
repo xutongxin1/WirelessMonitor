@@ -14,7 +14,7 @@ enum DataType{ SYS_TIME , USER_TIME };
 typedef struct DataNode {
     QString name;
     QList<double> *double_list;
-    QList<QPair<double,double>> *time_double_list;
+    QList<QPair<double,double>> *data_list;
     int flag = 0;//判断是否画图不加数据,0——不画图，1——显示图，2——隐藏图但是会有数据
     DataType data_node_type;
     //long long d_size = 0;//记录数据存储大小
@@ -88,7 +88,11 @@ class ChartsNext : public RepeaterWidget {
     void monitor(const QVector<double> &addDate);
 
  public:
-    explicit ChartsNext(int DeviceNum, int winNum, QSettings *cfg, ToNewWidget *parentInfo, QWidget *parent = nullptr);
+    explicit ChartsNext(int device_num,
+                        int win_num,
+                        QSettings *cfg,
+                        ToNewWidget *parentInfo,
+                        QWidget *parent = nullptr);
 
     ~ChartsNext();
 
@@ -98,9 +102,9 @@ class ChartsNext : public RepeaterWidget {
     unsigned char CurrentData;
 
     //！！！公开函数！！！
-    bool registerData(const QString &addName, DataType datatype = USER_TIME);
+    bool RegisterDataPoint(const QString &point_name);
 
-    bool antiRegisterData(QString addName);
+    bool AntiRegisterDataPoint(const QString &point_name);
 
     [[maybe_unused]] bool checkRegister(QString addname);
 
@@ -120,9 +124,7 @@ class ChartsNext : public RepeaterWidget {
 
  public slots:
 
-    void ShowLine(QCustomPlot *customPlot);//显示折线图
-
-    void ReadyShowLine();
+    void UpdateLine();
 
     void myMoveEvent(QMouseEvent *event);
     //本例中用于修改实时数据，并调用ShowLine函数
@@ -139,7 +141,15 @@ class ChartsNext : public RepeaterWidget {
     void selectionChanged();
 
  private:
-    Ui::charts_next *uiChart;
+    Ui::charts_next *ui_chart_;
+
+    QCustomPlot *custom_plot_;
+
+    QList<DataNode> data_pool_;//数据池
+
+    QVector<QVector<singaldata> *> data_pool_index_;//指针索引，加快添加数据时的速度
+
+    TimeType chart_time_type_ = PROGRAM_TIME;
 
     int flag;
     double timer_count = 0.0;
@@ -149,6 +159,9 @@ class ChartsNext : public RepeaterWidget {
     bool timeHasInit = false;
     //DataReceiverNext *thread;
 //    Thread *thread;
+
+
+    void UpdateDataPoolIndex();
 };
 
 #endif // ChartsNext_H

@@ -150,7 +150,7 @@ void MainWindow::DeviceWindowsInit() {
                     // lulu_test
                     QVector<double> a;
                     test_1->registerData("test", USER_TIME);
-                    // test_1->registerData("test",SYS_TIME);
+                    // test_1->RegisterDataPoint("test",SYS_TIME);
                     break;
                 }
                 case 52:devices_windows_info_[device_num][win_num].type = DATA_CIRCULATION;  // 结构体初始化
