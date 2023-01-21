@@ -15,7 +15,7 @@ class TCPInfoHandle : public QTcpSocket {
     void HasConnected();//防止与原生方法冲突
     void HasDisconnected();
 
-    void RecNewData(QByteArray data, QString ip, int port, QTime time);
+    void RecNewData(QByteArray data, QString ip, int port, QDateTime time);
 
  public:
     TCPInfoHandle(QObject *parent = nullptr);

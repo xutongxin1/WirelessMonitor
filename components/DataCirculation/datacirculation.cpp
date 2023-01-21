@@ -8,9 +8,9 @@
 //TODO:添加数据流关闭按钮
 #include "datacirculation.h"
 
-#include <QDebug>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QFile>
 
 #include "ui_DataCirculation.h"
 
@@ -27,6 +27,7 @@ DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, To
     this->tcp_info_handler_[1] = (*(parent_info->devices_info))[device_num].tcp_info_handler[1];
     this->tcp_info_handler_[2] = (*(parent_info->devices_info))[device_num].tcp_info_handler[2];
     this->tcp_info_handler_[3] = (*(parent_info->devices_info))[device_num].tcp_info_handler[3];
+
 
     DataCirculation::GetConstructConfig();
     ui_->comProcessMode->setCurrentIndex(process_mode_);
@@ -72,7 +73,7 @@ DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, To
       int i = 0;
       while (!file.atEnd()) {
           QByteArray line = file.readLine();
-          this->DoCirculation(line, chart_window_->startedTime.addSecs(i++));
+          this->DoCirculation(line, QDateTime::currentDateTime());
         }
         //        QByteArray allArray = file.readAll();
         //        QString allStr = QString(allArray);
@@ -195,9 +196,11 @@ void DataCirculation::StartCirculation()
     ui_->btnStart->setEnabled(false);
     // 检查变量组
 
-    for (auto &value : values_) {
-        chart_window_->antiRegisterData(value.name);
-    }
+//    for (auto &value : values_) {
+//        chart_window_->AntiRegisterDataPoint(value.name);
+//    }//依次反注册数据点
+
+    chart_window_->AntiRegisterAllDataPoint();//反注册所有数据点
     values_.clear();
     int row = ui_->tableWidget->rowCount();
     for (int i = 0; i < row; i++) {
@@ -206,19 +209,29 @@ void DataCirculation::StartCirculation()
                 ui_->tableWidget->item(i, 0)->text(), ""
             };
         values_.emplace_back(tmp_value);
-        chart_window_->registerData(tmp_value.name);
+        chart_window_->RegisterDataPoint(tmp_value.name);
     }
+
+    chart_window_->UpdateDataPoolIndex();
+    chart_window_->SetProgramTime();
+    chart_window_->paint_timer_->start();
 
     // 绑定数据进入过滤
     if (tcp_info_handler_[1]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN && tcp_info_handler_[1]->is_connected_) {
         qDebug() << "绑定一号通道进入解析";
         connect(tcp_info_handler_[1], &TCPInfoHandle::RecNewData, this,
-                [&](const QByteArray &data, const QString &ip, int port, QTime time) { this->DoCirculation(data); });
+                [&](const QByteArray &data,
+                    const QString &ip,
+                    int port,
+                    QDateTime time) { this->DoCirculation(data); });
     }
     if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN && tcp_info_handler_[2]->is_connected_) {
         qDebug() << "绑定二号通道进入解析";
         connect(tcp_info_handler_[2], &TCPInfoHandle::RecNewData, this,
-                [&](const QByteArray &data, const QString &ip, int port, QTime time) { this->DoCirculation(data); });
+                [&](const QByteArray &data,
+                    const QString &ip,
+                    int port,
+                    QDateTime time) { this->DoCirculation(data); });
     }
 
     // 完成绑定
@@ -230,7 +243,7 @@ void DataCirculation::StartCirculation()
 
 /// 对目标数据进行过滤
 ///  \param data 过滤目标数据
-void DataCirculation::DoCirculation(const QByteArray &data, QTime data_time) {
+void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &data_time) {
     QString strtmp = data;
     qDebug("准备解析数据%s,时间%s", qPrintable(strtmp), qPrintable(data_time.toString("h:m:s")));
     QStringList buffer;
@@ -253,7 +266,7 @@ void DataCirculation::DoCirculation(const QByteArray &data, QTime data_time) {
                 double num = circulation_str.toDouble(&ok);
                 if (ok) {
                     qDebug("解析成功 %f", num);
-                    chart_window_->updateData(ui_->tableWidget->item(0, 0)->text(), data_time, num);
+                    chart_window_->AddDataWithProgramTime(ui_->tableWidget->item(0, 0)->text(), num, data_time);
                 } else {
                     qCritical("%s 解析失败", qPrintable(circulation_str));
                     QMessageBox::critical(this, tr("错误"), tr("解析错误"));

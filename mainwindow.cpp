@@ -13,6 +13,7 @@
 #include "SideBarButton/SideBarButton.h"
 #include "TCPBridgeConfiguration/tcpbridgeconfiguration.h"
 #include "TCPCom/Tcpcom.h"
+#include "Charts/charts_next.h"
 
 int record_DeviceNum = 0, record_WinNum = 0;
 
@@ -139,8 +140,9 @@ void MainWindow::DeviceWindowsInit() {
                     record_WinNum = win_num;
 
                     devices_windows_info_[device_num][win_num].type = MAIN_CHART;  // 结构体初始化
-                    Charts
-                        *test_1 = new Charts(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
+                    ChartsNext
+                        *test_1 =
+                        new ChartsNext(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
                     devices_windows_info_[device_num][win_num].widget = test_1;
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
@@ -149,8 +151,7 @@ void MainWindow::DeviceWindowsInit() {
                     // 测试数据添加
                     // lulu_test
                     QVector<double> a;
-                    test_1->registerData("test", USER_TIME);
-                    // test_1->RegisterDataPoint("test",SYS_TIME);
+                    test_1->RegisterDataPoint("test");
                     break;
                 }
                 case 52:devices_windows_info_[device_num][win_num].type = DATA_CIRCULATION;  // 结构体初始化
@@ -214,21 +215,24 @@ void MainWindow::DeviceExchange(int device_num) {
  * @param win_num 窗口号
  */
 void MainWindow::DeviceWindowsExchange(int device_num, int win_num) {
-  //    if(devices_windows_info_[Device_Num][win_num].index==0)
-  //    {
-  //        ErrorHandle("尝试打开不存在的窗口");
-  //    }
-  qDebug("try to switch %d device, %d windows", device_num, win_num);
-  //    devices_info_[device_num_].tab_widget->setTabActive(win_num);
-  if (devices_info_[device_num].config_step < win_num) {
-    //TODO:添加提醒用户完成上一步骤
-    qDebug("Switch Failed");
-    devices_info_[device_num].tab_widget->setCurrentTab(devices_info_[device_num].current_window - 1,
-                                                        false);//把高亮回到该窗口（但受限于库底层，我无法解决它）
-    return;
-  }
-  ui_->FunctionWindow->setCurrentIndex(devices_windows_info_[device_num][win_num].index);
-  devices_info_[device_num].current_window = win_num;
+    //    if(devices_windows_info_[Device_Num][win_num].index==0)
+    //    {
+    //        ErrorHandle("尝试打开不存在的窗口");
+    //    }
+    qDebug("try to switch %d device, %d windows", device_num, win_num);
+    //    devices_info_[device_num_].tab_widget->setTabActive(win_num);
+#if DEBUG
+#else
+    if (devices_info_[device_num].config_step < win_num) {
+        //TODO:添加提醒用户完成上一步骤
+        qDebug("Switch Failed");
+        devices_info_[device_num].tab_widget->setCurrentTab(devices_info_[device_num].current_window - 1,
+                                                            false);//把高亮回到该窗口（但受限于库底层，我无法解决它）
+        return;
+    }
+#endif
+    ui_->FunctionWindow->setCurrentIndex(devices_windows_info_[device_num][win_num].index);
+    devices_info_[device_num].current_window = win_num;
 }
 
 void MainWindow::NewWindowCreate() {

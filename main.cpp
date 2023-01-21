@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "iostream"
 #include <QApplication>
-#include "Charts/charts.h"
 
 ///日志消息的处理函数
 void LogMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message) {

@@ -33,28 +33,6 @@ namespace Ui {
 class charts_next;
 }
 
-class DataReceiverNext : public QThread {
- Q_OBJECT
- public:
-    //获取DataReceiverNext单例实例
-    static DataReceiverNext *getInstance(void);
-
-    explicit DataReceiverNext(QObject *parent = nullptr);
-
-    //~DataReceiverNext();
-    void stop();
-
- protected:
-    void run() override;
-
- private:
-    QMutex mutex;
-
- signals:
-
-    void oneDataReady();
-};
-
 /*
 class Thread:public QThread
 {
@@ -76,7 +54,7 @@ signals:
 class ChartsNext : public RepeaterWidget {
  Q_OBJECT
 
-//friend bool AddDate(QString addname, const QVector<double> &addDate, ChartsNext *Chart);
+    //friend bool AddDate(QString addname, const QVector<double> &addDate, ChartsNext *Chart);
     friend class MainWindow;
 
     friend class ChartThread;
@@ -91,28 +69,30 @@ class ChartsNext : public RepeaterWidget {
     explicit ChartsNext(int device_num,
                         int win_num,
                         QSettings *cfg,
-                        ToNewWidget *parentInfo,
+                        ToNewWidget *parent_info,
                         QWidget *parent = nullptr);
 
     ~ChartsNext();
 
     double Buff[100];    //数据缓冲数组
 
-    //实时数据，嵌入式系统中，可将下位机传上来的数据存于此变量中
-    unsigned char CurrentData;
 
     //！！！公开函数！！！
     bool RegisterDataPoint(const QString &point_name);
 
     bool AntiRegisterDataPoint(const QString &point_name);
+    bool AntiRegisterAllDataPoint();
 
-    [[maybe_unused]] bool checkRegister(QString addname);
+    [[maybe_unused]] bool IsDataPointRegistter(const QString &addname);
 
-    bool updateData(const QString &addName, double data);
+    bool AddDataAuto(const QString &point_name, double data);
 
-    bool updateData(const QString &addName, double ChangeTime, double data);
+    bool AddDataWithProgramTime(const QString &point_name, double data, double program_time);
+    bool AddDataWithProgramTime(const QString &point_name,
+                                double data,
+                                const QDateTime &time);
 
-    bool updateData(const QString &addName, QTime ChangeTime, double data);
+    bool AddDataWithDateTime(const QString &point_name, double data, QDateTime *date_time);
 
 //    bool updateData2(QString addname, double ChangeTime , double ChangeData);
 
@@ -120,7 +100,11 @@ class ChartsNext : public RepeaterWidget {
 
     void test(const QVector<double> &addDate);
 
-    QTime startedTime;
+    void UpdateDataPoolIndex();
+
+    void SetProgramTime();
+
+    QTimer *paint_timer_;
 
  public slots:
 
@@ -132,8 +116,6 @@ class ChartsNext : public RepeaterWidget {
  private slots:
 
     void on_pushButton_clicked();
-
-    void on_pushButton_add_clicked();
 
     void on_pushButton_yincang_clicked();
 //    void keep_monitor();
@@ -147,21 +129,22 @@ class ChartsNext : public RepeaterWidget {
 
     QList<DataNode> data_pool_;//数据池
 
-    QVector<QVector<singaldata> *> data_pool_index_;//指针索引，加快添加数据时的速度
+    QHash<QString, DataNodeIndex> data_pool_index_;//指针索引，加快添加数据时的速度
 
     TimeType chart_time_type_ = PROGRAM_TIME;
 
     int flag;
     double timer_count = 0.0;
     bool checked = 1;
-    QTimer *timerChart;
 
     bool timeHasInit = false;
+
+    long double program_begin_time_;
     //DataReceiverNext *thread;
 //    Thread *thread;
 
 
-    void UpdateDataPoolIndex();
+
 };
 
 #endif // ChartsNext_H

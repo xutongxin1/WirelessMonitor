@@ -1,17 +1,16 @@
 #include "charts_next.h"
 #include "ui_charts_next.h"
-#include <string.h>
+
 #include <QDebug>
 #include <QPair>
 
-Q_GLOBAL_STATIC(DataReceiverNext, s_DataReceiverNext)
 //QList方便与图例顺序对应
 
 //打开通道不能移动和放缩，默认和关闭可以
 //DataPairs是负责后台更新维护显示数据的，因为图表显示需要double数组。
 //Data_pools是中间数据池，用容器去维护。
 //收到的数据存在这个容器(数据池)，然后调用addData。存进去之前先确保是否已经存在这个名称，不然会继续往相同名称里加
-//QHash<QString, Datanode> Data_pools;
+//QHash<QString, Datanode> data_pool_index_;
 bool hide_flag = 1;//1是关闭隐藏，0是开启隐藏
 /*颜色笔可选颜色，默认为红
  */
@@ -39,7 +38,7 @@ bool hide_flag = 1;//1是关闭隐藏，0是开启隐藏
 //QThread * move_thread = new QThread();
 //graph.setPen,setName。每个曲线都会独占一个graph
 
-ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget *parentInfo, QWidget *parent) :
+ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent) :
     RepeaterWidget(parent),
     ui_chart_(new Ui::charts_next) {
     ui_chart_->setupUi(this);
@@ -48,29 +47,18 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
     this->cfg_ = cfg;
     this->group_name_ = "Win" + QString::number(win_num);
     this->device_num_ = device_num;
-    this->parent_info_ = parentInfo;
-    startedTime = QTime::currentTime();
+    this->parent_info_ = parent_info;
 
-    (*(parentInfo->devices_info))[device_num].has_chart = true;
-//    (*(parentInfo->devices_info))[DeviceNum].charts_windows = this;
+    (*(parent_info->devices_info))[device_num].has_chart = true;
+    (*(parent_info->devices_info))[device_num].charts_windows = this;
 
-    timerChart = new QTimer(this);
-    timerChart->setInterval(500);
+    paint_timer_ = new QTimer(this);
+    paint_timer_->setInterval(100);
 
+    connect(paint_timer_, &QTimer::timeout, this, [&] {
+      UpdateLine();
+    });//绘图定时器
 
-//    timerChart->start();
-//    DataReceiverNext::getInstance()->start();
-//    connect(DataReceiverNext::getInstance(),
-//            &DataReceiverNext::oneDataReady,
-//            this,
-//            [&] { ShowLine(ui_chart_->widget); });
-
-    //connect(timerChart, &QTimer::timeout, this,[&]{timer_count++;updateData("test",timer_count);});
-    connect(timerChart, &QTimer::timeout, this, [&] {
-      timer_count++;
-      updateData("test", timer_count, 1.0);
-    });
-//    updateData2("test",5.0,1.0);
 
 // Allow user to drag axis ranges with mouse, zoom with mouse wheel and select graphs by clicking:
     //chart配置               ui_chart_->widget->graph(i)->setName();
@@ -113,11 +101,12 @@ ChartsNext::~ChartsNext() {
 
 void ChartsNext::UpdateLine() {
     for (int i = 0; i < data_pool_.size(); i++) {
-        if (data_pool_.at(i).last_draw_index == 0)//首次绘制(或修改颜色后首次)
+        if (data_pool_.at(i).last_draw_index == -1)//首次绘制(或修改颜色后首次)
         {
             QPen pen;
             pen.setWidth(data_pool_.at(i).line_width);//设置线宽,默认是2
             pen.setColor(data_pool_.at(i).line_color);//设置线条红色
+            custom_plot_->addGraph();
             custom_plot_->graph(i)->setPen(pen);
             custom_plot_->graph(i)->setName(data_pool_.at(i).data_name);
             if (data_pool_.at(i).is_visible) {
@@ -125,25 +114,29 @@ void ChartsNext::UpdateLine() {
             } else {
                 custom_plot_->graph(i)->setVisible(false);
             }
+            data_pool_[i].last_draw_index = 0;
+
         }
         if (data_pool_.at(i).is_update) {
             this->data_pool_[i].is_update = false;
 
-            for (int j = data_pool_.at(i).last_draw_index; j < data_pool_.at(i).data_list->size(); j++) {
+            for (int j = data_pool_.at(i).last_draw_index; j < data_pool_.at(i).data_list.size(); j++) {
 
                 if (chart_time_type_ == DATA_TIME) {
-                    custom_plot_->graph(i)->addData(data_pool_[i].data_list->at(j).time.data_time_.toTime_t(),
-                                                    data_pool_[i].data_list->at(j).data
+                    custom_plot_->graph(i)->addData(data_pool_[i].data_list.at(j).time.date_time_->toTime_t(),
+                                                    data_pool_[i].data_list.at(j).data
                     );
                 } else {
                     custom_plot_->graph(i)->addData(
-                        data_pool_[i].data_list->at(j).time.program_time_,
-                        data_pool_[i].data_list->at(j).data);
+                        data_pool_[i].data_list.at(j).time.program_time_,
+                        data_pool_[i].data_list.at(j).data);
                 }
             }
-            data_pool_[i].last_draw_index = data_pool_[i].data_list->size();
+            data_pool_[i].last_draw_index = data_pool_[i].data_list.size();
+            custom_plot_->graph(0)->rescaleAxes();
         }
     }
+
     custom_plot_->replot(QCustomPlot::rpQueuedReplot);
 }
 
@@ -236,7 +229,6 @@ void ChartsNext::on_pushButton_clicked() {
 /*****
  * registerData是给外界的接口作用是增加可以绘图的变量，因此不用ui界面互动。
  * 如果识别到就先提前加图层准备画图
- * type两种类型，sys_time系统定时, user_time用户提供时间
  * 成功返回1，失败0
 *****/
 bool ChartsNext::RegisterDataPoint(const QString &point_name) {
@@ -244,8 +236,8 @@ bool ChartsNext::RegisterDataPoint(const QString &point_name) {
 
     struct DataNode node;
     node.data_name = point_name;
-    QVector<singaldata> data_tmp;
-    node
+//    QVector<singaldata> data_tmp;
+//    node.data_list = &data_tmp;
     data_pool_.append(node);
 
     qDebug() << "RegisterDataPoint:register success!" << endl;
@@ -273,10 +265,19 @@ void ChartsNext::on_pushButton_yincang_clicked() {
 *****/
 bool ChartsNext::AntiRegisterDataPoint(const QString &point_name) {
     qDebug() << "反注册变量 " << point_name;
-    //删除数据池里的数据和pair里的数据
+    //释放DataTime里的对象（如果使用了DATA_TIME），然后释放data_list，最后释放data_pool_的对应节点
     QList<DataNode>::iterator i;
     for (i = data_pool_.begin(); i != data_pool_.end(); ++i) {
         if (i->data_name == point_name) {
+            if (chart_time_type_ == DATA_TIME) {//释放DataTime里的对象（如果使用了DATA_TIME）
+                for (QVector<singaldata>::iterator j = i->data_list.begin(); j != i->data_list.end(); j++) {
+                    delete j->time.date_time_;
+                }
+            }
+            //释放data_list
+            i->data_list.clear();
+
+            //释放data_pool_的对应节点
             i = data_pool_.erase(i);
 //            i--;//让迭代器去指向下一个元素，这样for循环才不会出错
             return true;
@@ -292,38 +293,56 @@ bool ChartsNext::AntiRegisterDataPoint(const QString &point_name) {
  * 中介是Data_pools
  * 成功返回1，失败0
 *****/
-bool ChartsNext::updateData(const QString &addName, double data) {
-//    if (Data_pools.contains(addName)) {
-//
-//        Data_pools[addName].double_list->Append(ChangeData);
-//
-//        return true;
-//    }
-//    else {
-//        qDebug() << "updateData: find fail！" << endl;
-//        return false;
-//    }
-//    qDebug() << "updateData: fail！" << endl;
-//    return 0;
-    return updateData(addName, QTime::currentTime(), data);
+bool ChartsNext::AddDataAuto(const QString &point_name, double data) {
+    if (chart_time_type_ == PROGRAM_TIME) {
+        return AddDataWithProgramTime(point_name,
+                                      data,
+                                      double(QDateTime::currentMSecsSinceEpoch() / (long double) 1000
+                                                 - program_begin_time_));//上限精度
+    } else {
+        return AddDataWithDateTime(point_name, data, new QDateTime(QDateTime::currentDateTime()));
+    }
 }
 
-bool ChartsNext::updateData(const QString &addName, QTime ChangeTime, double data) {
-    qDebug("启动时间%s,更新时间%s", qPrintable(startedTime.toString("h:m:s")), qPrintable(ChangeTime.toString("h:m:s")));
-    qDebug("时间差%.02f", (double) startedTime.msecsTo(ChangeTime) / 1000.0);
-    return updateData(addName, (double) startedTime.msecsTo(ChangeTime) / 1000, data);
+bool ChartsNext::AddDataWithProgramTime(const QString &point_name,
+                                        double data,
+                                        const QDateTime &time) {
+    return AddDataWithProgramTime(point_name,
+                                  data,
+                                  double(time.toMSecsSinceEpoch() / (long double) 1000
+                                             - program_begin_time_));//上限精度
 }
 
-bool ChartsNext::updateData(const QString &addName, double ChangeTime, double data) {
-    if (Data_pools.contains(addName)) {
-        QPair<double, double> *temppair = new QPair<double, double>;
-        temppair->first = ChangeTime;
-        temppair->second = data;
-        Data_pools[addName].data_list->append(*temppair);
-        qDebug("添加数据%s,时间%.2f", qPrintable(addName), ChangeTime);
+bool ChartsNext::AddDataWithProgramTime(const QString &point_name, double data, double program_time) {
+//    qDebug("启动时间%.02f,更新时间%.02f", program_begin_time_, program_time);
+//    qDebug("时间差%.02f", (double) program_time - program_begin_time_);
+    if (data_pool_index_.contains(point_name)) {
+        struct singaldata tmp;
+        tmp.data = data;
+        tmp.time.program_time_ = (double) program_time;//降低上限精度
+
+        struct DataNodeIndex index_tmp = data_pool_index_.value(point_name);
+        index_tmp.data_list->append(tmp);
+        *(index_tmp.is_update) = true;
+        qDebug("添加数据%.02f,时间%.02f", data, (double) program_time);
+    } else {
+        qDebug() << "AddDataWithProgramTime: find point fail！" << endl;
+        return false;
+    }
+
+}
+
+bool ChartsNext::AddDataWithDateTime(const QString &point_name, double data, QDateTime *date_time) {
+    if (data_pool_index_.contains(point_name)) {
+        struct singaldata tmp;
+        tmp.data = data;
+        tmp.time.date_time_ = date_time;
+        struct DataNodeIndex index_tmp = data_pool_index_.value(point_name);
+        index_tmp.data_list->append(tmp);
+        qDebug("添加数据%.02f,时间%s", data, qPrintable(date_time->toString("dd.MM.yyyy h:m:s ap")));
         return true;
     } else {
-        qDebug() << "updateData: find fail！" << endl;
+        qDebug() << "AddDataWithDateTime: find point fail！" << endl;
         return false;
     }
 }
@@ -332,16 +351,21 @@ void ChartsNext::UpdateDataPoolIndex() {
     data_pool_index_.clear();//清除索引
     QList<DataNode>::iterator i;
     for (i = data_pool_.begin(); i != data_pool_.end(); ++i) {
-        data_pool_index_.append(i->data_list);//添加到索引
+        struct DataNodeIndex tmp = {
+            .data_list =  &(i->data_list),
+            .is_update = &(i->is_update),
+            .last_draw_index = &(i->last_draw_index)
+        };
+        data_pool_index_.insert(i->data_name, tmp);//添加到索引
     }
 }
 /*****
- * checkRegister
+ * IsDataPointRegistter
  * 检测是否注册过的接口
  * 成功找到返回1，失败0
 *****/
-[[maybe_unused]] bool ChartsNext::checkRegister(QString addname) {
-    if (Data_pools.contains(addname)) {
+[[maybe_unused]] bool ChartsNext::IsDataPointRegistter(const QString &addname) {
+    if (data_pool_index_.contains(addname)) {
         qDebug() << "check: find！" << endl;
         return true;
     } else {
@@ -375,29 +399,25 @@ void ChartsNext::selectionChanged() {
         }
     }
 }
+void ChartsNext::SetProgramTime() {
+    program_begin_time_ = (QDateTime::currentMSecsSinceEpoch() / (long double) 1000);
+}
+bool ChartsNext::AntiRegisterAllDataPoint() {
+    qDebug() << "反注册全部变量 ";
+    for (QList<DataNode>::iterator i = data_pool_.begin(); i != data_pool_.end(); ++i) {
 
-///****************************************************/
-//DataReceiverNext *DataReceiverNext::getInstance() {
-//    return s_DataReceiverNext;
-//}
-//
-//DataReceiverNext::DataReceiverNext(QObject *parent) : QThread(parent) {}
-//
-//void DataReceiverNext::stop() {
-//    this->requestInterruption();
-//}
-//
-//void DataReceiverNext::run() {
-//    while (!isInterruptionRequested()) {
-//
-//        //qDebug() << "xianchengrun"<< endl;
-//        mutex.lock();
-//        emit oneDataReady();
-//        mutex.unlock();
-//
-//
-//        //短暂睡眠让出线程
-//        msleep(100);//不加这句CPU占用率高达50%
-//    }
-//}
-//
+        if (chart_time_type_ == DATA_TIME) {//释放DataTime里的对象（如果使用了DATA_TIME）
+            for (QVector<singaldata>::iterator j = i->data_list.begin(); j != i->data_list.end(); ++j) {
+                delete j->time.date_time_;
+            }
+        }
+        //释放data_list
+        i->data_list.clear();
+
+        //释放data_pool_的对应节点
+        i = data_pool_.erase(i);
+        i--;//让迭代器去指向下一个元素，这样for循环才不会出错
+    }
+    custom_plot_->clearGraphs();
+    return true;
+}

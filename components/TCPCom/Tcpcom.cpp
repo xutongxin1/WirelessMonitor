@@ -9,7 +9,7 @@
 #include "quihelper.h"
 #include "quihelperdata.h"
 
-#define DEBUG 1
+
 
 /*
  * TODO:shell语法高亮，使用正则表达式https://c.runoob.com_/front-end/
@@ -59,13 +59,13 @@ TcpCom::TcpCom(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_
       //数据接收绑定
       if (tcp_info_handler_[1]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN) {
           connect(tcp_info_handler_[1], &TCPInfoHandle::RecNewData, this,
-                  [&](const QByteArray &data, const QString &ip, int port, QTime time) {
+                  [&](const QByteArray &data, const QString &ip, int port, QDateTime time) {
                     this->GetData(data, port);
                   });
       }
       if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN) {
           connect(tcp_info_handler_[2], &TCPInfoHandle::RecNewData, this,
-                  [&](const QByteArray &data, const QString &ip, int port, QTime time) {
+                  [&](const QByteArray &data, const QString &ip, int port, QDateTime time) {
                     this->GetData(data, port);
                   });
       }
@@ -106,13 +106,13 @@ TcpCom::TcpCom(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_
         //数据接收绑定
         if (tcp_info_handler_[1]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN) {
             connect(tcp_info_handler_[1], &TCPInfoHandle::RecNewData, this,
-                    [&](const QByteArray &data, const QString &ip, int port, QTime time) {
+                    [&](const QByteArray &data, const QString &ip, int port, QDateTime time) {
                       this->GetData(data, port);
                     });
         }
         if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN) {
             connect(tcp_info_handler_[2], &TCPInfoHandle::RecNewData, this,
-                    [&](const QByteArray &data, const QString &ip, int port, QTime time) {
+                    [&](const QByteArray &data, const QString &ip, int port, QDateTime time) {
                       this->GetData(data, port);
                     });
         }
