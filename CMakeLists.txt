@@ -60,12 +60,13 @@ set_target_properties(
         ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
         MACOSX_BUNDLE TRUE)
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND cp -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/Debug
-        )#给Clion等win环境使用
+#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#        COMMAND cp -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/Debug
+#        )#给Clion等win环境使用
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND cp -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND cp.exe -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/thirdPartyTool/cp
         )#QTCreator或者linux环境使用
 
 if (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/Debug/resource")
