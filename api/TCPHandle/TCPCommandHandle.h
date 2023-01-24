@@ -29,10 +29,10 @@ class TCPCommandHandle : public QTcpSocket {
     void StartInfoConnection();
     void StopInfoConnection();
  public:
-    TCPCommandHandle(QObject *parent = nullptr);
-    bool is_connected_;
-    bool is_working_;
-    bool is_finish_last_work_;
+    explicit TCPCommandHandle(QObject *parent = nullptr);
+    bool is_connected_=false;
+//    bool is_working_{};
+//    bool is_finish_last_work_{};
 
     void SendHeart();
 
@@ -50,7 +50,7 @@ class TCPCommandHandle : public QTcpSocket {
 
     static QString GetStringFromJsonObject(const QJsonObject &json_object);
 
-    bool GetConnectionState() const;
+    [[nodiscard]] bool GetConnectionState() const;
 
     QString ip_;
     virtual qint64 write(const char *data, qint64 len);
@@ -61,7 +61,7 @@ class TCPCommandHandle : public QTcpSocket {
 
     virtual QByteArray read(qint64 maxlen);
 
-    virtual QByteArray readAll();
+    [[maybe_unused]] virtual QByteArray readAll();
 
 private:
     QString command_;
@@ -76,7 +76,7 @@ private:
 
     bool is_mode_set_ = false;
 
-    bool has_receive_reply_;
+    bool has_receive_reply_{};
 
     QTimer *heart_timer_;
 //    void WaitSecondOK();
