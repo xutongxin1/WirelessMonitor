@@ -63,6 +63,8 @@ class TCPCommandHandle : public QTcpSocket {
 
     [[maybe_unused]] virtual QByteArray readAll();
 
+    bool has_receive_reply_=false;
+
 private:
     QString command_;
 
@@ -76,7 +78,7 @@ private:
 
     bool is_mode_set_ = false;
 
-    bool has_receive_reply_{};
+
 
     QTimer *heart_timer_;
 //    void WaitSecondOK();

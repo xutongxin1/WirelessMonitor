@@ -12,7 +12,10 @@
 #include <QMessageBox>
 
 #include "ui_TCPBridgeConfiguration.h"
-
+//TODO:通讯链路失败 无论如何都会跳出来
+//TODO:设置失败时断开链接（写成一个函数）
+//TODO:feat:允许再应用
+//TODO:feat:允许用户断开指令通道时断开消息通道
 TCPBridgeConfiguration::TCPBridgeConfiguration(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info,
                                                QWidget *parent)
     : RepeaterWidget(parent), ui_(new Ui::TCPBridgeConfiguration) {
@@ -207,8 +210,7 @@ void TCPBridgeConfiguration::SaveConstructConfig() {
     cfg_->endGroup();
 }
 
-TCPBridgeConfiguration::~TCPBridgeConfiguration()
-{
+TCPBridgeConfiguration::~TCPBridgeConfiguration() {
     delete ui_;
 }
 
@@ -236,8 +238,7 @@ void TCPBridgeConfiguration::ChangeMode() {
         if (mode_3_ == OUTPUT) {
             mode_3_ = CLOSED;
         }
-    }
-    else {
+    } else {
         ui_->mode2->setItemData(1, -1, Qt::UserRole - 1);
         ui_->mode2->setItemData(2, -1, Qt::UserRole - 1);
         ui_->mode1->setItemData(1, -1, Qt::UserRole - 1);
@@ -465,6 +466,7 @@ void TCPBridgeConfiguration::SetUart() {
     connect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, this, [=] {
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, 0, 0);
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, 0, 0);
+      StopAllInfoTCP();
       QMessageBox::critical(this, tr("错误"), tr("设置串口失败"));
       ui_->save->setEnabled(true);
       ui_->save->setText("保存并应用");
@@ -472,21 +474,47 @@ void TCPBridgeConfiguration::SetUart() {
     connect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, this, [=] {
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, 0, 0);
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, 0, 0);
-      QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
-                               QMessageBox::Ok);
-      ui_->save->setEnabled(true);
-      ui_->save->setText("保存并应用");
-      (*(parent_info_->devices_info))[device_num_].config_step = 4;
+      if (tcp_info_handler_[1]->is_connected_ && tcp_info_handler_[2]->is_connected_
+          && tcp_info_handler_[3]->is_connected_) {
+          QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
+                                   QMessageBox::Ok);
+          ui_->save->setEnabled(true);
+          ui_->save->setText("再次保存并应用");
+          (*(parent_info_->devices_info))[device_num_].config_step = 4;
+      }
     });
 
     tcp_command_handle_->SendCommand(all, "OK!\r\n");
 
     // 超时设置
-    QTimer::singleShot(1000, this, [&] {
-      if (!(tcp_info_handler_[1]->is_connected_ && tcp_info_handler_[2]->is_connected_
+    QTimer::singleShot(2000, this, [&] {
+      if (!tcp_command_handle_->has_receive_reply_) {
+          QMessageBox::critical(this, tr("错误"), tr("设置通信链路模式失败"));
+          StopAllInfoTCP();
+          ui_->save->setEnabled(true);
+          ui_->save->setText("保存并应用");
+          (*(parent_info_->devices_info))[device_num_].config_step = 2;
+      } else if (!(tcp_info_handler_[1]->is_connected_ && tcp_info_handler_[2]->is_connected_
           && tcp_info_handler_[3]->is_connected_)) {
-          QMessageBox::critical(this, tr("错误"), tr("设置通信链路失败"));
+          StopAllInfoTCP();
+          QMessageBox::critical(this, tr("错误"), tr("连接消息服务器失败"));
+          ui_->save->setEnabled(true);
+          ui_->save->setText("保存并应用");
           (*(parent_info_->devices_info))[device_num_].config_step = 2;
       }
     });
+}
+void TCPBridgeConfiguration::StopAllInfoTCP() {
+    if(tcp_info_handler_[1]->is_connected_)
+    {
+        tcp_info_handler_[1]->disconnectFromHost();
+    }
+    if(tcp_info_handler_[2]->is_connected_)
+    {
+        tcp_info_handler_[2]->disconnectFromHost();
+    }
+    if(tcp_info_handler_[3]->is_connected_)
+    {
+        tcp_info_handler_[3]->disconnectFromHost();
+    }
 }
