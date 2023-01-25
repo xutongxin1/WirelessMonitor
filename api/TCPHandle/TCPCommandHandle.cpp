@@ -158,33 +158,33 @@ void TCPCommandHandle::WaitForMode(int mode) {
 /// 发送指令并绑定回复
 /// \param command 指令
 /// \param reply 回复
-void TCPCommandHandle::SendCommand(const QJsonObject& command, const QString& reply) {
+void TCPCommandHandle::SendCommand(const QJsonObject &command, const QString &reply) {
     TCPCommandHandle::SendCommand(GetStringFromJsonObject(command), reply);
 }
 
 /// 发送指令并绑定回复
 /// \param command 指令
 /// \param reply 回复
-void TCPCommandHandle::SendCommand(const QString& command, const QString& reply) {
+void TCPCommandHandle::SendCommand(const QString &command, const QString &reply) {
     has_receive_reply_ = false;
 
     heart_timer_->stop();
     connect(this, &QTcpSocket::readyRead, this, [&, reply] {
-              QByteArray t_2 = this->read(1024);
-              if (t_2 == reply) {
-                  //读取到心跳返回包
-                  disconnect(this, &QTcpSocket::readyRead, 0, 0);
-                  has_receive_reply_ = true;
-                  emit(SendCommandSuccess());
-                  emit(StartInfoConnection());
-                  heart_timer_->start(3000);
-              }
+                QByteArray t_2 = this->read(1024);
+                if (t_2 == reply) {
+                    //读取到心跳返回包
+                    disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
+                    has_receive_reply_ = true;
+                    emit(SendCommandSuccess());
+                    emit(StartInfoConnection());
+                    heart_timer_->start(3000);
+                }
             }
     );
     QTimer::singleShot(5000, this, [&] {
-      if (!has_receive_reply_) {
-          emit(SendCommandError());
-      }
+        if (!has_receive_reply_) {
+            emit(SendCommandError());
+        }
     });
     this->write(command.toLatin1());
 }
