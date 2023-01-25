@@ -8,7 +8,18 @@
 TCPCommandHandle::TCPCommandHandle(QObject *parent) : QTcpSocket(parent) {
     heart_timer_ = new QTimer(this);
     connect(heart_timer_, &QTimer::timeout, this, [&] {
-        this->SendHeart();//初始化定时器
+      this->SendHeart();//初始化定时器
+    });
+    send_command_timer_ = new QTimer(this);
+
+    //绑定send_command_timer_的超时事件
+    //该超时函数不会考虑断开整个连接，而只是重启心跳包发送。如果没有响应，由心跳包超时器负责
+    connect(send_command_timer_, &QTimer::timeout, this, [&] {
+      send_command_timer_->stop();
+      emit(SendCommandError());
+//      if (!has_receive_reply_) {
+//          emit(SendCommandError());
+//      }
     });
 }
 
@@ -166,7 +177,7 @@ void TCPCommandHandle::SendCommand(const QJsonObject &command, const QString &re
 /// \param command 指令
 /// \param reply 回复
 void TCPCommandHandle::SendCommand(const QString &command, const QString &reply) {
-    has_receive_reply_ = false;
+//    has_receive_reply_ = false;
 
     heart_timer_->stop();
     connect(this, &QTcpSocket::readyRead, this, [&, reply] {
@@ -174,18 +185,15 @@ void TCPCommandHandle::SendCommand(const QString &command, const QString &reply)
                 if (t_2 == reply) {
                     //读取到心跳返回包
                     disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
-                    has_receive_reply_ = true;
+//                    has_receive_reply_ = true;
+                    send_command_timer_->stop();
                     emit(SendCommandSuccess());
                     emit(StartInfoConnection());
                     heart_timer_->start(3000);
                 }
             }
     );
-    QTimer::singleShot(5000, this, [&] {
-        if (!has_receive_reply_) {
-            emit(SendCommandError());
-        }
-    });
+    send_command_timer_->start(5000);
     this->write(command.toLatin1());
 }
 

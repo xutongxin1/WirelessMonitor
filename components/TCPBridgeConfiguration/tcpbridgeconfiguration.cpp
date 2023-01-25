@@ -463,11 +463,24 @@ void TCPBridgeConfiguration::SetUart() {
     ui_->save->setEnabled(false);
     ui_->save->setText("正在设置");
 
+
+    // 检查消息线路有没有正确连接，指令执行超时由SendCommand内处理，发出SendCommandError信号
+    QTimer::singleShot(2000, this, [&] {
+      if (!(tcp_info_handler_[1]->is_connected_ && tcp_info_handler_[2]->is_connected_
+          && tcp_info_handler_[3]->is_connected_)) {
+          StopAllInfoTCP();
+          QMessageBox::critical(this, tr("错误"), tr("连接消息服务器失败"));
+          ui_->save->setEnabled(true);
+          ui_->save->setText("保存并应用");
+          (*(parent_info_->devices_info))[device_num_].config_step = 2;
+      }
+    });
+
     connect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, this, [=] {
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, 0, 0);
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, 0, 0);
       StopAllInfoTCP();
-      QMessageBox::critical(this, tr("错误"), tr("设置串口失败"));
+      QMessageBox::critical(this, tr("错误"), tr("应用串口设置失败"));
       ui_->save->setEnabled(true);
       ui_->save->setText("保存并应用");
     });
@@ -484,25 +497,8 @@ void TCPBridgeConfiguration::SetUart() {
       }
     });
 
-    tcp_command_handle_->SendCommand(all, "OK!\r\n");
+    tcp_command_handle_->SendCommand(all, "OK!\r\n");//超时处理在这里
 
-    // 超时设置
-    QTimer::singleShot(2000, this, [&] {
-      if (!tcp_command_handle_->has_receive_reply_) {
-          QMessageBox::critical(this, tr("错误"), tr("设置通信链路模式失败"));
-          StopAllInfoTCP();
-          ui_->save->setEnabled(true);
-          ui_->save->setText("保存并应用");
-          (*(parent_info_->devices_info))[device_num_].config_step = 2;
-      } else if (!(tcp_info_handler_[1]->is_connected_ && tcp_info_handler_[2]->is_connected_
-          && tcp_info_handler_[3]->is_connected_)) {
-          StopAllInfoTCP();
-          QMessageBox::critical(this, tr("错误"), tr("连接消息服务器失败"));
-          ui_->save->setEnabled(true);
-          ui_->save->setText("保存并应用");
-          (*(parent_info_->devices_info))[device_num_].config_step = 2;
-      }
-    });
 }
 void TCPBridgeConfiguration::StopAllInfoTCP() {
     if(tcp_info_handler_[1]->is_connected_)
