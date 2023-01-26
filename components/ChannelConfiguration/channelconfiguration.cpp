@@ -12,8 +12,6 @@
 
 #include "ui_ChannelConfiguration.h"
 
-//TODO:多次连接时可能出现上个连接超时的bug(需要验证)
-//TODO:设置模式失败后没有断开连接
 ChannelConfiguration::ChannelConfiguration(int device_num, QSettings *main_cfg, QSettings *device_cfg,
                                            ToNewWidget *parent_info, RepeaterWidget *parent)
     : RepeaterWidget(parent), ui_(new Ui::ChannelConfiguration) {
@@ -32,6 +30,9 @@ ChannelConfiguration::ChannelConfiguration(int device_num, QSettings *main_cfg, 
     this->tcp_command_handle_ = (*(parent_info->devices_info))[device_num].tcp_command_handler;  // 结构体这样用
     this->group_name_ = "Win1";
     ChannelConfiguration::GetConstructConfig();
+    this->tcp_info_handler_[1] = (*(parent_info->devices_info))[device_num].tcp_info_handler[1];
+    this->tcp_info_handler_[2] = (*(parent_info->devices_info))[device_num].tcp_info_handler[2];
+    this->tcp_info_handler_[3] = (*(parent_info->devices_info))[device_num].tcp_info_handler[3];
 
     //    ui_->note->setText(MainCfg->GetMainCfg(cfgText + "note"));
     //
@@ -58,7 +59,7 @@ ChannelConfiguration::ChannelConfiguration(int device_num, QSettings *main_cfg, 
     connect(ui_->Connect, &QPushButton::clicked, this, &ChannelConfiguration::OnConnect);
     connect(ui_->Disconnect, &QPushButton::clicked, this, [&] {
       tcp_command_handle_->disconnectFromHost();
-      ChannelConfiguration::OnDisconnect();
+//      ChannelConfiguration::OnDisconnect();
     });
 
     // IP地址正则表达式并应用
@@ -226,14 +227,14 @@ void ChannelConfiguration::OnConnect() {
       qInfo("等待重启后的心跳包应答");
     });
 
-    // 超时管理
+    // 全流程超时管理
     QTimer::singleShot(45000, this, [&] {
       if (ui_->progressBar->value() != 100 && !has_give_up_) {
           tcp_command_handle_->disconnectFromHost();
           QMessageBox::critical(this, tr("错误"), tr("连接流程超时"));
           //            ui_->connectionTip->setText(ui_->connectionTip->text() +
           //            "\n错误:操作超时");
-          ChannelConfiguration::OnDisconnect();
+          ChannelConfiguration::OnDisconnect();//手动调用，防止从来没连上过
           qCritical("连接超时");
       }
     });
@@ -256,10 +257,12 @@ void ChannelConfiguration::OnConnect() {
 // }
 
 /**
- * @description: 断开按钮按下事件
+ * @description: 断开指令通道后的行为（如果从未连接上指令通道，该函数不会执行）
  * @return {*}
  */
 void ChannelConfiguration::OnDisconnect() {
+    RepeaterWidget::StopAllInfoTCP();
+    QMessageBox::information(this, tr("提示"), tr("连接已断开"));
     qDebug("关闭了连接");
     ui_->progressBar->setValue(0);
     ui_->connectionTip->setText("");

@@ -51,6 +51,8 @@ public:
 
     TCPInfoHandle *tcp_info_handler_[4];
 
+    void StopAllInfoTCP();
+
 };
 
 #endif //MAIN_API_REPEATERWIDGET_REPEATERWIDGET_H_

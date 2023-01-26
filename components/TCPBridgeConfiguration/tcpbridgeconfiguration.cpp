@@ -12,8 +12,6 @@
 #include <QMessageBox>
 
 #include "ui_TCPBridgeConfiguration.h"
-//TODO:通讯链路失败 无论如何都会跳出来
-//TODO:设置失败时断开链接（写成一个函数）
 //TODO:feat:允许再应用
 //TODO:feat:允许用户断开指令通道时断开消息通道
 TCPBridgeConfiguration::TCPBridgeConfiguration(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info,
@@ -391,23 +389,16 @@ void TCPBridgeConfiguration::RefreshBox() {
  * @return {*}
  */
 void TCPBridgeConfiguration::SetUart() {
+
     if (!tcp_command_handle_->GetConnectionState()) {
         qDebug() << "No connection found";
         return;
     }
     this->ip_ = tcp_command_handle_->ip_;
 
-    // 连接信号服务器
-    if (!tcp_info_handler_[1]->is_connected_) {
-        tcp_info_handler_[1]->connectToHost(ip_, 1921, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
-    }
-    if (!tcp_info_handler_[2]->is_connected_) {
-        tcp_info_handler_[2]->connectToHost(ip_, 1922, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
-    }
-    if (!tcp_info_handler_[3]->is_connected_) {
-        tcp_info_handler_[3]->connectToHost(ip_, 1923, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
-    }
-
+    ui_->save->setEnabled(false);
+    ui_->save->setText("正在设置");
+    StopAllInfoTCP();//关闭之前的信号通道
     // 构造配置文件
     QJsonObject c_1;
     if (mode_1_ == CLOSED) {
@@ -460,9 +451,18 @@ void TCPBridgeConfiguration::SetUart() {
     all.insert("c_2", c_2);
     all.insert("c_3", c_3);
 
-    ui_->save->setEnabled(false);
-    ui_->save->setText("正在设置");
 
+
+    // 连接信号服务器
+    if (!tcp_info_handler_[1]->is_connected_) {
+        tcp_info_handler_[1]->connectToHost(ip_, 1921, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+    }
+    if (!tcp_info_handler_[2]->is_connected_) {
+        tcp_info_handler_[2]->connectToHost(ip_, 1922, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+    }
+    if (!tcp_info_handler_[3]->is_connected_) {
+        tcp_info_handler_[3]->connectToHost(ip_, 1923, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+    }
 
     // 检查消息线路有没有正确连接，指令执行超时由SendCommand内处理，发出SendCommandError信号
     QTimer::singleShot(2000, this, [&] {
@@ -499,18 +499,4 @@ void TCPBridgeConfiguration::SetUart() {
 
     tcp_command_handle_->SendCommand(all, "OK!\r\n");//超时处理在这里
 
-}
-void TCPBridgeConfiguration::StopAllInfoTCP() {
-    if(tcp_info_handler_[1]->is_connected_)
-    {
-        tcp_info_handler_[1]->disconnectFromHost();
-    }
-    if(tcp_info_handler_[2]->is_connected_)
-    {
-        tcp_info_handler_[2]->disconnectFromHost();
-    }
-    if(tcp_info_handler_[3]->is_connected_)
-    {
-        tcp_info_handler_[3]->disconnectFromHost();
-    }
 }

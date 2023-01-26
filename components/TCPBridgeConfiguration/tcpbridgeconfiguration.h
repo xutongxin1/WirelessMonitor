@@ -36,7 +36,6 @@ class TCPBridgeConfiguration : public RepeaterWidget {
       FOLLOW_3_INPUT
     };
 
-    void StopAllInfoTCP();
  private:
     Ui::TCPBridgeConfiguration *ui_;
     IoMode mode_1_ = CLOSED;
@@ -60,8 +59,6 @@ class TCPBridgeConfiguration : public RepeaterWidget {
 
 
     class TCPCommandHandle *tcp_command_handle_;
-
-    TCPInfoHandle *tcp_info_handler_[4];
 
     void ChangeMode();
 
