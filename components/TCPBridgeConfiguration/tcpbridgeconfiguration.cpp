@@ -496,6 +496,7 @@ void TCPBridgeConfiguration::SetUart() {
           ui_->save->setEnabled(true);
           ui_->save->setText("再次保存并应用");
           (*(parent_info_->devices_info))[device_num_].config_step = 4;
+          emit(OrderExchangeWindow(device_num_, 3));
       }
     });
 

@@ -266,6 +266,7 @@ void ChannelConfiguration::OnDisconnect() {
     RepeaterWidget::StopAllInfoTCP();
     QMessageBox::information(this, tr("提示"), tr("连接已断开"));
     qDebug("关闭了连接");
+    emit(OrderExchangeWindow(device_num_, 1));
     ui_->progressBar->setValue(0);
     ui_->connectionTip->setText("");
     ui_->IP->setEnabled(true);
