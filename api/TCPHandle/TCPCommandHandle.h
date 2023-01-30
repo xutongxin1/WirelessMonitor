@@ -45,8 +45,8 @@ class TCPCommandHandle : public QTcpSocket {
 
     void SetMode(int mode);
 
-    void SendCommand(const QJsonObject& command, const QString& reply);
-    void SendCommand(const QString& command,const QString& reply);
+    void SendCommand(const QJsonObject &command, const QString &reply);
+    void SendCommand(const QByteArray &command, const QString &reply);
 
     static QString GetStringFromJsonObject(const QJsonObject &json_object);
 

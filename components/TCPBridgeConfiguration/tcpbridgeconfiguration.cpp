@@ -12,8 +12,7 @@
 #include <QMessageBox>
 
 #include "ui_TCPBridgeConfiguration.h"
-//TODO:feat:允许再应用
-//TODO:feat:允许用户断开指令通道时断开消息通道
+
 TCPBridgeConfiguration::TCPBridgeConfiguration(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info,
                                                QWidget *parent)
     : RepeaterWidget(parent), ui_(new Ui::TCPBridgeConfiguration) {
@@ -445,13 +444,16 @@ void TCPBridgeConfiguration::SetUart() {
         c_3.insert("parity", parity_3_);
         c_3.insert("data", data_bit_3_);
     }
-    QJsonObject all;
+    QJsonObject attach;
 
-    all.insert("c_1", c_1);
-    all.insert("c_2", c_2);
-    all.insert("c_3", c_3);
+    attach.insert("c_1", c_1);
+    attach.insert("c_2", c_2);
+    attach.insert("c_3", c_3);
 
+    QJsonObject command;
 
+    command.insert("command", 220);
+    command.insert("attach", attach);
 
     // 连接信号服务器
     if (!tcp_info_handler_[1]->is_connected_) {
@@ -477,16 +479,16 @@ void TCPBridgeConfiguration::SetUart() {
     });
 
     connect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, this, [=] {
-      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, 0, 0);
-      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, 0, 0);
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, nullptr, nullptr);
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, nullptr, nullptr);
       StopAllInfoTCP();
       QMessageBox::critical(this, tr("错误"), tr("应用串口设置失败"));
       ui_->save->setEnabled(true);
       ui_->save->setText("保存并应用");
     });
     connect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, this, [=] {
-      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, 0, 0);
-      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, 0, 0);
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, nullptr, nullptr);
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, nullptr, nullptr);
       if (tcp_info_handler_[1]->is_connected_ && tcp_info_handler_[2]->is_connected_
           && tcp_info_handler_[3]->is_connected_) {
           QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
@@ -497,6 +499,6 @@ void TCPBridgeConfiguration::SetUart() {
       }
     });
 
-    tcp_command_handle_->SendCommand(all, "OK!\r\n");//超时处理在这里
+    tcp_command_handle_->SendCommand(command, "OK!\r\n");//超时处理在这里
 
 }
