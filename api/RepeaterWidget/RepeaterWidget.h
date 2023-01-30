@@ -23,7 +23,10 @@ struct RequestNewWidget {
 };
 
 class RepeaterWidget : public QWidget {
-public:
+ Q_OBJECT
+ signals:
+    void OrderExchangeWindow(int device, int windows_num);
+ public:
 //    QPushButtonMap button_;
     explicit RepeaterWidget(QWidget *parent = nullptr);
 

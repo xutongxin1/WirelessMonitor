@@ -208,6 +208,8 @@ void ChannelConfiguration::OnConnect() {
                 (*(parent_info_->devices_info))[device_num_].config_step = 2;
                 ui_->Disconnect->setEnabled(true);
 
+                emit(OrderExchangeWindow(device_num_, 2));//基本可以肯定这是第一个窗口
+
               });
       tcp_command_handle_->SetMode(ui_->FuncitonComboBox->currentIndex());
     });
