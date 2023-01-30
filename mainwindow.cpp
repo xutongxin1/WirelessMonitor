@@ -237,7 +237,7 @@ void MainWindow::DeviceWindowsExchange(int device_num, int win_num) {
         //TODO:添加提醒用户完成上一步骤
         qDebug("Switch Failed");
         devices_info_[device_num].tab_widget->setCurrentTab(devices_info_[device_num].current_window - 1,
-                                                            false);//把高亮回到该窗口（但受限于库底层，我无法解决它）
+                                                            false);//把高亮回到该窗口
         return;
     }
 #endif
@@ -249,4 +249,6 @@ void MainWindow::NewWindowCreate() {
 }
 void MainWindow::ReciveOrderExchangeWindow(int device, int windows_num) {
     DeviceWindowsExchange(device, windows_num);
+    devices_info_[device].tab_widget->setCurrentTab(windows_num - 1,
+                                                    false);//调整上面tab的视觉效果
 }

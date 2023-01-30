@@ -202,7 +202,7 @@ void TCPCommandHandle::SendCommand(const QByteArray &command, const QString &rep
 /// 从JsonObject提取为QString
 /// \param json_object 输入的JsonObject
 /// \return 返回的字符串
-QString TCPCommandHandle::GetStringFromJsonObject(const QJsonObject &json_object) {
+[[maybe_unused]] QString TCPCommandHandle::GetStringFromJsonObject(const QJsonObject &json_object) {
     return QString(QJsonDocument(json_object).toJson());
 }
 
