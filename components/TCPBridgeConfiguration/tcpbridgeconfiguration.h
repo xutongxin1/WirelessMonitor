@@ -60,8 +60,6 @@ class TCPBridgeConfiguration : public RepeaterWidget {
 
     class TCPCommandHandle *tcp_command_handle_;
 
-    TCPInfoHandle *tcp_info_handler_[4];
-
     void ChangeMode();
 
     void RefreshBox();

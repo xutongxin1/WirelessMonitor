@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 
-#include <cstdlib>
 
 #include "./ui_mainwindow.h"
 #include "ChannelConfiguration/channelconfiguration.h"
@@ -9,7 +8,6 @@
 #include "qcustomplot.h"
 #include "qtmaterialappbar.h"
 #include "qtmaterialdrawer.h"
-#include "qtmaterialscrollbar.h"
 #include "SideBarButton/SideBarButton.h"
 #include "TCPBridgeConfiguration/tcpbridgeconfiguration.h"
 #include "TCPCom/Tcpcom.h"
@@ -120,10 +118,16 @@ void MainWindow::DeviceWindowsInit() {
             }
             devices_windows_info_[device_num].emplace_back();  // 0位置空占位
             devices_windows_info_[device_num].emplace_back();
+            RepeaterWidget *tmp_widget = nullptr;
             switch (win_type) {
                 case 1:devices_windows_info_[device_num][win_num].type = CHANNEL_CONFIGURATION;  // 结构体初始化
-                    devices_windows_info_[device_num][win_num].widget = new ChannelConfiguration(
+                    tmp_widget = new ChannelConfiguration(
                         device_num, cfg_->config_device_ini_[0], cfg_->config_device_ini_[device_num], &parent_info_);
+                    devices_windows_info_[device_num][win_num].widget = tmp_widget;
+                    connect(tmp_widget,
+                            &RepeaterWidget::OrderExchangeWindow,
+                            this,
+                            &MainWindow::ReciveOrderExchangeWindow);//绑定切换窗口的有关事件
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
                     devices_info_[device_num].tab_widget->addTab("通道配置");  // 添加tab栏
@@ -162,11 +166,17 @@ void MainWindow::DeviceWindowsInit() {
                     devices_info_[device_num].tab_widget->addTab("数据流过滤器配置");  // 添加tab栏
                     break;
                 case 201:devices_windows_info_[device_num][win_num].type = TCP_BRIDGE_CONFIGURATION;  // 结构体初始化
-                    devices_windows_info_[device_num][win_num].widget =
+
+                    tmp_widget =
                         new TCPBridgeConfiguration(device_num,
                                                    win_num,
                                                    cfg_->config_device_ini_[device_num],
                                                    &parent_info_);
+                    devices_windows_info_[device_num][win_num].widget = tmp_widget;
+                    connect(tmp_widget,
+                            &RepeaterWidget::OrderExchangeWindow,
+                            this,
+                            &MainWindow::ReciveOrderExchangeWindow);//绑定切换窗口的有关事件
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
                     devices_info_[device_num].tab_widget->addTab("串口桥配置");  // 添加tab栏
@@ -227,7 +237,8 @@ void MainWindow::DeviceWindowsExchange(int device_num, int win_num) {
         //TODO:添加提醒用户完成上一步骤
         qDebug("Switch Failed");
         devices_info_[device_num].tab_widget->setCurrentTab(devices_info_[device_num].current_window - 1,
-                                                            false);//把高亮回到该窗口（但受限于库底层，我无法解决它）
+                                                            false);//把高亮回到该窗口
+        QMessageBox::information(this, tr("提示"), tr("请先完成上一步骤的配置吧"));
         return;
     }
 #endif
@@ -235,5 +246,10 @@ void MainWindow::DeviceWindowsExchange(int device_num, int win_num) {
     devices_info_[device_num].current_window = win_num;
 }
 
-void MainWindow::NewWindowCreate() {
+//void MainWindow::NewWindowCreate() {
+//}
+void MainWindow::ReciveOrderExchangeWindow(int device, int windows_num) {
+    DeviceWindowsExchange(device, windows_num);
+    devices_info_[device].tab_widget->setCurrentTab(windows_num - 1,
+                                                    false);//调整上面tab的视觉效果
 }

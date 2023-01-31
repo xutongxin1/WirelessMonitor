@@ -25,26 +25,26 @@ class ChannelConfiguration : public RepeaterWidget {
 
   void GetConstructConfig() override;
 
-  void SaveConstructConfig() override;
+    void SaveConstructConfig() override;
 
  private:
-  Ui::ChannelConfiguration *ui_;
+    Ui::ChannelConfiguration *ui_;
 
-  QString device_group_;
+    QString device_group_;
 
-  bool has_give_up_ = false;
+    bool has_give_up_ = false;
 
-  QString ip_;
-  int port_;
-  int connect_step_;
+    QString ip_;
+//    int port_ = 0;
+//    int connect_step_ = 0;
 
-  QSettings *main_cfg_;
+    QSettings *main_cfg_;
 
-  void OnConnect();
+    void OnConnect();
 
-  void OnDisconnect();
+    void OnDisconnect();
 
-  void ReflashUi(bool is_xmb);
+    void ReflashUi(bool is_xmb);
 
 //    void SendModePackage();
 //

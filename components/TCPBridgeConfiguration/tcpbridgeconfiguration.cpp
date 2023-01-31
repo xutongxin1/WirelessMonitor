@@ -207,8 +207,7 @@ void TCPBridgeConfiguration::SaveConstructConfig() {
     cfg_->endGroup();
 }
 
-TCPBridgeConfiguration::~TCPBridgeConfiguration()
-{
+TCPBridgeConfiguration::~TCPBridgeConfiguration() {
     delete ui_;
 }
 
@@ -236,8 +235,7 @@ void TCPBridgeConfiguration::ChangeMode() {
         if (mode_3_ == OUTPUT) {
             mode_3_ = CLOSED;
         }
-    }
-    else {
+    } else {
         ui_->mode2->setItemData(1, -1, Qt::UserRole - 1);
         ui_->mode2->setItemData(2, -1, Qt::UserRole - 1);
         ui_->mode1->setItemData(1, -1, Qt::UserRole - 1);
@@ -390,23 +388,16 @@ void TCPBridgeConfiguration::RefreshBox() {
  * @return {*}
  */
 void TCPBridgeConfiguration::SetUart() {
+
     if (!tcp_command_handle_->GetConnectionState()) {
         qDebug() << "No connection found";
         return;
     }
     this->ip_ = tcp_command_handle_->ip_;
 
-    // 连接信号服务器
-    if (!tcp_info_handler_[1]->is_connected_) {
-        tcp_info_handler_[1]->connectToHost(ip_, 1921, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
-    }
-    if (!tcp_info_handler_[2]->is_connected_) {
-        tcp_info_handler_[2]->connectToHost(ip_, 1922, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
-    }
-    if (!tcp_info_handler_[3]->is_connected_) {
-        tcp_info_handler_[3]->connectToHost(ip_, 1923, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
-    }
-
+    ui_->save->setEnabled(false);
+    ui_->save->setText("正在设置");
+    StopAllInfoTCP();//关闭之前的信号通道
     // 构造配置文件
     QJsonObject c_1;
     if (mode_1_ == CLOSED) {
@@ -453,40 +444,62 @@ void TCPBridgeConfiguration::SetUart() {
         c_3.insert("parity", parity_3_);
         c_3.insert("data", data_bit_3_);
     }
-    QJsonObject all;
+    QJsonObject attach;
 
-    all.insert("c_1", c_1);
-    all.insert("c_2", c_2);
-    all.insert("c_3", c_3);
+    attach.insert("c_1", c_1);
+    attach.insert("c_2", c_2);
+    attach.insert("c_3", c_3);
 
-    ui_->save->setEnabled(false);
-    ui_->save->setText("正在设置");
+    QJsonObject command;
+
+    command.insert("command", 220);
+    command.insert("attach", attach);
+
+    // 连接信号服务器
+    if (!tcp_info_handler_[1]->is_connected_) {
+        tcp_info_handler_[1]->connectToHost(ip_, 1921, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+    }
+    if (!tcp_info_handler_[2]->is_connected_) {
+        tcp_info_handler_[2]->connectToHost(ip_, 1922, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+    }
+    if (!tcp_info_handler_[3]->is_connected_) {
+        tcp_info_handler_[3]->connectToHost(ip_, 1923, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
+    }
+
+    // 检查消息线路有没有正确连接，指令执行超时由SendCommand内处理，发出SendCommandError信号
+    QTimer::singleShot(2000, this, [&] {
+      if (!(tcp_info_handler_[1]->is_connected_ && tcp_info_handler_[2]->is_connected_
+          && tcp_info_handler_[3]->is_connected_)) {
+          StopAllInfoTCP();
+          QMessageBox::critical(this, tr("错误"), tr("连接消息服务器失败"));
+          ui_->save->setEnabled(true);
+          ui_->save->setText("保存并应用");
+          (*(parent_info_->devices_info))[device_num_].config_step = 2;
+      }
+    });
 
     connect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, this, [=] {
-      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, 0, 0);
-      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, 0, 0);
-      QMessageBox::critical(this, tr("错误"), tr("设置串口失败"));
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, nullptr, nullptr);
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, nullptr, nullptr);
+      StopAllInfoTCP();
+      QMessageBox::critical(this, tr("错误"), tr("应用串口设置失败"));
       ui_->save->setEnabled(true);
       ui_->save->setText("保存并应用");
     });
     connect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, this, [=] {
-      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, 0, 0);
-      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, 0, 0);
-      QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
-                               QMessageBox::Ok);
-      ui_->save->setEnabled(true);
-      ui_->save->setText("保存并应用");
-      (*(parent_info_->devices_info))[device_num_].config_step = 4;
-    });
-
-    tcp_command_handle_->SendCommand(all, "OK!\r\n");
-
-    // 超时设置
-    QTimer::singleShot(1000, this, [&] {
-      if (!(tcp_info_handler_[1]->is_connected_ && tcp_info_handler_[2]->is_connected_
-          && tcp_info_handler_[3]->is_connected_)) {
-          QMessageBox::critical(this, tr("错误"), tr("设置通信链路失败"));
-          (*(parent_info_->devices_info))[device_num_].config_step = 2;
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, nullptr, nullptr);
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, nullptr, nullptr);
+      if (tcp_info_handler_[1]->is_connected_ && tcp_info_handler_[2]->is_connected_
+          && tcp_info_handler_[3]->is_connected_) {
+          QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
+                                   QMessageBox::Ok);
+          ui_->save->setEnabled(true);
+          ui_->save->setText("再次保存并应用");
+          (*(parent_info_->devices_info))[device_num_].config_step = 4;
+          emit(OrderExchangeWindow(device_num_, 3));
       }
     });
+
+    tcp_command_handle_->SendCommand(command, "OK!\r\n");//超时处理在这里
+
 }

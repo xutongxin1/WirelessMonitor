@@ -23,7 +23,10 @@ struct RequestNewWidget {
 };
 
 class RepeaterWidget : public QWidget {
-public:
+ Q_OBJECT
+ signals:
+    void OrderExchangeWindow(int device, int windows_num);
+ public:
 //    QPushButtonMap button_;
     explicit RepeaterWidget(QWidget *parent = nullptr);
 
@@ -50,6 +53,8 @@ public:
     TCPCommandHandle *tcp_command_handle_;
 
     TCPInfoHandle *tcp_info_handler_[4];
+
+    void StopAllInfoTCP();
 
 };
 

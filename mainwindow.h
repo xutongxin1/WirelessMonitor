@@ -29,8 +29,8 @@ class MainWindow : public QMainWindow {
     vector<DevicesInfo> devices_info_;//设备信息
     int device_count_;//设备数量
 
-
-
+ public slots:
+    void ReciveOrderExchangeWindow(int device, int windows_num);
  private:
     Ui::MainWindow *ui_;
     QCustomPlot *custom_plot_;
@@ -49,7 +49,7 @@ class MainWindow : public QMainWindow {
 
     void DeviceWindowsExchange(int device_num, int win_num);
 
-    void NewWindowCreate();
+//    void NewWindowCreate();
 
 
 };
