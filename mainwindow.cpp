@@ -238,6 +238,7 @@ void MainWindow::DeviceWindowsExchange(int device_num, int win_num) {
         qDebug("Switch Failed");
         devices_info_[device_num].tab_widget->setCurrentTab(devices_info_[device_num].current_window - 1,
                                                             false);//把高亮回到该窗口
+        QMessageBox::information(this, tr("提示"), tr("请先完成上一步骤的配置吧"));
         return;
     }
 #endif
@@ -245,8 +246,8 @@ void MainWindow::DeviceWindowsExchange(int device_num, int win_num) {
     devices_info_[device_num].current_window = win_num;
 }
 
-void MainWindow::NewWindowCreate() {
-}
+//void MainWindow::NewWindowCreate() {
+//}
 void MainWindow::ReciveOrderExchangeWindow(int device, int windows_num) {
     DeviceWindowsExchange(device, windows_num);
     devices_info_[device].tab_widget->setCurrentTab(windows_num - 1,

@@ -49,7 +49,7 @@ class MainWindow : public QMainWindow {
 
     void DeviceWindowsExchange(int device_num, int win_num);
 
-    void NewWindowCreate();
+//    void NewWindowCreate();
 
 
 };
