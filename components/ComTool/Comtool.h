@@ -25,11 +25,11 @@ class ComTool : public RepeaterWidget {
 
     ~ComTool() override;
 
-    static QString port_name_;            //串口号
-    static int baud_rate_;                //波特率
-    static int data_bit_;                 //数据位
-    static int parity_;              //校验位
-    static double stop_bit_;              //停止位
+    QString port_name_;            //串口号
+    int baud_rate_ = 115200;                //波特率
+    int data_bit_ = 8;                 //数据位
+    int parity_ = 0;              //校验位
+    double stop_bit_ = 1;              //停止位
 
     static bool hex_send_;                //16进制发送
     static bool hex_receive_;             //16进制接收
@@ -75,19 +75,25 @@ class ComTool : public RepeaterWidget {
 
     void UpdateComSetting();
 
-    void GetPortInfo();
+    QStringList GetPortInfo();
     void ReflashComCombo();
+    bool StartSerial();
+    QStringList my_serialportinfo = {};
+
+    QSerialPort *my_serialport_;
+
+    void StartTool();
+    void ChangeMode();
 
  private slots:
 
     void InitForm();            //初始化窗体数据
 //    void InitConfig();          //初始化配置文件
 //    void SaveConfig();          //保存配置文件
-    void GetData(const QByteArray &data, int port);            //读取串口数据
+    void GetData();            //读取串口数据
     void SendData();            //发送串口数据
     void SaveData();            //保存串口数据
 
-    void ChangeEnable(bool b);  //改变状态
     void Append(int type, const QString &data, bool clear = false);
 
  private slots:

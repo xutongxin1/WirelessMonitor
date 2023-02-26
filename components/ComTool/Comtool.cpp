@@ -4,7 +4,7 @@
 
 // You may need to build the project (run Qt uic code generator) to get "ui_ComTool.h" resolved
 
-#include "ComTool.h"
+#include "Comtool.h"
 #include "ui_comtool.h"
 #include "quihelper.h"
 #include "quihelperdata.h"
@@ -23,7 +23,8 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 
     this->group_name_ = "Win" + QString::number(win_num);
 
-    timer_for_port_=new QTimer(this);
+    timer_for_port_ = new QTimer(this);
+    my_serialport_ = new QSerialPort(this);
 
     QuiHelper::InitAll();
     ComTool::GetConstructConfig();
@@ -37,13 +38,6 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 //    this->InitConfig();
     QuiHelper::SetFormInCenter(this);
 
-    this->tcp_command_handle_ = (*(parent_info->devices_info))[device_num].tcp_command_handler;//结构体这样用
-    this->tcp_info_handler_[1] = (*(parent_info->devices_info))[device_num].tcp_info_handler[1];
-    this->tcp_info_handler_[2] = (*(parent_info->devices_info))[device_num].tcp_info_handler[2];
-    this->tcp_info_handler_[3] = (*(parent_info->devices_info))[device_num].tcp_info_handler[3];
-
-    this->ip_ = tcp_command_handle_->ip_;
-
     connect(ui_->btnSend, &QPushButton::clicked, this, [&] {
       this->SendData();
     });
@@ -54,47 +48,6 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
       ui_->SendDataEdit->setPlainText(text);
       this->SendData();
     });
-
-#if DEBUG
-    //测试按钮绑定
-    ui_->btnStartTest->setHidden(false);
-    connect(ui_->btnStartTest, &QPushButton::clicked, this, [&] {
-      qDebug("工作在测试模式，发送通道的comboBox设置错误为正常现象");
-      this->ip_ = "127.0.0.1";
-      if (!tcp_info_handler_[1]->is_connected_) {
-          tcp_info_handler_[1]->connectToHost(ip_, 1921, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
-      }
-      if (!tcp_info_handler_[2]->is_connected_) {
-          tcp_info_handler_[2]->connectToHost(ip_, 1922, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
-      }
-      if (!tcp_info_handler_[3]->is_connected_) {
-          tcp_info_handler_[3]->connectToHost(ip_, 1923, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
-      }
-
-      //默认设置模式
-      connect(tcp_info_handler_[3], &QTcpSocket::connected, this, [&] {
-        tcp_info_handler_[1]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_IN);
-        tcp_info_handler_[2]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_IN);
-        tcp_info_handler_[3]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_OUT);
-        //数据接收绑定
-        if (tcp_info_handler_[1]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN) {
-            connect(tcp_info_handler_[1], &TCPInfoHandle::RecNewData, this,
-                    [&](const QByteArray &data, const QString &ip, int port, QDateTime time) {
-                      this->GetData(data, port);
-                    });
-        }
-        if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN) {
-            connect(tcp_info_handler_[2], &TCPInfoHandle::RecNewData, this,
-                    [&](const QByteArray &data, const QString &ip, int port, QDateTime time) {
-                      this->GetData(data, port);
-                    });
-        }
-      });
-
-    });
-#else
-    ui_->btnStartTest->setHidden(true);
-#endif
 
     QStringList baud_list;
     baud_list << QString::number(baud_rate_)
@@ -118,18 +71,20 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     void (QComboBox::*fp)(int) = &QComboBox::currentIndexChanged;
     connect(ui_->BandCombo, fp, this, [&](int num) {
       baud_rate_ = ui_->BandCombo->currentText().toInt();
+      my_serialport_->setBaudRate(baud_rate_);
       UpdateComSetting();
     });
 
     QStringList data_bits_list;
-    data_bits_list << "5"
-                   << "6"
+    data_bits_list << "8"
                    << "7"
-                   << "8";
+                   << "6"
+                   << "5";
 
     ui_->DataBitCombo->addItems(data_bits_list);
     connect(ui_->DataBitCombo, fp, this, [&](int num) {
       data_bit_ = ui_->DataBitCombo->currentText().toInt();
+      my_serialport_->setDataBits(QSerialPort::DataBits(data_bit_));
       UpdateComSetting();
     });
 
@@ -140,6 +95,7 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     ui_->ParityBitCombo->addItems(parity_list);
     connect(ui_->ParityBitCombo, fp, this, [&](int num) {
       parity_ = ui_->ParityBitCombo->currentIndex();
+      my_serialport_->setParity(QSerialPort::Parity(parity_));
       UpdateComSetting();
     });
 
@@ -154,76 +110,107 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     ui_->StopBitCombo->addItems(stop_bits_list);
     connect(ui_->StopBitCombo, fp, this, [&](int num) {
       stop_bit_ = ui_->StopBitCombo->currentText().toDouble();
+      if (stop_bit_ == 1.5) {
+          my_serialport_->setStopBits(QSerialPort::OneAndHalfStop);
+      } else {
+          my_serialport_->setStopBits(QSerialPort::StopBits(stop_bit_));
+      }
       UpdateComSetting();
     });
 
     //扫描有效的端口
     timer_for_port_->start(500);
 
-    connect(timer_for_port_,&QTimer::timeout,this, &ComTool::ReflashComCombo);
+    connect(timer_for_port_, &QTimer::timeout, this, &ComTool::ReflashComCombo);
+    connect(ui_->StartTool, &QPushButton::clicked, this, &ComTool::StartTool);
 
+    connect(my_serialport_, &QSerialPort::readyRead, this, &ComTool::GetData);
 
+    connect(ui_->COMButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
+    connect(ui_->TCPClientButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
+    connect(ui_->TCPServerButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
 
+}
 
+void ComTool::UpdateComSetting() {
+    if (my_serialport_->isOpen()) {
 
+    }
 
-
+    SaveConstructConfig();
 }
 
 ComTool::~ComTool() {
     delete ui_;
 }
 
-QStringList ComTool::GetPortInfo()
-{
+QStringList ComTool::GetPortInfo() {
     QStringList serialportinfo;
-        foreach(QSerialPortInfo info,QSerialPortInfo::availablePorts())
-        {
-            serialportinfo<<info.portName();
+        foreach(QSerialPortInfo info, QSerialPortInfo::availablePorts()) {
+            serialportinfo << info.portName();
         }
     // ui->comboBox->addItems(serialportinfo);
     return serialportinfo;
 }
 
-void ComTool::ReflashComCombo()
-{
+void ComTool::ReflashComCombo() {
     timer_for_port_->stop();
-    old_portinfo=my_serialportinfo;
-    my_serialportinfo= Getportinfo();
-    QString com=ui->comboBox->currentText();
-    if(old_portinfo.length()!=my_serialportinfo.length())
-    {
-        ui->comboBox->clear();   //清空列表
+    QStringList old_portinfo = my_serialportinfo;
+    my_serialportinfo = GetPortInfo();
+    QString com = ui_->COMCombo->currentText();
+    if (old_portinfo.length() != my_serialportinfo.length()) {
+        ui_->COMCombo->clear();   //清空列表
         //说明串口列表出现变化,更新列表
-        if(my_serialport->isOpen())        //有串口打开的时候
+        if (my_serialport_->isOpen())        //有串口打开的时候
         {   //保证
-            ui->comboBox->addItem(my_serialport->portName());
-                foreach(QString comname, my_serialportinfo)
-                {
-                    if(comname!=my_serialport->portName())
-                        ui->comboBox->addItem(comname);
+            ui_->COMCombo->addItem(my_serialport_->portName());
+                foreach(QString comname, my_serialportinfo) {
+                    if (comname != my_serialport_->portName()) {
+                        ui_->COMCombo->addItem(comname);
+                    }
                 }
-        }
-        else                              //无串口打开的时候
+        } else                              //无串口打开的时候
         {
-                foreach(QString comname, my_serialportinfo)
-                {
-                    ui->comboBox->addItem(comname);
+                foreach(QString comname, my_serialportinfo) {
+                    ui_->COMCombo->addItem(comname);
                 }
 
         }
-        if(!my_serialportinfo.contains(com)&&my_serialport->isOpen())
-        {
+        if (!my_serialportinfo.contains(com) && my_serialport_->isOpen()) {
             QMessageBox::critical(this, tr("Error"), "串口连接中断，请检查是否正确连接！");
-            closeserialport();
-            ui->comboBox->removeItem(ui->comboBox->currentIndex());
+            my_serialport_->close();
+            ui_->COMCombo->removeItem(ui_->COMCombo->currentIndex());
+            ui_->StartTool->setText("启动");
+            ui_->StartTool->setStyleSheet("background-color: rgba(170, 255, 0, 125);");
+            ui_->COMButton->setEnabled(true);
+            ui_->TCPClientButton->setEnabled(true);
+            ui_->TCPServerButton->setEnabled(true);
         }
     }
 
-    timerforport->start();
+    timer_for_port_->start();
 }
 
-
+bool ComTool::StartSerial() {
+    qDebug() << ui_->COMCombo->currentText();
+    my_serialport_->setPortName(ui_->COMCombo->currentText());
+    my_serialport_->setBaudRate(baud_rate_);
+    my_serialport_->setParity(QSerialPort::Parity(parity_));
+    my_serialport_->setDataBits(QSerialPort::DataBits(data_bit_));
+    if (stop_bit_ == 1.5) {
+        my_serialport_->setStopBits(QSerialPort::OneAndHalfStop);
+    } else {
+        my_serialport_->setStopBits(QSerialPort::StopBits(stop_bit_));
+    }
+    my_serialport_->setFlowControl(QSerialPort::NoFlowControl);//不使用流控制
+    my_serialport_->setReadBufferSize(500);
+    if (my_serialport_->open(QIODevice::ReadWrite)) {
+        return true;
+    } else {
+        qDebug() << my_serialport_->error();
+        return false;
+    }
+}
 
 ///初始化统计
 void ComTool::InitForm() {
@@ -233,15 +220,37 @@ void ComTool::InitForm() {
     is_show_ = true;
 
     ui_->tabWidget->setCurrentIndex(0);
-    ChangeEnable(false);
 
 #ifdef __arm__
     ui_->widgetRight->setFixedWidth(280);
 #endif
 }
 
-void ComTool::ChangeEnable(bool b) {
+void ComTool::StartTool() {
+    if (ui_->StartTool->text() == "停止") {
+        if (ui_->COMButton->isChecked()) {
 
+            my_serialport_->close();
+
+        }
+
+        ui_->COMButton->setEnabled(true);
+        ui_->TCPClientButton->setEnabled(true);
+        ui_->TCPServerButton->setEnabled(true);
+        ui_->StartTool->setText("启动");
+        ui_->StartTool->setStyleSheet("background-color: rgba(170, 255, 0, 125);");
+
+    } else {
+        if (ui_->COMButton->isChecked()) {
+            StartSerial();
+        }
+
+        ui_->COMButton->setEnabled(false);
+        ui_->TCPClientButton->setEnabled(false);
+        ui_->TCPServerButton->setEnabled(false);
+        ui_->StartTool->setText("停止");
+        ui_->StartTool->setStyleSheet("background-color: rgba(255, 0, 0, 125);");
+    }
 }
 
 /// 往日志区添加数据
@@ -269,27 +278,17 @@ void ComTool::Append(int type, const QString &data, bool clear) {
 
 //    //过滤回车换行符
     QString str_data = data;
-//    str_data = str_data.replace("\r", "");
-//    str_data = str_data.replace("\n", "");
+    str_data = str_data.replace("\r", "\\r");
+    str_data = str_data.replace("\n", "\\n");
 
     //不同类型不同颜色显示
     QString str_type;
-    if (type == 0) {
-        str_type = "一通道接收 <<";
+    if (type == 1) {
+        str_type = "接收 <<";
         ui_->txtMain->setTextColor(QColor("dodgerblue"));
-    } else if (type == 1) {
-        str_type = "二通道接收 <<";
+    } else if (type == 2) {
+        str_type = "发送 <<";
         ui_->txtMain->setTextColor(QColor("black"));
-    }
-    else if (type == 2) {
-        str_type = "二通道发送 >>";
-        ui_->txtMain->setTextColor(QColor("gray"));
-    } else if (type == 3) {
-        str_type = "三通道发送 >>";
-        ui_->txtMain->setTextColor(QColor("green"));
-    } else if (type == 4) {
-        str_type = "提示信息 >>";
-        ui_->txtMain->setTextColor(QColor(100, 184, 255));
     }
 
     str_data = QString("时间[%1] %2 %3").arg(TIMEMS, str_type, str_data);
@@ -300,23 +299,22 @@ void ComTool::Append(int type, const QString &data, bool clear) {
 /// 数据收入处理
 /// \param data 数据
 /// \param port 端口
-void ComTool::GetData(const QByteArray &data, int port) {
+void ComTool::GetData() {
 
-    QString buffer;
-    if (ui_->ckHexReceive->isChecked()) {
-        buffer = QUIHelperData::byteArrayToHexStr(data);
-    } else {
-        buffer = QString::fromLocal8Bit(data);
-    }
-
-    if (port == 1) {
-        Append(0, buffer);
-    } else if (port == 2) {
+    if (my_serialport_->bytesAvailable() > 0)//判断等到读取的数据大小
+    {
+        QByteArray main_serial_recv_data = my_serialport_->readAll();
+        QString buffer;
+        if (ui_->ckHexReceive->isChecked()) {
+            buffer = QUIHelperData::byteArrayToHexStr(main_serial_recv_data);
+        } else {
+            buffer = QString::fromLocal8Bit(main_serial_recv_data);
+        }
         Append(1, buffer);
+        receive_count_ = receive_count_ + main_serial_recv_data.size();
+        ui_->ReceiveCount->setText(QString("接收 : %1 字节").arg(receive_count_));
     }
 
-    receive_count_ = receive_count_ + data.size();
-    ui_->ReceiveCount->setText(QString("接收 : %1 字节").arg(receive_count_));
 }
 
 ///发送发送栏里的数据
@@ -334,22 +332,8 @@ void ComTool::SendData() {
         buffer = QUIHelperData::asciiStrToByteArray(data);
     }
 
-    if (ui_->channelToSend->currentIndex() == 0) {
-        if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_OUT) {
-            Append(2, data);
-            tcp_info_handler_[2]->write(buffer);
-        }
-        if (tcp_info_handler_[3]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_OUT) {
-            Append(3, data);
-            tcp_info_handler_[3]->write(buffer);
-        }
-    } else if (ui_->channelToSend->currentIndex() == 1) {
-        Append(2, data);
-        tcp_info_handler_[2]->write(buffer);
-    } else if (ui_->channelToSend->currentIndex() == 2) {
-        Append(3, data);
-        tcp_info_handler_[3]->write(buffer);
-    }
+    Append(2, data);
+    my_serialport_->write(buffer);
 
     send_count_ = send_count_ + buffer.size();
     ui_->SendCount->setText(QString("发送 : %1 字节").arg(send_count_));
@@ -394,6 +378,27 @@ void ComTool::SaveConstructConfig() {
 void ComTool::ReadErrorNet() {
 
 }
-void ComTool::UpdateComSetting() {
+void ComTool::ChangeMode() {
+    bool tmp;
+    if (ui_->COMButton->isChecked()) {
+        ui_->label_6->setVisible(false);
+        ui_->IPLine->setVisible(false);
+        tmp = true;
+    } else if (ui_->TCPClientButton->isChecked()) {
+        ui_->label_6->setVisible(true);
+        ui_->IPLine->setVisible(true);
+        ui_->label_6->setText("IP:Port");
+        tmp = false;
+    } else {
+        ui_->label_6->setVisible(true);
+        ui_->IPLine->setVisible(true);
+        ui_->label_6->setText("HearingIP");
+        tmp = false;
+    }
 
+    ui_->COMLayout->setEnabled(tmp);
+    ui_->BandLayout->setEnabled(tmp);
+    ui_->DataBitLayout->setEnabled(tmp);
+    ui_->ParityBitLayout->setEnabled(tmp);
+    ui_->StopBitLayout->setEnabled(tmp);
 }

@@ -16,7 +16,7 @@
     <verstretch>4</verstretch>
    </sizepolicy>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_6">
+  <layout class="QHBoxLayout" name="horizontalLayout_6">
    <item>
     <widget class="QSplitter" name="splitter_2">
      <property name="orientation">
@@ -60,25 +60,6 @@
            </item>
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_2">
-             <item>
-              <widget class="QComboBox" name="channelToSend">
-               <item>
-                <property name="text">
-                 <string>发送给所有可用通道</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>发送到二通道</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>发送到三通道</string>
-                </property>
-               </item>
-              </widget>
-             </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_5">
                <item>
@@ -289,19 +270,6 @@
                </property>
               </widget>
              </item>
-             <item>
-              <widget class="QtMaterialRaisedButton" name="btnStartTest">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>60</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>启动测试</string>
-               </property>
-              </widget>
-             </item>
             </layout>
            </item>
            <item>
@@ -309,9 +277,13 @@
              <property name="styleSheet">
               <string notr="true">background-color: rgba(255, 170, 0,50);</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,1,2,2,2,2,2,2,2">
+             <layout class="QVBoxLayout" name="verticalLayout_5" stretch="2,1,2,2,2,2,2,2,0">
               <item>
                <widget class="QPushButton" name="StartTool">
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgba(170, 255, 0, 125);
+</string>
+                </property>
                 <property name="text">
                  <string>启动</string>
                 </property>
@@ -340,6 +312,12 @@
                  <widget class="QtMaterialRadioButton" name="TCPClientButton">
                   <property name="text">
                    <string>TCPClient</string>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>16</width>
+                    <height>16</height>
+                   </size>
                   </property>
                  </widget>
                 </item>
@@ -485,11 +463,6 @@
    <extends>QWidget</extends>
    <header>repeaterwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>QtMaterialRaisedButton</class>
-   <extends>QPushButton</extends>
-   <header>qtmaterialraisedbutton.h</header>
   </customwidget>
   <customwidget>
    <class>QtMaterialRadioButton</class>
