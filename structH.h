@@ -21,7 +21,7 @@ class ChartsNext;
 enum WindowsType {
     NONE = 0,
     CHANNEL_CONFIGURATION = 1,
-    XCOM = 50,
+    Com_Tool = 50,
     MAIN_CHART = 51,
     DATA_CIRCULATION = 52,
     TCP_BRIDGE_CONFIGURATION = 201,
