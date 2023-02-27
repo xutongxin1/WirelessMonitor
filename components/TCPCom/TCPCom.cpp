@@ -4,26 +4,24 @@
 
 // You may need to build the project (run Qt uic code generator) to get "ui_TCPCom.h" resolved
 
-#include "Tcpcom.h"
+#include "TCPCom.h"
 #include "ui_tcpcom.h"
 #include "quihelper.h"
 #include "quihelperdata.h"
-
-
 
 /*
  * TODO:shell语法高亮，使用正则表达式https://c.runoob.com_/front-end/
  * TODO:以回车分隔
  * TODO:ui修改
  */
-TcpCom::TcpCom(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent) :
-    RepeaterWidget(parent), ui_(new Ui::Tcpcom) {
+TCPCom::TCPCom(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent) :
+    RepeaterWidget(parent), ui_(new Ui::TCPCom) {
     this->cfg_ = cfg;
     this->config_file_path_ = "./config/Device" + QString::number(device_num) + ".ini";
 
     this->group_name_ = "Win" + QString::number(win_num);
     QuiHelper::InitAll();
-    TcpCom::GetConstructConfig();
+    TCPCom::GetConstructConfig();
 
     AppData::ReadSendData();
     AppData::ReadDeviceData();
@@ -45,30 +43,25 @@ TcpCom::TcpCom(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_
 //        disconnect(tcp_command_handle_, &tcp_command_handle_::StartInfoConnection, 0, 0);
 
       //选项栏绑定
-      if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_OUT) {
+      if (tcp_info_handler_[1]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_BOTH) {
           ui_->channelToSend->setItemData(1, -1, Qt::UserRole - 1);
+          connect(tcp_info_handler_[1], &TCPInfoHandle::RecNewData, this,
+                  [&](const QByteArray &data, const QString &ip, int port, const QDateTime &time) {
+                    this->GetData(data, port);
+                  });
       } else {
           ui_->channelToSend->setItemData(1, 0, Qt::UserRole - 1);
       }
-      if (tcp_info_handler_[3]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_OUT) {
+      if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_BOTH) {
+          connect(tcp_info_handler_[2], &TCPInfoHandle::RecNewData, this,
+                  [&](const QByteArray &data, const QString &ip, int port, const QDateTime &time) {
+                    this->GetData(data, port);
+                  });
           ui_->channelToSend->setItemData(2, -1, Qt::UserRole - 1);
       } else {
           ui_->channelToSend->setItemData(2, 0, Qt::UserRole - 1);
       }
 
-      //数据接收绑定
-      if (tcp_info_handler_[1]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN) {
-          connect(tcp_info_handler_[1], &TCPInfoHandle::RecNewData, this,
-                  [&](const QByteArray &data, const QString &ip, int port, QDateTime time) {
-                    this->GetData(data, port);
-                  });
-      }
-      if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN) {
-          connect(tcp_info_handler_[2], &TCPInfoHandle::RecNewData, this,
-                  [&](const QByteArray &data, const QString &ip, int port, QDateTime time) {
-                    this->GetData(data, port);
-                  });
-      }
     });
 
     connect(ui_->btnSend, &QPushButton::clicked, this, [&] {
@@ -94,25 +87,21 @@ TcpCom::TcpCom(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_
       if (!tcp_info_handler_[2]->is_connected_) {
           tcp_info_handler_[2]->connectToHost(ip_, 1922, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
       }
-      if (!tcp_info_handler_[3]->is_connected_) {
-          tcp_info_handler_[3]->connectToHost(ip_, 1923, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
-      }
 
       //默认设置模式
-      connect(tcp_info_handler_[3], &QTcpSocket::connected, this, [&] {
-        tcp_info_handler_[1]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_IN);
-        tcp_info_handler_[2]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_IN);
-        tcp_info_handler_[3]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_OUT);
+      connect(tcp_info_handler_[2], &QTcpSocket::connected, this, [&] {
+        tcp_info_handler_[1]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_BOTH);
+        tcp_info_handler_[2]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_BOTH);
         //数据接收绑定
-        if (tcp_info_handler_[1]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN) {
+        if (tcp_info_handler_[1]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_BOTH) {
             connect(tcp_info_handler_[1], &TCPInfoHandle::RecNewData, this,
-                    [&](const QByteArray &data, const QString &ip, int port, QDateTime time) {
+                    [&](const QByteArray &data, const QString &ip, int port, const QDateTime &time) {
                       this->GetData(data, port);
                     });
         }
-        if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN) {
+        if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_BOTH) {
             connect(tcp_info_handler_[2], &TCPInfoHandle::RecNewData, this,
-                    [&](const QByteArray &data, const QString &ip, int port, QDateTime time) {
+                    [&](const QByteArray &data, const QString &ip, int port, const QDateTime &time) {
                       this->GetData(data, port);
                     });
         }
@@ -124,11 +113,11 @@ TcpCom::TcpCom(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_
 #endif
 }
 
-TcpCom::~TcpCom() {
+TCPCom::~TCPCom() {
     delete ui_;
 }
 ///初始化统计
-void TcpCom::InitForm() {
+void TCPCom::InitForm() {
     sleep_time_rec_ = 10;
     receive_count_ = 0;
     send_count_ = 0;
@@ -142,7 +131,7 @@ void TcpCom::InitForm() {
 #endif
 }
 
-void TcpCom::ChangeEnable(bool b) {
+void TCPCom::ChangeEnable(bool b) {
 
 }
 
@@ -150,7 +139,7 @@ void TcpCom::ChangeEnable(bool b) {
 /// \param type 数据类型
 /// \param data 数据
 /// \param clear 是否清空
-void TcpCom::Append(int type, const QString &data, bool clear) {
+void TCPCom::Append(int type, const QString &data, bool clear) {
     static int current_count = 0;
     static int max_count = 81920;
 
@@ -202,7 +191,7 @@ void TcpCom::Append(int type, const QString &data, bool clear) {
 /// 数据收入处理
 /// \param data 数据
 /// \param port 端口
-void TcpCom::GetData(const QByteArray &data, int port) {
+void TCPCom::GetData(const QByteArray &data, int port) {
 
     QString buffer;
     if (ui_->ckHexReceive->isChecked()) {
@@ -222,7 +211,7 @@ void TcpCom::GetData(const QByteArray &data, int port) {
 }
 
 ///发送发送栏里的数据
-void TcpCom::SendData() {
+void TCPCom::SendData() {
     QString data = ui_->SendDataEdit->toPlainText();
     if (data.isEmpty()) {
         ui_->SendDataEdit->setFocus();
@@ -237,27 +226,27 @@ void TcpCom::SendData() {
     }
 
     if (ui_->channelToSend->currentIndex() == 0) {
-        if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_OUT) {
+        if (tcp_info_handler_[1]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_BOTH) {
             Append(2, data);
-            tcp_info_handler_[2]->write(buffer);
+            tcp_info_handler_[1]->write(buffer);
         }
-        if (tcp_info_handler_[3]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_OUT) {
+        if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_BOTH) {
             Append(3, data);
-            tcp_info_handler_[3]->write(buffer);
+            tcp_info_handler_[2]->write(buffer);
         }
     } else if (ui_->channelToSend->currentIndex() == 1) {
         Append(2, data);
-        tcp_info_handler_[2]->write(buffer);
+        tcp_info_handler_[1]->write(buffer);
     } else if (ui_->channelToSend->currentIndex() == 2) {
         Append(3, data);
-        tcp_info_handler_[3]->write(buffer);
+        tcp_info_handler_[2]->write(buffer);
     }
 
     send_count_ = send_count_ + buffer.size();
     ui_->btnSendCount->setText(QString("发送 : %1 字节").arg(send_count_));
 }
 
-void TcpCom::SaveData() {
+void TCPCom::SaveData() {
     QString temp_data = ui_->txtMain->toPlainText();
     if (temp_data.isEmpty()) {
         return;
@@ -276,7 +265,7 @@ void TcpCom::SaveData() {
     on_btnClear_clicked();
 }
 
-void TcpCom::on_btnData_clicked() {
+void TCPCom::on_btnData_clicked() {
     QString file_name = QString("%1/%2").arg(QuiHelper::AppPath()).arg("send.txt");
     QFile file(file_name);
     if (!file.exists()) {
@@ -303,23 +292,23 @@ void TcpCom::on_btnData_clicked() {
     }
 }
 
-void TcpCom::on_btnClear_clicked() {
+void TCPCom::on_btnClear_clicked() {
     Append(0, "", true);
 }
 
-void TcpCom::GetConstructConfig() {
+void TCPCom::GetConstructConfig() {
     cfg_->beginGroup(group_name_);
 
     cfg_->endGroup();
 
 }
 
-void TcpCom::SaveConstructConfig() {
+void TCPCom::SaveConstructConfig() {
     cfg_->beginGroup(group_name_);
 
     cfg_->endGroup();
 }
 
-void TcpCom::ReadErrorNet() {
+void TCPCom::ReadErrorNet() {
 
 }

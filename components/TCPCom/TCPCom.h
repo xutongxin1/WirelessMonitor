@@ -14,16 +14,16 @@
 //#include "ui_tcpcom.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class Tcpcom; }
+namespace Ui { class TCPCom; }
 QT_END_NAMESPACE
 
-class TcpCom : public RepeaterWidget {
+class TCPCom : public RepeaterWidget {
  Q_OBJECT
 
  public:
-    explicit TcpCom(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent = nullptr);
+    explicit TCPCom(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent = nullptr);
 
-    ~TcpCom() override;
+    ~TCPCom() override;
 
     static QString port_name_;            //串口号
     static int baud_rate_;                //波特率
@@ -53,7 +53,7 @@ class TcpCom : public RepeaterWidget {
     QSettings *cfg_;
 
  private:
-    Ui::Tcpcom *ui_;
+    Ui::TCPCom *ui_;
     QTimer *timer_read_;          //定时读取串口数据
     QTimer *timer_send_;          //定时发送串口数据
     QTimer *timer_save_;          //定时保存串口数据

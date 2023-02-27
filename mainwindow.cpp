@@ -10,7 +10,7 @@
 #include "qtmaterialdrawer.h"
 #include "SideBarButton/SideBarButton.h"
 #include "TCPBridgeConfiguration/tcpbridgeconfiguration.h"
-#include "TCPCom/Tcpcom.h"
+#include "TCPCom/TCPCom.h"
 #include "Charts/charts_next.h"
 
 int record_DeviceNum = 0, record_WinNum = 0;
@@ -183,7 +183,7 @@ void MainWindow::DeviceWindowsInit() {
                     break;
                 case 202:devices_windows_info_[device_num][win_num].type = TCP_COM;  // 结构体初始化
                     devices_windows_info_[device_num][win_num].widget =
-                        new TcpCom(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
+                        new TCPCom(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
                     devices_info_[device_num].tab_widget->addTab("串口桥数据监视器");  // 添加tab栏

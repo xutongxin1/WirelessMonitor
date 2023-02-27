@@ -13,18 +13,18 @@
   <property name="windowTitle">
    <string>TCPBridgeConfiguration</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1,1">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,4">
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>一通道（IO34）</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;一通道（IO34）&lt;/p&gt;&lt;p&gt;二通道（IO25）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,2,5">
+      <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,0,5">
        <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
@@ -33,25 +33,10 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="mode1">
-         <property name="styleSheet">
-          <string notr="true"/>
+        <widget class="QtMaterialCheckBox" name="enable12CheckBox">
+         <property name="text">
+          <string>启动</string>
          </property>
-         <item>
-          <property name="text">
-           <string>关闭</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>接收信号</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>独占接收</string>
-          </property>
-         </item>
         </widget>
        </item>
        <item>
@@ -156,138 +141,14 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,4">
      <item>
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>二通道（IO25）</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_5" stretch="1,2,5">
-       <item>
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>串口模式</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="mode2">
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <item>
-          <property name="text">
-           <string>关闭</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>跟随通道一发送信号</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>跟随通道三接收信号</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item>
-        <widget class="QFrame" name="frameTop_2">
-         <property name="frameShape">
-          <enum>QFrame::Box</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_4">
-          <property name="leftMargin">
-           <number>6</number>
-          </property>
-          <property name="topMargin">
-           <number>6</number>
-          </property>
-          <property name="rightMargin">
-           <number>6</number>
-          </property>
-          <property name="bottomMargin">
-           <number>6</number>
-          </property>
-          <item row="3" column="0">
-           <widget class="QLabel" name="labStopBit_2">
-            <property name="text">
-             <string>停止位</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="DataBit2">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="labParity_2">
-            <property name="text">
-             <string>校验位</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="Parity2">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="BaudRate2">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="labDataBit_2">
-            <property name="text">
-             <string>数据位</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLabel" name="StopBit2">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="labBaudRate_2">
-            <property name="text">
-             <string>波特率</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,4">
-     <item>
       <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>三通道（IO26）</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;三通道（IO26）&lt;/p&gt;&lt;p&gt;四通道（IO26）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,2,5">
+      <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,0,5">
        <item>
         <widget class="QLabel" name="label_6">
          <property name="text">
@@ -296,29 +157,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="mode3">
-         <property name="styleSheet">
-          <string notr="true"/>
+        <widget class="QtMaterialCheckBox" name="enable34CheckBox">
+         <property name="text">
+          <string>启动</string>
          </property>
-         <item>
-          <property name="text">
-           <string>关闭</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>发送信号</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>独占发送</string>
-          </property>
-         </item>
         </widget>
        </item>
        <item>
-        <widget class="QFrame" name="frameTop_3">
+        <widget class="QFrame" name="frameTop_2">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -339,14 +185,14 @@
            <number>6</number>
           </property>
           <item row="2" column="0">
-           <widget class="QLabel" name="labParity_3">
+           <widget class="QLabel" name="labParity_2">
             <property name="text">
              <string>校验位</string>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QComboBox" name="Parity3">
+           <widget class="QComboBox" name="Parity2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -356,7 +202,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="BaudRate3">
+           <widget class="QComboBox" name="BaudRate2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -369,28 +215,28 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="labDataBit_3">
+           <widget class="QLabel" name="labDataBit_2">
             <property name="text">
              <string>数据位</string>
             </property>
            </widget>
           </item>
           <item row="0" column="0">
-           <widget class="QLabel" name="labBaudRate_3">
+           <widget class="QLabel" name="labBaudRate_2">
             <property name="text">
              <string>波特率</string>
             </property>
            </widget>
           </item>
           <item row="3" column="0">
-           <widget class="QLabel" name="labStopBit_3">
+           <widget class="QLabel" name="labStopBit_2">
             <property name="text">
              <string>停止位</string>
             </property>
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QComboBox" name="StopBit3">
+           <widget class="QComboBox" name="StopBit2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -400,7 +246,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QComboBox" name="DataBit3">
+           <widget class="QComboBox" name="DataBit2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>1</horstretch>
@@ -417,14 +263,21 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_7" stretch="1,3">
+    <layout class="QVBoxLayout" name="verticalLayout_7" stretch="1,0,3">
      <property name="sizeConstraint">
       <enum>QLayout::SetFixedSize</enum>
      </property>
      <item>
-      <widget class="QtMaterialCheckBox" name="transmit">
+      <widget class="QtMaterialCheckBox" name="transmit12">
        <property name="text">
-        <string>转发模式（限定单输入单输出）</string>
+        <string>一二通道转发模式</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QtMaterialCheckBox" name="transmit34">
+       <property name="text">
+        <string>三四通道转发模式</string>
        </property>
       </widget>
      </item>

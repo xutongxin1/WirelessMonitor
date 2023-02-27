@@ -15,7 +15,7 @@ class TCPInfoHandle : public QTcpSocket {
     void HasConnected();//防止与原生方法冲突
     void HasDisconnected();
 
-    void RecNewData(QByteArray data, QString ip, int port, QDateTime time);
+    void RecNewData(QByteArray data, QString ip, int port, const QDateTime &time);
 
  public:
     TCPInfoHandle(QObject *parent = nullptr);
@@ -40,9 +40,10 @@ class TCPInfoHandle : public QTcpSocket {
     virtual QByteArray readAll();
 
     enum TCPInfoMode {
-      TCP_INFO_MODE_NONE = 0,
-      TCP_INFO_MODE_IN,
-      TCP_INFO_MODE_OUT
+        TCP_INFO_MODE_NONE = 0,
+        TCP_INFO_MODE_REC,
+        TCP_INFO_MODE_SEND,
+        TCP_INFO_MODE_BOTH
     } tcp_mode_ = TCP_INFO_MODE_NONE;
 
     void ChangeTCPInfoMode(TCPInfoMode mode);
