@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Tcpcom</class>
- <widget class="RepeaterWidget" name="Tcpcom">
+ <class>TCPCom</class>
+ <widget class="RepeaterWidget" name="TCPCom">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -69,12 +69,12 @@
                </item>
                <item>
                 <property name="text">
-                 <string>发送到二通道</string>
+                 <string>发送给1串口</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>发送到三通道</string>
+                 <string>发送给2串口</string>
                 </property>
                </item>
               </widget>
