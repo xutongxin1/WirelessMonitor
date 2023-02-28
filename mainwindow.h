@@ -38,7 +38,7 @@ class MainWindow : public QMainWindow {
     SideBarButton *device_select_[100];//侧边栏设备按钮指针
     CfgClass *cfg_;
     QTimer *new_window_create_timer_ = new QTimer(this);
-    ToNewWidget parent_info_;
+    ToNewWidget parent_info_;//用于从父窗口传入到子窗口的所有信息的结构体
 
 
 //    void ErrorHandle(const QString &reason);

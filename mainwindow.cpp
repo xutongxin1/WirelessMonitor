@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     //    canvas->setLayout(layout);
     //    canvas->setMaximumHeight(300);
     //
-    //
+    //手动初始化侧边栏（不是在ui文件里初始化的）
     m_drawer_ = new QtMaterialDrawer;
     cfg_ = new CfgClass;
     m_drawer_->setParent(ui_->centralwidget);
@@ -40,12 +40,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     m_drawer_->setOverlayMode(true);
     m_drawer_->setDrawerWidth(250);
 
+    //初始化侧边栏的布局
     auto *drawer_layout = new QVBoxLayout;
     m_drawer_->setDrawerLayout(drawer_layout);
 
+    //往侧边栏添加第一个按钮（数据聚合窗口）
     device_select_[0] = new SideBarButton();
     drawer_layout->addWidget(device_select_[0]);  // 初始化数据聚合窗口
 
+    //绑定每个按钮的点击事件
     device_count_ = cfg_->device_num_;
     for (int i = 1; i <= device_count_; i++) {
         device_select_[i] = new SideBarButton(i, cfg_);
@@ -96,7 +99,7 @@ void MainWindow::DeviceWindowsInit() {
     for (int device_num = 1; device_num <= device_count_; device_num++)  // 设备遍历初始化
     {
         // 创建Tab栏,初始化DevicesInfo内数据
-        auto *new_tab = new QtMaterialTabs();
+        auto *new_tab = new QtMaterialTabs();//上方切换栏
         struct DevicesInfo tmp
             {
                 .windows_num = cfg_->GetMainCfg("/Device " + QString::number(device_num) + "/win").toInt(),
@@ -201,12 +204,12 @@ void MainWindow::DeviceWindowsInit() {
           DeviceWindowsExchange(device_num, num + 1);
         });
 
-        connect(new_window_create_timer_, &QTimer::timeout, this, [=] {
-
-        });
-        connect(new_window_create_timer_, &QTimer::timeout, this, [=] {
-
-        });
+//        connect(new_window_create_timer_, &QTimer::timeout, this, [=] {
+//
+//        });
+//        connect(new_window_create_timer_, &QTimer::timeout, this, [=] {
+//
+//        });
     }
 }
 
