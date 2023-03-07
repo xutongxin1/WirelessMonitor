@@ -126,6 +126,13 @@
               </spacer>
              </item>
              <item>
+              <widget class="QtMaterialCheckBox" name="checkBox">
+               <property name="text">
+                <string>自动添加回车换行发送</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QLabel" name="label">
                <property name="text">
                 <string> 发送编码：</string>
@@ -339,6 +346,11 @@
    <class>QtMaterialRaisedButton</class>
    <extends>QPushButton</extends>
    <header>qtmaterialraisedbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QtMaterialCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>qtmaterialcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>QtMaterialRadioButton</class>
