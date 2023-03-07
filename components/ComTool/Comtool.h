@@ -11,6 +11,7 @@
 #include <QtSerialPort/QtSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include "structH.h"
+#include "highlighter.h"
 //#include "ui_ComTool.h"
 
 QT_BEGIN_NAMESPACE
@@ -78,12 +79,17 @@ class ComTool : public RepeaterWidget {
     QStringList GetPortInfo();
     void ReflashComCombo();
     bool StartSerial();
-    QStringList my_serialportinfo = {};
+    QStringList my_serialportinfo_ = {};
 
     QSerialPort *my_serialport_;
 
     void StartTool();
     void ChangeMode();
+
+    Highlighter *highlighter1;
+    Highlighter *highlighter2;
+
+    bool is_start_ = false;
 
  private slots:
 

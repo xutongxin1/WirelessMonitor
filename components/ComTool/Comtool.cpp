@@ -10,7 +10,6 @@
 #include "quihelperdata.h"
 
 
-
 /*
  * TODO:shell语法高亮，使用正则表达式https://c.runoob.com_/front-end/
  * TODO:以回车分隔
@@ -118,6 +117,8 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
       UpdateComSetting();
     });
 
+    ui_->SendDataEdit->setLineWrapMode(QTextEdit::NoWrap);
+
     //扫描有效的端口
     timer_for_port_->start(500);
 
@@ -129,6 +130,9 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     connect(ui_->COMButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
     connect(ui_->TCPClientButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
     connect(ui_->TCPServerButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
+
+    highlighter1 = new Highlighter(ui_->SendDataEdit->document());
+    highlighter2 = new Highlighter(ui_->txtMain->document());
 
 }
 
@@ -155,32 +159,33 @@ QStringList ComTool::GetPortInfo() {
 
 void ComTool::ReflashComCombo() {
     timer_for_port_->stop();
-    QStringList old_portinfo = my_serialportinfo;
-    my_serialportinfo = GetPortInfo();
+    QStringList old_portinfo = my_serialportinfo_;
+    my_serialportinfo_ = GetPortInfo();
     QString com = ui_->COMCombo->currentText();
-    if (old_portinfo.length() != my_serialportinfo.length()) {
+    if (old_portinfo.length() != my_serialportinfo_.length()) {
         ui_->COMCombo->clear();   //清空列表
         //说明串口列表出现变化,更新列表
         if (my_serialport_->isOpen())        //有串口打开的时候
         {   //保证
             ui_->COMCombo->addItem(my_serialport_->portName());
-                foreach(QString comname, my_serialportinfo) {
+                foreach(QString comname, my_serialportinfo_) {
                     if (comname != my_serialport_->portName()) {
                         ui_->COMCombo->addItem(comname);
                     }
                 }
         } else                              //无串口打开的时候
         {
-                foreach(QString comname, my_serialportinfo) {
+                foreach(QString comname, my_serialportinfo_) {
                     ui_->COMCombo->addItem(comname);
                 }
 
         }
-        if (!my_serialportinfo.contains(com) && my_serialport_->isOpen()) {
+        if (!my_serialportinfo_.contains(com) && my_serialport_->isOpen()) {
             QMessageBox::critical(this, tr("Error"), "串口连接中断，请检查是否正确连接！");
             my_serialport_->close();
             ui_->COMCombo->removeItem(ui_->COMCombo->currentIndex());
             ui_->StartTool->setText("启动");
+            is_start_ = false;
             ui_->StartTool->setStyleSheet("background-color: rgba(170, 255, 0, 125);");
             ui_->COMButton->setEnabled(true);
             ui_->TCPClientButton->setEnabled(true);
@@ -200,7 +205,7 @@ bool ComTool::StartSerial() {
     if (stop_bit_ == 1.5) {
         my_serialport_->setStopBits(QSerialPort::OneAndHalfStop);
     } else {
-        my_serialport_->setStopBits(QSerialPort::StopBits(stop_bit_));
+        my_serialport_->setStopBits(QSerialPort::StopBits(int(stop_bit_)));
     }
     my_serialport_->setFlowControl(QSerialPort::NoFlowControl);//不使用流控制
     my_serialport_->setReadBufferSize(500);
@@ -226,6 +231,7 @@ void ComTool::InitForm() {
 #endif
 }
 
+///启动串口/tcp工具
 void ComTool::StartTool() {
     if (ui_->StartTool->text() == "停止") {
         if (ui_->COMButton->isChecked()) {
@@ -238,6 +244,7 @@ void ComTool::StartTool() {
         ui_->TCPClientButton->setEnabled(true);
         ui_->TCPServerButton->setEnabled(true);
         ui_->StartTool->setText("启动");
+        is_start_ = false;
         ui_->StartTool->setStyleSheet("background-color: rgba(170, 255, 0, 125);");
 
     } else {
@@ -249,6 +256,7 @@ void ComTool::StartTool() {
         ui_->TCPClientButton->setEnabled(false);
         ui_->TCPServerButton->setEnabled(false);
         ui_->StartTool->setText("停止");
+        is_start_ = true;
         ui_->StartTool->setStyleSheet("background-color: rgba(255, 0, 0, 125);");
     }
 }
@@ -276,8 +284,16 @@ void ComTool::Append(int type, const QString &data, bool clear) {
         return;
     }
 
-//    //过滤回车换行符
+    //过滤回车换行符
     QString str_data = data;
+    str_data = str_data.replace("\a", "\\a");
+    str_data = str_data.replace("\b", "\\b");
+    str_data = str_data.replace("\f", "\\f");
+    str_data = str_data.replace("\t", "\\t");
+    str_data = str_data.replace("\v", "\\v");
+    str_data = str_data.replace("\\", "\\\\");
+    str_data = str_data.replace("\'", "\\'");
+    str_data = str_data.replace("\"", R"RX(\\")RX");
     str_data = str_data.replace("\r", "\\r");
     str_data = str_data.replace("\n", "\\n");
 
@@ -287,11 +303,16 @@ void ComTool::Append(int type, const QString &data, bool clear) {
         str_type = "接收 <<";
         ui_->txtMain->setTextColor(QColor("dodgerblue"));
     } else if (type == 2) {
-        str_type = "发送 <<";
+        str_type = "发送 >>";
         ui_->txtMain->setTextColor(QColor("black"));
     }
 
-    str_data = QString("时间[%1] %2 %3").arg(TIMEMS, str_type, str_data);
+    if (str_data.at(str_data.length() - 1) != '\n') {
+        str_data = QString("时间[%1] %2 %3\n").arg(TIMEMS, str_type, str_data);
+    } else {
+        str_data = QString("时间[%1] %2 %3").arg(TIMEMS, str_type, str_data);
+    }
+
     ui_->txtMain->append(str_data);
     current_count++;
 }
@@ -319,11 +340,27 @@ void ComTool::GetData() {
 
 ///发送发送栏里的数据
 void ComTool::SendData() {
+    if (!is_start_) {
+        QMessageBox::warning(this, tr("错误"), tr("请先打开串口后再发送"));
+        return;
+    }
+
     QString data = ui_->SendDataEdit->toPlainText();
     if (data.isEmpty()) {
         ui_->SendDataEdit->setFocus();
         return;
     }
+
+    data = data.replace("\\n", "\n");
+    data = data.replace("\\a", "\a");
+    data = data.replace("\\b", "\b");
+    data = data.replace("\\f", "\f");
+    data = data.replace("\\r", "\r");
+    data = data.replace("\\t", "\t");
+    data = data.replace("\\v", "\v");
+    data = data.replace("\\\\", "\\");
+    data = data.replace("\\'", "\'");
+    data = data.replace(R"RX(\\")RX", "\"");
 
     QByteArray buffer;
     if (ui_->ckHexSend->isChecked()) {
@@ -378,6 +415,8 @@ void ComTool::SaveConstructConfig() {
 void ComTool::ReadErrorNet() {
 
 }
+
+///模式改变所导致的视觉效果变化的更新
 void ComTool::ChangeMode() {
     bool tmp;
     if (ui_->COMButton->isChecked()) {

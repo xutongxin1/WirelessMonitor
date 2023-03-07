@@ -82,7 +82,7 @@ class TCPCom : public RepeaterWidget {
     void SendData();            //发送串口数据
     void SaveData();            //保存串口数据
 
-    void ChangeEnable(bool b);  //改变状态
+
     void Append(int type, const QString &data, bool clear = false);
 
  private slots:

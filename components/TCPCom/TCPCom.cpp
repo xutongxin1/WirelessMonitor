@@ -124,18 +124,13 @@ void TCPCom::InitForm() {
     is_show_ = true;
 
     ui_->tabWidget->setCurrentIndex(0);
-    ChangeEnable(false);
 
 #ifdef __arm__
     ui_->widgetRight->setFixedWidth(280);
 #endif
 }
 
-void TCPCom::ChangeEnable(bool b) {
-
-}
-
-/// 往日志区添加数据
+/// 往数据日志区添加数据
 /// \param type 数据类型
 /// \param data 数据
 /// \param clear 是否清空
