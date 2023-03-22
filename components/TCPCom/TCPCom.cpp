@@ -303,7 +303,3 @@ void TCPCom::SaveConstructConfig() {
 
     cfg_->endGroup();
 }
-
-void TCPCom::ReadErrorNet() {
-
-}

@@ -33,6 +33,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     //    canvas->setMaximumHeight(300);
     //
     //手动初始化侧边栏（不是在ui文件里初始化的）
+
+
+
+    ui_->FunctionBar->setBackgroundColor(QColor(245, 180, 202, 100));
     m_drawer_ = new QtMaterialDrawer;
     cfg_ = new CfgClass;
     m_drawer_->setParent(ui_->centralwidget);
@@ -70,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
 
   //    ui_->FunctionWindow->setCurrentIndex(2);
   //    devices_info_[1].tab_widget->setCurrentTab(2);
+    //ui_->FunctionBar->setStyleSheet("background-color: rgba(255, 255, 255, 50);");
 }
 
 MainWindow::~MainWindow() {
@@ -100,6 +105,7 @@ void MainWindow::DeviceWindowsInit() {
     {
         // 创建Tab栏,初始化DevicesInfo内数据
         auto *new_tab = new QtMaterialTabs();//上方切换栏
+
         struct DevicesInfo tmp
             {
                 .windows_num = cfg_->GetMainCfg("/Device " + QString::number(device_num) + "/win").toInt(),
@@ -195,6 +201,7 @@ void MainWindow::DeviceWindowsInit() {
                 default:break;
             }
         }
+        new_tab->setBackgroundColor(QColor(123, 169, 199, 50));
 
         //        Charts test;  //图标界面测试
         //        test.show();
