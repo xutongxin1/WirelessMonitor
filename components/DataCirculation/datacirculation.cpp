@@ -60,13 +60,19 @@ DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, To
       SaveConstructConfig();
     });
 
-    connect(ui_->btnStart, &QPushButton::clicked, this, [&] { StartCirculation(); });
+    connect(ui_->btnStart, &QPushButton::clicked, this, [&] {
+        if (ui_->btnStart->text()=="停止数据流处理"){
+            StopCirculation();
+        }else {
+            StartCirculation();
+        }
+    });
 
     connect(ui_->btnTestFlow, &QPushButton::clicked, this, [&] {
       //        QString path = QFileDialog::GetOpenFileName(this, "打开文件", "D:\\OneDriveFile\\bird\\OneDrive -
       //        xutongxin\\Competition\\xmbDebugTools\\QT\\thirdPartyTool");
       QFile file(
-          "D:\\OneDriveFile\\bird\\OneDrive - xutongxin\\Competition\\xmbDebugTools\\QT\\thirdPartyTool\\result.txt");
+          "E:\\Desktop\\WirelessMonitor\\thirdPartyTool\\result.txt");
       if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
           return;
       }
@@ -181,7 +187,9 @@ void DataCirculation::RefreshBox() {
     ui_->labelOutputMode->setVisible(tmp_bool);
 }
 
-/// 启动数据流过滤，绑定通道
+/// 启动数据流过滤，绑定通道（开启数据流处理）
+/// TODO: 1.重新开启数据处理，会清空数据
+
 void DataCirculation::StartCirculation()
 {
     // 检查界面是否存在
@@ -193,7 +201,8 @@ void DataCirculation::StartCirculation()
     qDebug() << "开始绑定数据流";
     chart_window_ = (*(parent_info_->devices_info))[device_num_].charts_windows;
 
-    ui_->btnStart->setEnabled(false);
+    ui_->btnStart->setEnabled(false);   // 这个是按键使能的标志吗？
+
     // 检查变量组
 
 //    for (auto &value : values_) {
@@ -215,6 +224,13 @@ void DataCirculation::StartCirculation()
     chart_window_->UpdateDataPoolIndex();
     chart_window_->SetProgramTime();
     chart_window_->paint_timer_->start();
+
+    /// 加载变量到charts
+    QString name_first = ui_->tableWidget->item(0,0)->text();
+    QString name_second = ui_->tableWidget->item(1,0)->text();
+    chart_window_->LoadInfo(name_first,name_second);
+
+
 
     // 绑定数据进入过滤
     if (tcp_info_handler_[1]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN && tcp_info_handler_[1]->is_connected_) {
@@ -240,6 +256,22 @@ void DataCirculation::StartCirculation()
     ui_->btnStart->setText("停止数据流处理");
     ui_->btnStart->setEnabled(true);
 }
+
+/// 停止数据流过滤，关闭通道（停止数据流处理）
+/* TODO:
+    1.关闭通道
+
+*/
+void DataCirculation::StopCirculation() {
+    ui_->btnStart->setEnabled(false);       // 按钮使能状态
+
+
+    qDebug() << "关闭数据流过滤" << endl;
+    ui_->btnStart->setText("启动数据流处理");
+    ui_->btnStart->setEnabled(true);
+
+}
+
 
 /// 对目标数据进行过滤
 ///  \param data 过滤目标数据

@@ -1,0 +1,235 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						5,
+						6
+					],
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						4,
+						5
+					]
+				},
+				{
+					"build" : "api",
+					"childIndexes" : 
+					[
+						2,
+						3,
+						4
+					],
+					"jsonFile" : "directory-api-Debug-5ab110d9fc402529b4bb.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "api"
+				},
+				{
+					"build" : "api/RepeaterWidget",
+					"jsonFile" : "directory-api.RepeaterWidget-Debug-a30543895268fbe3aa27.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "api/RepeaterWidget"
+				},
+				{
+					"build" : "api/TCPHandle",
+					"jsonFile" : "directory-api.TCPHandle-Debug-6bfd07d8a2c299828eb3.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "api/TCPHandle"
+				},
+				{
+					"build" : "api/ComToolDepend",
+					"jsonFile" : "directory-api.ComToolDepend-Debug-d3fa5acaf3d9fb14f286.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "api/ComToolDepend"
+				},
+				{
+					"build" : "components",
+					"jsonFile" : "directory-components-Debug-167515c4e4d9cb6cacf4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "components"
+				},
+				{
+					"build" : "thirdLib",
+					"childIndexes" : 
+					[
+						7,
+						8
+					],
+					"jsonFile" : "directory-thirdLib-Debug-17639f4cc96f377293ec.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "thirdLib"
+				},
+				{
+					"build" : "thirdLib/qcustomplot",
+					"jsonFile" : "directory-thirdLib.qcustomplot-Debug-7708e8eda73b9acf2eff.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 0,
+					"source" : "thirdLib/qcustomplot"
+				},
+				{
+					"build" : "thirdLib/qmetarial",
+					"jsonFile" : "directory-thirdLib.qmetarial-Debug-e028ae22bbc3c558b2ad.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 1,
+					"source" : "thirdLib/qmetarial",
+					"targetIndexes" : 
+					[
+						2,
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7
+					],
+					"name" : "Main",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						4,
+						5
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						8
+					],
+					"name" : "components",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Main::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Main-Debug-d7e8dff87c48fc20d737.json",
+					"name" : "Main",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Main_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Main_autogen-Debug-ac3b9c21308557e937b3.json",
+					"name" : "Main_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "components::@9c9323161d0a7554cfa5",
+					"jsonFile" : "target-components-Debug-e566c5eb4f0ef6bf7cb6.json",
+					"name" : "components",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "components_autogen::@9c9323161d0a7554cfa5",
+					"jsonFile" : "target-components_autogen-Debug-0f9a902d0a24cfc14ced.json",
+					"name" : "components_autogen",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "whatever::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-whatever-Debug-6badd29149d2b7bdfb2e.json",
+					"name" : "whatever",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "whatever_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-whatever_autogen-Debug-e4d19cd32a18a8bb204a.json",
+					"name" : "whatever_autogen",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "E:/Desktop/WirelessMonitor/cmake-build-debug-coverage",
+		"source" : "E:/Desktop/WirelessMonitor"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

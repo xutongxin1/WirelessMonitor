@@ -104,6 +104,7 @@ class ChartsNext : public RepeaterWidget {
 
     void SetProgramTime();
 
+    void LoadInfo(QString name_first,QString name_second);
     QTimer *paint_timer_;
 
  public slots:

@@ -45,7 +45,7 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
     ui_chart_(new Ui::charts_next) {
     ui_chart_->setupUi(this);
 
-    //需要接入统一的设置文件系统
+    //需要接入统一的设置文件的系统
     this->cfg_ = cfg;
     this->group_name_ = "Win" + QString::number(win_num);
     this->device_num_ = device_num;
@@ -145,7 +145,7 @@ void ChartsNext::UpdateLine() {
 
 void ChartsNext::myMoveEvent(QMouseEvent *event) {
     //获取鼠标坐标，相对父窗体坐标
-    int c_flag = 0;
+    int c_flag = 0;         // 应该是一个是否选中线条的标志
     int x_pos = event->pos().x();
     int y_pos = event->pos().y();
 //    qDebug() << "event->pos()" << event->pos();
@@ -331,7 +331,7 @@ bool ChartsNext::AddDataWithProgramTime(const QString &point_name, double data, 
         qDebug() << "AddDataWithProgramTime: find point fail！" << endl;
         return false;
     }
-
+    return true;
 }
 
 bool ChartsNext::AddDataWithDateTime(const QString &point_name, double data, QDateTime *date_time) {
@@ -387,6 +387,41 @@ void ChartsNext::test(const QVector<double> &addDate) {
     qDebug() << temp[3] << endl;
 }
 
+/// 加载右边的信息框
+void ChartsNext::LoadInfo(QString name_first,QString name_second){
+    ui_chart_->line_table->setRowCount(2);
+    ui_chart_->line_table->setColumnCount(3);
+
+    /// 变量名
+    ui_chart_->line_table->setItem(0,0,new QTableWidgetItem(name_first));
+    ui_chart_->line_table->setItem(1,0,new QTableWidgetItem(name_second));
+
+    /// 颜色选择（下拉选择框）
+    QComboBox *combobox_first = new QComboBox;
+    QComboBox *combobox_second = new QComboBox;
+    QStringList list;
+    list << "red" << "green" << "blue";
+    combobox_first->addItems(list);
+    combobox_second->addItems(list);
+    ui_chart_->line_table->setCellWidget(0,1,combobox_first);
+    ui_chart_->line_table->setCellWidget(1,1,combobox_second);
+
+    void (QComboBox::*p)(int) =&QComboBox::currentIndexChanged;
+    connect(combobox_first,p,[=](int index){
+        qDebug() << "index = " << index << endl;
+        qDebug() << combobox_first->currentText() << endl;
+    });
+    //设置默认选项
+    combobox_first->setCurrentText(list[0]);
+
+
+    ///  是否显示（检查框）
+    ui_chart_->line_table->setCellWidget(0,2,new QCheckBox);
+    ui_chart_->line_table->setCellWidget(1,2,new QCheckBox);
+
+
+}
+
 void ChartsNext::selectionChanged() {
     // 将图形的选择与相应图例项的选择同步
     for (int i = 0; i < ui_chart_->widget->graphCount(); ++i) {
@@ -415,7 +450,6 @@ bool ChartsNext::AntiRegisterAllDataPoint() {
         }
         //释放data_list
         i->data_list.clear();
-
         //释放data_pool_的对应节点
         i = data_pool_.erase(i);
         i--;//让迭代器去指向下一个元素，这样for循环才不会出错
