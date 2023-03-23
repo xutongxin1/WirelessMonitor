@@ -35,8 +35,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     //手动初始化侧边栏（不是在ui文件里初始化的）
 
 
-
+#ifdef BEAUTIFY
+    ui_->centralwidget->setStyleSheet(".QWidget{border-image: url(config/backgroud.png);}");
     ui_->FunctionBar->setBackgroundColor(QColor(245, 180, 202, 100));
+#endif
     m_drawer_ = new QtMaterialDrawer;
     cfg_ = new CfgClass;
     m_drawer_->setParent(ui_->centralwidget);
@@ -201,7 +203,9 @@ void MainWindow::DeviceWindowsInit() {
                 default:break;
             }
         }
+#ifdef BEAUTIFY
         new_tab->setBackgroundColor(QColor(123, 169, 199, 50));
+#endif
 
         //        Charts test;  //图标界面测试
         //        test.show();

@@ -24,7 +24,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
-    <string notr="true">.QWidget{border-image: url(config/backgroud.png);}</string>
+    <string notr="true"/>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
     <property name="spacing">
