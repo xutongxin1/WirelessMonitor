@@ -108,6 +108,11 @@ class ComTool : public RepeaterWidget {
 
     void on_btnClear_clicked();
 
+    struct send_history
+    {
+        QString str;
+        QDateTime time;
+    };
 
 };
 
