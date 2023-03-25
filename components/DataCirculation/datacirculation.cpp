@@ -226,9 +226,10 @@ void DataCirculation::StartCirculation()
     chart_window_->paint_timer_->start();
 
     /// 加载变量到charts
-    QString name_first = ui_->tableWidget->item(0,0)->text();
-    QString name_second = ui_->tableWidget->item(1,0)->text();
-    chart_window_->LoadInfo(name_first,name_second);
+    /// 如果有了data_pool_ 那就不用在这里传参了
+//    QString name_first = ui_->tableWidget->item(0,0)->text();
+//    QString name_second = ui_->tableWidget->item(1,0)->text();
+    chart_window_->LoadInfo();
 
 
 

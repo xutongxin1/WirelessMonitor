@@ -388,7 +388,7 @@ void ChartsNext::test(const QVector<double> &addDate) {
 }
 
 /// 加载右边的信息框
-void ChartsNext::LoadInfo(QString name_first,QString name_second){
+void ChartsNext::LoadInfo(){
     ui_chart_->line_table->setRowCount(2);
     ui_chart_->line_table->setColumnCount(3);
 

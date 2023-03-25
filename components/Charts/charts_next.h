@@ -104,7 +104,8 @@ class ChartsNext : public RepeaterWidget {
 
     void SetProgramTime();
 
-    void LoadInfo(QString name_first,QString name_second);
+    void LoadInfo();
+
     QTimer *paint_timer_;
 
  public slots:
@@ -128,9 +129,9 @@ class ChartsNext : public RepeaterWidget {
 
     QCustomPlot *custom_plot_;
 
-    QList<DataNode> data_pool_;//数据池
+    QList<DataNode> data_pool_;                             //数据池
 
-    QHash<QString, DataNodeIndex> data_pool_index_;//指针索引，加快添加数据时的速度
+    QHash<QString, DataNodeIndex> data_pool_index_;         //指针索引，加快添加数据时的速度
 
     TimeType chart_time_type_ = PROGRAM_TIME;
 

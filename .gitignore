@@ -91,3 +91,5 @@ cmake-build-debug-qt/
 cmake-build-debug/
 
 cmake-build-debug-coverage/
+
+CMakeLists.txt.user.*

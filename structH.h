@@ -59,6 +59,7 @@ enum TimeType {
     DATA_TIME,
     PROGRAM_TIME
 };
+
 ///共用体,降低内存占用
 ///其实我很担心这一段会有一些奇怪的问题
 union DataTime {
@@ -82,6 +83,7 @@ struct singaldata {
 
     }
 };
+
 ///数据点
 struct DataNode {
     QString data_name;///数据名称
