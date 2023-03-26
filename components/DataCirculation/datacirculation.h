@@ -55,8 +55,6 @@ private:
 
     void StartCirculation();
 
-    void StopCirculation();
-
     void DoCirculation(const QByteArray &data, const QDateTime &data_time = QDateTime::currentDateTime());
 
     ChartsNext *chart_window_;
