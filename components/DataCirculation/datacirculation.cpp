@@ -4,8 +4,6 @@
 
 // You may need to build the project (run Qt uic code generator) to get "ui_DataCirculation.h" resolved
 
-
-//TODO:添加数据流关闭按钮
 #include "datacirculation.h"
 
 #include <QInputDialog>
@@ -188,7 +186,6 @@ void DataCirculation::RefreshBox() {
 }
 
 /// 启动数据流过滤，绑定通道（开启数据流处理）
-/// TODO: 1.重新开启数据处理，会清空数据
 
 void DataCirculation::StartCirculation()
 {
@@ -259,14 +256,13 @@ void DataCirculation::StartCirculation()
 }
 
 /// 停止数据流过滤，关闭通道（停止数据流处理）
-/* TODO:
-    1.关闭通道
+/// TODO: 1. 关闭数据过滤时，不要清空数据点
 
-*/
+
 void DataCirculation::StopCirculation() {
     ui_->btnStart->setEnabled(false);       // 按钮使能状态
 
-
+    chart_window_->AntiRegisterAllDataPoint();
     qDebug() << "关闭数据流过滤" << endl;
     ui_->btnStart->setText("启动数据流处理");
     ui_->btnStart->setEnabled(true);

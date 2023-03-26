@@ -10,6 +10,8 @@
 #include "qtmaterialtabs.h"
 #include "TCPCommandHandle.h"
 #include "TCPInfoHandle.h"
+#include <QCheckBox>
+#include <QColorDialog>
 
 #define DEBUG 1
 
@@ -86,23 +88,32 @@ struct singaldata {
 
 ///数据点
 struct DataNode {
-    QString data_name;///数据名称
-    QColor line_color = Qt::red;///线条颜色
+    QString data_name;                  ///数据名称
+    QColor line_color = Qt::red;        ///线条颜色
     int line_width = 2;
 //  QList<double> *double_list;
     QVector<singaldata> data_list;
-    bool is_visible = true;
+    bool is_visible = true;             ///是否可见
     TimeType time_type = PROGRAM_TIME;
     //long long d_size = 0;//记录数据存储大小
     //long long count = 0;//记录每个数据已经画了多少个了。要注意防止溢出！！！
     bool is_update = false;
     int last_draw_index = -1;
 };
+
 ///数据点的索引
 struct DataNodeIndex {
     QVector<singaldata> *data_list;
     bool *is_update;
     int *last_draw_index;
 };
+
+/// charts中的变量信息
+struct ChartsList{
+    QString data_name;
+    QPushButton *choose_color = new QPushButton;
+    QCheckBox *check_visible = new QCheckBox;
+};
+
 
 #endif //MAIN__STRUCTH_H_

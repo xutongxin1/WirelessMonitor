@@ -3,6 +3,8 @@
 
 #include <QDebug>
 #include <QPair>
+#include <QColorDialog>
+
 
 //QList方便与图例顺序对应
 
@@ -387,40 +389,57 @@ void ChartsNext::test(const QVector<double> &addDate) {
     qDebug() << temp[3] << endl;
 }
 
+
 /// 加载右边的信息框
+/// 变量名可以手动改？
+
 void ChartsNext::LoadInfo(){
-    ui_chart_->line_table->setRowCount(2);
+
+    ui_chart_->line_table->setRowCount(data_pool_.size());
     ui_chart_->line_table->setColumnCount(3);
 
-    /// 变量名
-    ui_chart_->line_table->setItem(0,0,new QTableWidgetItem(name_first));
-    ui_chart_->line_table->setItem(1,0,new QTableWidgetItem(name_second));
+    /// 动态创建控件
+    for(int i=0;i<data_pool_.size();i++)
+    {
+        struct ChartsList node;
+        node.choose_color->setText("颜色选择");
+        line_info_.append(node);
+        connect(line_info_[i].check_visible,SIGNAL(stateChanged(int)),this,SLOT(visibleChanged(int)));
+        connect(line_info_[i].choose_color,SIGNAL(clicked()),this,SLOT(selectColor()));
+    }
 
-    /// 颜色选择（下拉选择框）
-    QComboBox *combobox_first = new QComboBox;
-    QComboBox *combobox_second = new QComboBox;
-    QStringList list;
-    list << "red" << "green" << "blue";
-    combobox_first->addItems(list);
-    combobox_second->addItems(list);
-    ui_chart_->line_table->setCellWidget(0,1,combobox_first);
-    ui_chart_->line_table->setCellWidget(1,1,combobox_second);
-
-    void (QComboBox::*p)(int) =&QComboBox::currentIndexChanged;
-    connect(combobox_first,p,[=](int index){
-        qDebug() << "index = " << index << endl;
-        qDebug() << combobox_first->currentText() << endl;
-    });
-    //设置默认选项
-    combobox_first->setCurrentText(list[0]);
-
-
-    ///  是否显示（检查框）
-    ui_chart_->line_table->setCellWidget(0,2,new QCheckBox);
-    ui_chart_->line_table->setCellWidget(1,2,new QCheckBox);
-
+    /// 渲染右侧信息
+    int count = 0;
+    for (QList<DataNode>::iterator i = data_pool_.begin(); i != data_pool_.end(); ++i,count++) {
+        ui_chart_->line_table->setItem(count,0,new QTableWidgetItem(data_pool_.at(count).data_name));
+        ui_chart_->line_table->setCellWidget(count,1,line_info_[count].choose_color);
+        ui_chart_->line_table->setCellWidget(count,2,line_info_[count].check_visible);
+    }
 
 }
+
+/// 颜色选择窗口
+/// TODO: 1. 改变图像颜色,结构体里的line_color     2. 图像显隐切换,结构体里的is_visible       3. 改变之后，要重新渲染，图像右上角的信息框也要对应修改
+
+void ChartsNext::selectColor(){
+    /// 这里的初始化颜色，改为data_pool_里面的
+    QColor color = QColorDialog::getColor(Qt::red, this,("颜色选择"),QColorDialog::ShowAlphaChannel);
+
+    ///data_pool_[0].line_color = color;
+    ///更改后要重新渲染
+
+    qDebug() << "choose color:" << color << endl;
+}
+
+/// 是否可见选择
+void ChartsNext::visibleChanged(int state) {
+    if (state==Qt::Checked){
+        qDebug() << "changed visible" << endl;
+    }else if(state==Qt::Unchecked){
+        qDebug() << "changed unvisible" << endl;
+    }
+}
+
 
 void ChartsNext::selectionChanged() {
     // 将图形的选择与相应图例项的选择同步
