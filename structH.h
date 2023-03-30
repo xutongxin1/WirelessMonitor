@@ -10,8 +10,7 @@
 #include "qtmaterialtabs.h"
 #include "TCPCommandHandle.h"
 #include "TCPInfoHandle.h"
-
-#define DEBUG 1
+#include "defineH.h"
 
 class RepeaterWidget;
 

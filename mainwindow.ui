@@ -19,7 +19,13 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
     <property name="spacing">
      <number>0</number>
@@ -49,6 +55,9 @@
         <width>16777215</width>
         <height>100</height>
        </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
       </property>
       <widget class="QPushButton" name="settingButton">
        <property name="geometry">
@@ -94,6 +103,9 @@ border:none;</string>
          <width>1006</width>
          <height>82</height>
         </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
        </property>
        <widget class="QtMaterialTabs" name="MainTab"/>
       </widget>

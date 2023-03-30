@@ -45,7 +45,7 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
     ui_chart_(new Ui::charts_next) {
     ui_chart_->setupUi(this);
 
-    //需要接入统一的设置文件系统
+    //需要接入统一的设置文件的系统
     this->cfg_ = cfg;
     this->group_name_ = "Win" + QString::number(win_num);
     this->device_num_ = device_num;
@@ -188,7 +188,6 @@ void ChartsNext::myMoveEvent(QMouseEvent *event) {
         strToolTip += "\n";
         QToolTip::showText(mapToGlobal(QPoint(out_x, out_y)), strToolTip, ui_chart_->widget);
     }
-
 }
 
 void ChartsNext::on_pushButton_clicked() {
@@ -331,7 +330,7 @@ bool ChartsNext::AddDataWithProgramTime(const QString &point_name, double data, 
         qDebug() << "AddDataWithProgramTime: find point fail！" << endl;
         return false;
     }
-
+    return false;
 }
 
 bool ChartsNext::AddDataWithDateTime(const QString &point_name, double data, QDateTime *date_time) {

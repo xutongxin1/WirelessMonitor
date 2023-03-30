@@ -33,6 +33,9 @@
           <property name="enabled">
            <bool>true</bool>
           </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgba(255, 255, 255, 125);</string>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -53,6 +56,9 @@
           <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0">
            <item>
             <widget class="QTextEdit" name="SendDataEdit">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgba(255, 255, 255, 125);</string>
+             </property>
              <property name="placeholderText">
               <string>发送区</string>
              </property>
@@ -92,6 +98,13 @@
                 </widget>
                </item>
               </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="ClearSendDataEdit">
+               <property name="text">
+                <string>  清空发送区</string>
+               </property>
+              </widget>
              </item>
              <item>
               <spacer name="verticalSpacer_2">
@@ -180,6 +193,9 @@
         <height>0</height>
        </size>
       </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="leftMargin">
         <number>0</number>
@@ -195,11 +211,14 @@
        </property>
        <item>
         <widget class="QTabWidget" name="tabWidget">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="tabPosition">
           <enum>QTabWidget::South</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tab">
           <attribute name="title">
@@ -455,6 +474,54 @@
           <attribute name="title">
            <string>历史发送</string>
           </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QTableWidget" name="historyTable">
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+             <column>
+              <property name="text">
+               <string>信息</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>最后发送时间</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>发送次数</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>格式</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="clearHistorySend">
+             <property name="text">
+              <string> 清空历史记录</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </widget>
        </item>
@@ -472,14 +539,14 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QtMaterialCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>qtmaterialcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>QtMaterialRadioButton</class>
    <extends>QRadioButton</extends>
    <header>qtmaterialradiobutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QtMaterialCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>qtmaterialcheckbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

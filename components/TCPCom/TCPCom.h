@@ -87,10 +87,6 @@ class TCPCom : public RepeaterWidget {
 
  private slots:
 
-    void ReadErrorNet();
-
- private slots:
-
     void on_btnClear_clicked();
 
     void on_btnData_clicked();

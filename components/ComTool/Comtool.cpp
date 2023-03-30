@@ -33,7 +33,8 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 
     ui_->setupUi(this);
 
-    this->InitForm();
+    receive_count_ = 0;
+    send_count_ = 0;
 //    this->InitConfig();
     QuiHelper::SetFormInCenter(this);
 
@@ -131,8 +132,62 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     connect(ui_->TCPClientButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
     connect(ui_->TCPServerButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
 
+    //高亮转义字符
     highlighter1 = new Highlighter(ui_->SendDataEdit->document());
     highlighter2 = new Highlighter(ui_->txtMain->document());
+
+    //表格自动拉宽
+    ui_->historyTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    connect(ui_->clearHistorySend, &QPushButton::clicked, this, [&] {
+      ui_->historyTable->setRowCount(0);
+      ui_->historyTable->clearContents();
+      history_send_list_.clear();
+    });//清空历史记录
+
+    connect(ui_->historyTable, &QTableWidget::cellClicked, this, [&](int row, int col) {
+      ui_->SendDataEdit->setText(ui_->historyTable->item(row, 0)->text());
+    });//单击
+
+    connect(ui_->historyTable, &QTableWidget::cellDoubleClicked, this, [&](int row, int col) {
+      ui_->SendDataEdit->setText(ui_->historyTable->item(row, 0)->text());
+      this->SendData();
+    });//双击
+
+    //列宽
+    ui_->historyTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    ui_->historyTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    ui_->historyTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Interactive);
+
+    //右键菜单
+    ui_->historyTable->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui_->historyTable, &QTableWidget::customContextMenuRequested, this, [&](const QPoint pos) {
+      //获得鼠标点击的x，y坐标点
+      int x = pos.x();
+      int y = pos.y();
+      QModelIndex index = ui_->historyTable->indexAt(QPoint(x, y));
+      if (index.isValid()) {
+          int row = index.row();//获得QTableWidget列表点击的行数
+          QMenu *menu = new QMenu(ui_->historyTable);
+//          QAction *pnew_1 = new QAction("复制并修改该项", ui_->historyTable);
+          QAction *pnew_2 = new QAction("删除该项", ui_->historyTable);
+          connect(pnew_2, &QAction::triggered, this, [&, row] {
+            history_send_list_.remove(ui_->historyTable->item(row, 0)->text());
+            ui_->historyTable->removeRow(row);
+          });
+
+//          menu->addAction(pnew_1);
+          menu->addAction(pnew_2);
+          menu->move(cursor().pos());
+          menu->show();
+
+      }
+
+    });
+
+    connect(ui_->ClearSendDataEdit, &QPushButton::clicked, this, [&] {
+      ui_->SendDataEdit->clear();
+    });
 
 }
 
@@ -217,20 +272,6 @@ bool ComTool::StartSerial() {
     }
 }
 
-///初始化统计
-void ComTool::InitForm() {
-    sleep_time_rec_ = 10;
-    receive_count_ = 0;
-    send_count_ = 0;
-    is_show_ = true;
-
-    ui_->tabWidget->setCurrentIndex(0);
-
-#ifdef __arm__
-    ui_->widgetRight->setFixedWidth(280);
-#endif
-}
-
 ///启动串口/tcp工具
 void ComTool::StartTool() {
     if (ui_->StartTool->text() == "停止") {
@@ -278,10 +319,6 @@ void ComTool::Append(int type, const QString &data, bool clear) {
     if (current_count >= max_count) {
         ui_->txtMain->clear();
         current_count = 0;
-    }
-
-    if (!is_show_) {
-        return;
     }
 
     //过滤回车换行符
@@ -372,7 +409,26 @@ void ComTool::SendData() {
     Append(2, data);
     my_serialport_->write(buffer);
 
+    if (history_send_list_.contains(data)) {
+        if (ui_->ckHexSend->isChecked() != history_send_list_[data].is_Hex) {
+            history_send_list_[data].is_Hex = ui_->ckHexSend->isChecked();
+            history_send_list_[data].send_num = 1;
+        } else {
+            history_send_list_[data].send_num++;
+        }
+
+        history_send_list_[data].time = QDateTime::currentDateTime();
+    } else {
+        HistorySend tmp;
+        tmp.is_Hex = ui_->ckHexSend->isChecked();
+        tmp.data = data;
+        tmp.time = QDateTime::currentDateTime();
+        history_send_list_.insert(data, tmp);
+    }
+    UpdateSendHistory();
+
     send_count_ = send_count_ + buffer.size();
+
     ui_->SendCount->setText(QString("发送 : %1 字节").arg(send_count_));
 }
 
@@ -440,4 +496,24 @@ void ComTool::ChangeMode() {
     ui_->DataBitLayout->setEnabled(tmp);
     ui_->ParityBitLayout->setEnabled(tmp);
     ui_->StopBitLayout->setEnabled(tmp);
+}
+void ComTool::UpdateSendHistory() {
+    ui_->historyTable->setRowCount(0);
+    ui_->historyTable->clearContents();
+    ui_->historyTable->setSortingEnabled(false);
+    int j = 0;
+    for (QHash<QString, HistorySend>::iterator i = history_send_list_.begin(); i != history_send_list_.end(); ++i) {
+        ui_->historyTable->insertRow(j);
+        HistorySend tmp = i.value();
+        ui_->historyTable->setItem(j, 0, new QTableWidgetItem(tmp.data));
+        ui_->historyTable->setItem(j, 1, new QTableWidgetItem(tmp.time.toString("yyyy-MM-dd HH:mm:ss")));
+        ui_->historyTable->setItem(j, 2, new QTableWidgetItem(QString::number(tmp.send_num)));
+        if (tmp.is_Hex) {
+            ui_->historyTable->setItem(j, 3, new QTableWidgetItem("hex"));
+        } else {
+            ui_->historyTable->setItem(j, 3, new QTableWidgetItem("str"));
+        }
+        j++;
+    }
+    ui_->historyTable->setSortingEnabled(true);
 }
