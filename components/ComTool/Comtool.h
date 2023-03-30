@@ -22,7 +22,7 @@ class ComTool : public RepeaterWidget {
  Q_OBJECT
 
  public:
-    explicit ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent = nullptr);
+    explicit ComTool(int row, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent = nullptr);
 
     ~ComTool() override;
 
@@ -91,9 +91,18 @@ class ComTool : public RepeaterWidget {
 
     bool is_start_ = false;
 
+    typedef struct history_send {
+        QString data;
+        bool is_Hex = false;
+        int send_num = 1;
+        QDateTime time;
+    } HistorySend;
+    QHash<QString, HistorySend> history_send_list_;
+
+    void UpdateSendHistory();
+
  private slots:
 
-    void InitForm();            //初始化窗体数据
 //    void InitConfig();          //初始化配置文件
 //    void SaveConfig();          //保存配置文件
     void GetData();            //读取串口数据
@@ -107,12 +116,6 @@ class ComTool : public RepeaterWidget {
     void ReadErrorNet();
 
     void on_btnClear_clicked();
-
-    struct send_history
-    {
-        QString str;
-        QDateTime time;
-    };
 
 };
 

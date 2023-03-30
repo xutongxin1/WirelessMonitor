@@ -252,7 +252,7 @@ void TCPBridgeConfiguration::RefreshBox() {
  * @return {*}
  */
 void TCPBridgeConfiguration::SetUart() {
-
+    //TODO: 当只有一个串口打开时仍然连接两个服务器
     if (!tcp_command_handle_->GetConnectionState()) {
         qDebug() << "No connection found";
         return;
@@ -301,16 +301,17 @@ void TCPBridgeConfiguration::SetUart() {
     command.insert("attach", attach);
 
     // 连接信号服务器
-    if (!tcp_info_handler_[1]->is_connected_) {
+    if (mode_1_ != IO_MODE_CLOSED && !tcp_info_handler_[1]->is_connected_) {
         tcp_info_handler_[1]->connectToHost(ip_, 1921, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
     }
-    if (!tcp_info_handler_[2]->is_connected_) {
+    if (mode_2_ != IO_MODE_CLOSED && !tcp_info_handler_[2]->is_connected_) {
         tcp_info_handler_[2]->connectToHost(ip_, 1922, QAbstractSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
     }
 
     // 检查消息线路有没有正确连接，指令执行超时由SendCommand内处理，发出SendCommandError信号
     QTimer::singleShot(2000, this, [&] {
-      if (!(tcp_info_handler_[1]->is_connected_ && tcp_info_handler_[2]->is_connected_)) {
+      if ((!tcp_info_handler_[1]->is_connected_ && mode_1_ != IO_MODE_CLOSED)
+          || (!tcp_info_handler_[2]->is_connected_ && mode_2_ != IO_MODE_CLOSED)) {
           StopAllInfoTCP();
           QMessageBox::critical(this, tr("错误"), tr("连接消息服务器失败"));
           ui_->save->setEnabled(true);
@@ -330,7 +331,8 @@ void TCPBridgeConfiguration::SetUart() {
     connect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, this, [=] {
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, nullptr, nullptr);
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, nullptr, nullptr);
-      if (tcp_info_handler_[1]->is_connected_ && tcp_info_handler_[2]->is_connected_) {
+      if ((tcp_info_handler_[1]->is_connected_ || mode_1_ == IO_MODE_CLOSED)
+          && (tcp_info_handler_[2]->is_connected_ || mode_2_ == IO_MODE_CLOSED)) {
           QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
                                    QMessageBox::Ok);
           ui_->save->setEnabled(true);
