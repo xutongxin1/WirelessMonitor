@@ -63,6 +63,8 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
       UpdateLine();
     });//绘图定时器
 
+    // 设置表格列平分
+    ui_chart_->line_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
 // Allow user to drag axis ranges with mouse, zoom with mouse wheel and select graphs by clicking:
     //chart配置               ui_chart_->widget->graph(i)->setName();
@@ -166,6 +168,7 @@ void ChartsNext::myMoveEvent(QMouseEvent *event) {
     }
 
     //曲线的上点坐标位置，用来显示QToolTip提示框
+
     float out_x = ui_chart_->widget->xAxis->coordToPixel(x_val);
     float out_y = ui_chart_->widget->yAxis->coordToPixel(y_val);
     float out_value = ui_chart_->widget->yAxis->coordToPixel(line_y_val);
@@ -176,15 +179,21 @@ void ChartsNext::myMoveEvent(QMouseEvent *event) {
     strToolTip += str;
     strToolTip += "\n";
 
-    if (c_flag) {
+    /// 显示提示框
+    // c_flag
+    if (0) {
+        /// 这部分是选中逻辑
         str = QString::number(line_y_val, 10, 3);
         strToolTip += "ADC: ";
         strToolTip += str;
         strToolTip += "\n";
+        /// 这里这么写是有什么用吗，选中之后提示有什么作用？
         QToolTip::showText(mapToGlobal(QPoint(out_x, out_value)), strToolTip, ui_chart_->widget);
 
-    } else {
-        str = QString::number(y_val, 10, 3);
+    }
+    else {
+        /// 这部分是默认逻辑
+       str = QString::number(y_val, 10, 3);
         strToolTip += "ADC: ";
         strToolTip += str;
         strToolTip += "\n";
@@ -403,9 +412,16 @@ void ChartsNext::LoadInfo(){
     {
         struct ChartsList node;
         node.choose_color->setText("颜色选择");
+        node.check_visible->setCheckState(Qt::Checked);
         line_info_.append(node);
-        connect(line_info_[i].check_visible,SIGNAL(stateChanged(int)),this,SLOT(visibleChanged(int)));
-        connect(line_info_[i].choose_color,SIGNAL(clicked()),this,SLOT(selectColor()));
+        disconnect(line_info_[i].choose_color,0,0,0);
+        disconnect(line_info_[i].check_visible,0,0,0);
+        connect(line_info_[i].check_visible,&QCheckBox::stateChanged,this,[=](int state){
+            VisibleChanged(state,i);
+        });
+        connect(line_info_[i].choose_color,&QPushButton::clicked,this,[&,i]{
+            SelectColor(i);
+        });
     }
 
     /// 渲染右侧信息
@@ -414,29 +430,57 @@ void ChartsNext::LoadInfo(){
         ui_chart_->line_table->setItem(count,0,new QTableWidgetItem(data_pool_.at(count).data_name));
         ui_chart_->line_table->setCellWidget(count,1,line_info_[count].choose_color);
         ui_chart_->line_table->setCellWidget(count,2,line_info_[count].check_visible);
+//        line_info_[0].check_visible->setCheckState(Qt::Checked);
     }
-
 }
 
+
 /// 颜色选择窗口
-/// TODO: 1. 改变图像颜色,结构体里的line_color     2. 图像显隐切换,结构体里的is_visible       3. 改变之后，要重新渲染，图像右上角的信息框也要对应修改
+/// TODO:
+///     1. 小bug：颜色选择黑色之后，要在左侧选择框点才能成功切换，不过颜色采集可以用。
 
-void ChartsNext::selectColor(){
+void ChartsNext::SelectColor(int i){
     /// 这里的初始化颜色，改为data_pool_里面的
-    QColor color = QColorDialog::getColor(Qt::red, this,("颜色选择"),QColorDialog::ShowAlphaChannel);
 
-    ///data_pool_[0].line_color = color;
+    QPalette plet = line_info_[i].choose_color->palette();
+    QColor currentColor = plet.color(QPalette::Button);    // 当前颜色
+    QColor color = QColorDialog::getColor(currentColor, this,("颜色选择"));
+
+    if (color.isValid()){
+        plet.setColor (QPalette::Button, color);
+        line_info_[i].choose_color->setPalette (plet);
+        data_pool_[i].line_color = color;
+
+        // 改变图像属性
+        QPen pen;
+        pen.setWidth(data_pool_.at(i).line_width);//设置线宽,默认是2
+        pen.setColor(data_pool_.at(i).line_color);//设置线条红色
+        ui_chart_->widget->graph(i)->setPen(pen);
+
+
+    }
+
+
+
+//    LoadInfo();
+
+    qDebug() << "button:" << i;
     ///更改后要重新渲染
-
     qDebug() << "choose color:" << color << endl;
 }
 
+
 /// 是否可见选择
-void ChartsNext::visibleChanged(int state) {
+/// TODO: 1. 关闭数据流之后，点checkbox会闪退
+
+void ChartsNext::VisibleChanged(int state,int location) {
     if (state==Qt::Checked){
-        qDebug() << "changed visible" << endl;
+//        qDebug() << "changed visible" << endl;
+        ui_chart_->widget->graph(location)->setVisible(true);     // 不需要重新渲染其实也可以改变
+
     }else if(state==Qt::Unchecked){
-        qDebug() << "changed unvisible" << endl;
+        ui_chart_->widget->graph(location)->setVisible(false);
+//        qDebug() << "changed unvisible" << endl;
     }
 }
 

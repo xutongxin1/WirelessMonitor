@@ -36,6 +36,7 @@ DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, To
 
     // 绑定测试按钮
     connect(ui_->btnTest, &QPushButton::clicked, this, [&] { TestCirculationMode(); });
+
     // 设置表格列平分
     ui_->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -223,11 +224,7 @@ void DataCirculation::StartCirculation()
     chart_window_->paint_timer_->start();
 
     /// 加载变量到charts
-    /// 如果有了data_pool_ 那就不用在这里传参了
-//    QString name_first = ui_->tableWidget->item(0,0)->text();
-//    QString name_second = ui_->tableWidget->item(1,0)->text();
     chart_window_->LoadInfo();
-
 
 
     // 绑定数据进入过滤
@@ -256,14 +253,12 @@ void DataCirculation::StartCirculation()
 }
 
 /// 停止数据流过滤，关闭通道（停止数据流处理）
-/// TODO: 1. 关闭数据过滤时，不要清空数据点
-
 
 void DataCirculation::StopCirculation() {
     ui_->btnStart->setEnabled(false);       // 按钮使能状态
 
     chart_window_->AntiRegisterAllDataPoint();
-    qDebug() << "关闭数据流过滤" << endl;
+//    qDebug() << "关闭数据流过滤" << endl;
     ui_->btnStart->setText("启动数据流处理");
     ui_->btnStart->setEnabled(true);
 
