@@ -18,7 +18,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_PROJECT_VERSION 1.0)
-set(CMAKE_PREFIX_PATH "E:\\QT\\5.12.11\\mingw73_64\\lib\\cmake\\Qt5")
 
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets)
