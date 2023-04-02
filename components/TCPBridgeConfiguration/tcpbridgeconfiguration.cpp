@@ -271,7 +271,7 @@ void TCPBridgeConfiguration::SetUart() {
         tcp_info_handler_[1]->ChangeTCPInfoMode(TCPInfoHandle::TCP_INFO_MODE_BOTH);
         u_1.insert("mode", int(mode_1_));
 
-        u_1.insert("band", QString::number(baud_rate_1_));
+        u_1.insert("band", baud_rate_1_);
         u_1.insert("stop", stop_bit_1_);
         u_1.insert("parity", parity_1_);
         u_1.insert("data", data_bit_1_);
@@ -285,7 +285,7 @@ void TCPBridgeConfiguration::SetUart() {
 
         u_2.insert("mode", int(mode_2_));
 
-        u_2.insert("band", QString::number(baud_rate_2_));
+        u_2.insert("band", baud_rate_2_);
         u_2.insert("stop", stop_bit_2_);
         u_2.insert("parity", parity_2_);
         u_2.insert("data", data_bit_2_);
