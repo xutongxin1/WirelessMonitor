@@ -228,21 +228,21 @@ void DataCirculation::StartCirculation()
 
 
     // 绑定数据进入过滤
-    if (tcp_info_handler_[1]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN && tcp_info_handler_[1]->is_connected_) {
+    if (tcp_info_handler_[1]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_BOTH && tcp_info_handler_[1]->is_connected_) {
         qDebug() << "绑定一号通道进入解析";
         connect(tcp_info_handler_[1], &TCPInfoHandle::RecNewData, this,
                 [&](const QByteArray &data,
                     const QString &ip,
                     int port,
-                    QDateTime time) { this->DoCirculation(data); });
+                    const QDateTime &time) { this->DoCirculation(data); });
     }
-    if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_IN && tcp_info_handler_[2]->is_connected_) {
+    if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_BOTH && tcp_info_handler_[2]->is_connected_) {
         qDebug() << "绑定二号通道进入解析";
         connect(tcp_info_handler_[2], &TCPInfoHandle::RecNewData, this,
                 [&](const QByteArray &data,
                     const QString &ip,
                     int port,
-                    QDateTime time) { this->DoCirculation(data); });
+                    const QDateTime &time) { this->DoCirculation(data); });
     }
 
     // 完成绑定

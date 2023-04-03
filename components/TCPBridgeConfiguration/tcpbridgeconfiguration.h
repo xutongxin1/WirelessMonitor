@@ -26,21 +26,16 @@ class TCPBridgeConfiguration : public RepeaterWidget {
 
     void SaveConstructConfig() override;
 
-    enum IoMode {
-      CLOSED = 0,
-      INPUT,
-      OUTPUT,
-      SINGLE_INPUT,
-      SINGLE_OUTPUT,
-      FOLLOW_1_OUTPUT,
-      FOLLOW_3_INPUT
+    enum IOMode {
+        IO_MODE_CLOSED = 0,//关闭
+        IO_MODE_ON = 1,//开启输入输出
+        IO_MODE_TRANSMIT_ON = 2,//开启输入输出并转发
     };
 
  private:
     Ui::TCPBridgeConfiguration *ui_;
-    IoMode mode_1_ = CLOSED;
-    IoMode mode_2_ = CLOSED;
-    IoMode mode_3_ = CLOSED;
+    IOMode mode_1_ = IO_MODE_CLOSED;
+    IOMode mode_2_ = IO_MODE_CLOSED;
 
     QString ip_;
 
@@ -48,14 +43,14 @@ class TCPBridgeConfiguration : public RepeaterWidget {
     int data_bit_1_ = 8;                 //数据位1
     int parity_1_ = 0;              //校验位1
     double stop_bit_1_ = 1;              //停止位1
-//    int BaudRate2 = 115200;                //波特率2
-//    int DataBit2 = 8;                 //数据位2
-//    QString Parity2 = QString::fromUtf8("无");              //校验位2
-//    double StopBit2 = 1;              //停止位2
-    int baud_rate_3_ = 115200;                //波特率3
-    int data_bit_3_ = 8;                 //数据位3
-    int parity_3_ = 0;             //校验位3
-    double stop_bit_3_ = 1;              //停止位3
+    int baud_rate_2_ = 115200;                //波特率2
+    int data_bit_2_ = 8;                 //数据位2
+    int parity_2_ = 0;              //校验位2
+    double stop_bit_2_ = 1;              //停止位2
+//    int baud_rate_3_ = 115200;                //波特率3
+//    int data_bit_3_ = 8;                 //数据位3
+//    int parity_3_ = 0;             //校验位3
+//    double stop_bit_3_ = 1;              //停止位3
 
 
     class TCPCommandHandle *tcp_command_handle_;
