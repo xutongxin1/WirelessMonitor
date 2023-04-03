@@ -104,6 +104,14 @@ class ChartsNext : public RepeaterWidget {
 
     void SetProgramTime();
 
+    void LoadInfo();
+
+    void SelectColor(int);     // 颜色选择
+
+    void VisibleChanged(int state, int location);
+
+    void selectionChanged();      // 显示选择
+
     QTimer *paint_timer_;
 
  public slots:
@@ -120,16 +128,19 @@ class ChartsNext : public RepeaterWidget {
     void on_pushButton_yincang_clicked();
 //    void keep_monitor();
 
-    void selectionChanged();
+
+
 
  private:
     Ui::charts_next *ui_chart_;
 
     QCustomPlot *custom_plot_;
 
-    QList<DataNode> data_pool_;//数据池
+    QList<DataNode> data_pool_;                             //数据池
 
-    QHash<QString, DataNodeIndex> data_pool_index_;//指针索引，加快添加数据时的速度
+    QList<ChartsList> line_info_;                           // 图线信息
+
+    QHash<QString, DataNodeIndex> data_pool_index_;         //指针索引，加快添加数据时的速度
 
     TimeType chart_time_type_ = PROGRAM_TIME;
 

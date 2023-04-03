@@ -87,3 +87,9 @@ cmake-build-debug-qt51211-/
 cmake-build-release-qt51211/
 
 cmake-build-debug-qt/
+
+cmake-build-debug/
+
+cmake-build-debug-coverage/
+
+CMakeLists.txt.user.*

@@ -20,7 +20,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_PROJECT_VERSION 1.0)
 
 
-
 find_package(QT NAMES Qt6 Qt5 REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets)
 
