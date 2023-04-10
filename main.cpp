@@ -42,8 +42,8 @@ void LogMessageHandler(QtMsgType type, const QMessageLogContext &context, const 
     QFile file(str_current_path);
     file.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream text_stream(&file);
-    text_stream.setCodec(QTextCodec::codecForName("UTF8"));//设置编码格式
-    text_stream << type_str << endl;
+//    text_stream.setCodec(QTextCodec::codecForName("UTF8"));//设置编码格式
+    text_stream << type_str << "\r\n";
     std::cout << type_str.toStdString().data() << std::endl;
 }
 

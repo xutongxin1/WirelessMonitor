@@ -31,7 +31,7 @@ void QtMaterialTabsPrivate::QtMaterialTabsPrivate::init() {
   q->setStyle(&QtMaterialStyle::instance());
 
   tabLayout->setSpacing(0);
-  tabLayout->setMargin(0);
+  tabLayout->setContentsMargins(0,0,0,0);       // QT6 QGridLayout已经没有setMargin成员函数
 }
 
 /*!

@@ -52,7 +52,7 @@ bool CfgClass::SaveMainCfg(const QString &key, const QString &value) {
  */
 QSettings *CfgClass::OpenCfg(const QString &path) {
     QSettings *config = new QSettings(path, QSettings::IniFormat);
-    config->setIniCodec("UTF-8");
+//    config->setIniCodec("UTF-8");     QT6
     return config;
 }
 

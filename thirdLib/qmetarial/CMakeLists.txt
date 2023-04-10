@@ -15,8 +15,10 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt5 REQUIRED COMPONENTS Core)
-find_package(Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+# QT6 cmake改变
+find_package(Qt6 REQUIRED COMPONENTS StateMachine)
 
 file(GLOB THELIB "materiallib/*")
 file(GLOB COMPONENTSHEADER "*.h")
@@ -33,7 +35,8 @@ set(RCC_FILES resources.qrc)
 add_library(
   ${PROJECT_NAME} STATIC ${THELIB} ${COMPONENTSHEADER} ${COMPONENTSSOURCE}
                          ${RCC_FILES} ${HEADER} ${HEADER2})
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Core Qt5::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Widgets)
 target_include_directories(${PROJECT_NAME} PUBLIC ./include/qmetarial/)
 target_link_directories(${PROJECT_NAME} PUBLIC .)
-
+# QT6 cmake改变
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::StateMachine)
