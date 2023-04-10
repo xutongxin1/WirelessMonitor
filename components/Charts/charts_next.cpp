@@ -199,7 +199,6 @@ void ChartsNext::myMoveEvent(QMouseEvent *event) {
         strToolTip += "\n";
         QToolTip::showText(mapToGlobal(QPoint(out_x, out_y)), strToolTip, ui_chart_->widget);
     }
-
 }
 
 void ChartsNext::on_pushButton_clicked() {
@@ -338,11 +337,13 @@ bool ChartsNext::AddDataWithProgramTime(const QString &point_name, double data, 
         index_tmp.data_list->append(tmp);
         *(index_tmp.is_update) = true;
         qDebug("添加数据%.02f,时间%.02f", data, (double) program_time);
+        return false;
     } else {
         qDebug() << "AddDataWithProgramTime: find point fail！\r\n";
         return false;
     }
-    return true;
+    return false;
+
 }
 
 bool ChartsNext::AddDataWithDateTime(const QString &point_name, double data, QDateTime *date_time) {

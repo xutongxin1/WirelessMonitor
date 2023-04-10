@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>ChannelConfiguration</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_6">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -21,6 +24,9 @@
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
        </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
        <property name="text">
         <string>连接XMB无线调试器</string>
        </property>
@@ -28,6 +34,9 @@
      </item>
      <item>
       <widget class="QtMaterialRadioButton" name="COMButton">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
        <property name="text">
         <string>连接有线串口设备或TCP设备</string>
        </property>

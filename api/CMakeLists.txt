@@ -1,7 +1,7 @@
 add_subdirectory(RepeaterWidget)
 add_subdirectory(TCPHandle)
 add_subdirectory(ComToolDepend)
-
+add_subdirectory(Highlighter)
 IF (WIN32)
     MESSAGE(STATUS "Now is windows")
 

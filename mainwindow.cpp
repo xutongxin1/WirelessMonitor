@@ -10,7 +10,7 @@
 #include "qtmaterialdrawer.h"
 #include "SideBarButton/SideBarButton.h"
 #include "TCPBridgeConfiguration/tcpbridgeconfiguration.h"
-#include "TCPCom/Tcpcom.h"
+#include "TCPCom/TCPCom.h"
 #include "Charts/charts_next.h"
 
 int record_DeviceNum = 0, record_WinNum = 0;
@@ -32,7 +32,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     //    canvas->setLayout(layout);
     //    canvas->setMaximumHeight(300);
     //
-    //
+    //手动初始化侧边栏（不是在ui文件里初始化的）
+
+
+#ifdef BEAUTIFY
+    ui_->centralwidget->setStyleSheet(".QWidget{border-image: url(config/backgroud.png);}");
+    ui_->FunctionBar->setBackgroundColor(QColor(245, 180, 202, 100));
+#endif
     m_drawer_ = new QtMaterialDrawer;
     cfg_ = new CfgClass;
     m_drawer_->setParent(ui_->centralwidget);
@@ -40,12 +46,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     m_drawer_->setOverlayMode(true);
     m_drawer_->setDrawerWidth(250);
 
+    //初始化侧边栏的布局
     auto *drawer_layout = new QVBoxLayout;
     m_drawer_->setDrawerLayout(drawer_layout);
 
+    //往侧边栏添加第一个按钮（数据聚合窗口）
     device_select_[0] = new SideBarButton();
     drawer_layout->addWidget(device_select_[0]);  // 初始化数据聚合窗口
 
+    //绑定每个按钮的点击事件
     device_count_ = cfg_->device_num_;
     for (int i = 1; i <= device_count_; i++) {
         device_select_[i] = new SideBarButton(i, cfg_);
@@ -67,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
 
   //    ui_->FunctionWindow->setCurrentIndex(2);
   //    devices_info_[1].tab_widget->setCurrentTab(2);
+    //ui_->FunctionBar->setStyleSheet("background-color: rgba(255, 255, 255, 50);");
 }
 
 MainWindow::~MainWindow() {
@@ -96,7 +106,8 @@ void MainWindow::DeviceWindowsInit() {
     for (int device_num = 1; device_num <= device_count_; device_num++)  // 设备遍历初始化
     {
         // 创建Tab栏,初始化DevicesInfo内数据
-        auto *new_tab = new QtMaterialTabs();
+        auto *new_tab = new QtMaterialTabs();//上方切换栏
+
         struct DevicesInfo tmp
             {
                 .windows_num = cfg_->GetMainCfg("/Device " + QString::number(device_num) + "/win").toInt(),
@@ -132,7 +143,7 @@ void MainWindow::DeviceWindowsInit() {
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
                     devices_info_[device_num].tab_widget->addTab("通道配置");  // 添加tab栏
                     break;
-                case 50:devices_windows_info_[device_num][win_num].type = XCOM;  // 结构体初始化
+                case 50:devices_windows_info_[device_num][win_num].type = Com_Tool;  // 结构体初始化
                     devices_windows_info_[device_num][win_num].widget =
                         new ComTool(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
                     devices_windows_info_[device_num][win_num].index =
@@ -183,7 +194,7 @@ void MainWindow::DeviceWindowsInit() {
                     break;
                 case 202:devices_windows_info_[device_num][win_num].type = TCP_COM;  // 结构体初始化
                     devices_windows_info_[device_num][win_num].widget =
-                        new TcpCom(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
+                        new TCPCom(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
                     devices_info_[device_num].tab_widget->addTab("串口桥数据监视器");  // 添加tab栏
@@ -192,6 +203,9 @@ void MainWindow::DeviceWindowsInit() {
                 default:break;
             }
         }
+#ifdef BEAUTIFY
+        new_tab->setBackgroundColor(QColor(123, 169, 199, 50));
+#endif
 
         //        Charts test;  //图标界面测试
         //        test.show();
@@ -201,12 +215,12 @@ void MainWindow::DeviceWindowsInit() {
           DeviceWindowsExchange(device_num, num + 1);
         });
 
-        connect(new_window_create_timer_, &QTimer::timeout, this, [=] {
-
-        });
-        connect(new_window_create_timer_, &QTimer::timeout, this, [=] {
-
-        });
+//        connect(new_window_create_timer_, &QTimer::timeout, this, [=] {
+//
+//        });
+//        connect(new_window_create_timer_, &QTimer::timeout, this, [=] {
+//
+//        });
     }
 }
 
