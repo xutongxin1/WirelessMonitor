@@ -81,8 +81,10 @@ void ChannelConfiguration::GetConstructConfig() {
     main_cfg_->beginGroup(device_group_);
     if (main_cfg_->value("WayToConnect") == 1) {
         ui_->ESPButton->setChecked(true);
+        ReflashUi(true);
     } else {
         ui_->COMButton->setChecked(true);
+        ReflashUi(false);
     }
     ui_->IP->setText(main_cfg_->value("ip_").toString());
     ui_->note->setText(main_cfg_->value("note").toString());
