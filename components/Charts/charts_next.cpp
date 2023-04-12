@@ -129,7 +129,7 @@ void ChartsNext::UpdateLine() {
             for (int j = data_pool_.at(i).last_draw_index; j < data_pool_.at(i).data_list.size(); j++) {
 
                 if (chart_time_type_ == DATA_TIME) {
-                    custom_plot_->graph(i)->addData(data_pool_[i].data_list.at(j).time.date_time_->toTime_t(),
+                    custom_plot_->graph(i)->addData(data_pool_[i].data_list.at(j).time.date_time_->toMSecsSinceEpoch(),
                                                     data_pool_[i].data_list.at(j).data
                     );
                 } else {
@@ -204,7 +204,7 @@ void ChartsNext::myMoveEvent(QMouseEvent *event) {
 void ChartsNext::on_pushButton_clicked() {
     if (checked == 0) {
         //开启，不可以放缩和移动
-        //qDebug() << "开始画图" << endl;
+        //qDebug() << "开始画图 \r\n";
         ui_chart_->start_stop->setText("暂停显示");
         //timerChart->start();//每200ms重绘一次折线图
         //ui_chart_->widget->setInteractions(QCP::iNone);
@@ -252,8 +252,8 @@ bool ChartsNext::RegisterDataPoint(const QString &point_name) {
 //    node.data_list = &data_tmp;
     data_pool_.append(node);
 
-    qDebug() << "RegisterDataPoint:register success!" << endl;
-    qDebug() << (data_pool_.size()) << endl;
+    qDebug() << "RegisterDataPoint:register success!\r\n";
+    qDebug() << (data_pool_.size()) << "\r\n";
     return true;
 
 }
@@ -296,7 +296,7 @@ bool ChartsNext::AntiRegisterDataPoint(const QString &point_name) {
         }
     }
 
-    qCritical() << "AntiRegisterDataPoint: fail！" << endl;
+    qCritical() << "AntiRegisterDataPoint: fail！\r\n";
     return false;
 }
 
@@ -339,7 +339,7 @@ bool ChartsNext::AddDataWithProgramTime(const QString &point_name, double data, 
         qDebug("添加数据%.02f,时间%.02f", data, (double) program_time);
         return false;
     } else {
-        qDebug() << "AddDataWithProgramTime: find point fail！" << endl;
+        qDebug() << "AddDataWithProgramTime: find point fail！\r\n";
         return false;
     }
     return false;
@@ -356,7 +356,7 @@ bool ChartsNext::AddDataWithDateTime(const QString &point_name, double data, QDa
         qDebug("添加数据%.02f,时间%s", data, qPrintable(date_time->toString("dd.MM.yyyy h:m:s ap")));
         return true;
     } else {
-        qDebug() << "AddDataWithDateTime: find point fail！" << endl;
+        qDebug() << "AddDataWithDateTime: find point fail！\r\n";
         return false;
     }
 }
@@ -380,10 +380,10 @@ void ChartsNext::UpdateDataPoolIndex() {
 *****/
 [[maybe_unused]] bool ChartsNext::IsDataPointRegistter(const QString &addname) {
     if (data_pool_index_.contains(addname)) {
-        qDebug() << "check: find！" << endl;
+        qDebug() << "check: find！\r\n";
         return true;
     } else {
-        qDebug() << "check: find fail！" << endl;
+        qDebug() << "check: find fail！\r\n";
         return false;
     }
 }
@@ -396,7 +396,7 @@ void ChartsNext::test(const QVector<double> &addDate) {
     for (int i = 0; i < addDate.size(); i++) {
         temp[i] = addDate.at(i);
     }
-    qDebug() << temp[3] << endl;
+    qDebug() << temp[3] << "\r\n";
 }
 
 
@@ -467,7 +467,7 @@ void ChartsNext::SelectColor(int i){
 
     qDebug() << "button:" << i;
     ///更改后要重新渲染
-    qDebug() << "choose color:" << color << endl;
+    qDebug() << "choose color:" << color << "\r\n";
 }
 
 
@@ -476,12 +476,12 @@ void ChartsNext::SelectColor(int i){
 
 void ChartsNext::VisibleChanged(int state,int location) {
     if (state==Qt::Checked){
-//        qDebug() << "changed visible" << endl;
+//        qDebug() << "changed visible \r\n";
         ui_chart_->widget->graph(location)->setVisible(true);     // 不需要重新渲染其实也可以改变
 
     }else if(state==Qt::Unchecked){
         ui_chart_->widget->graph(location)->setVisible(false);
-//        qDebug() << "changed unvisible" << endl;
+//        qDebug() << "changed unvisible \r\n";
     }
 }
 

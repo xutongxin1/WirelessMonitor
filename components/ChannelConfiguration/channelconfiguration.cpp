@@ -9,7 +9,9 @@
 
 #include <QMessageBox>
 #include <QToolTip>
-
+#include <QRegExp>
+#include <QRegularExpressionValidator>
+#include <QValidator>
 #include "ui_ChannelConfiguration.h"
 
 ChannelConfiguration::ChannelConfiguration(int device_num, QSettings *main_cfg, QSettings *device_cfg,
@@ -63,9 +65,11 @@ ChannelConfiguration::ChannelConfiguration(int device_num, QSettings *main_cfg, 
     });
 
     // IP地址正则表达式并应用
-    QRegExp rx(
+    QRegularExpression const rx(
         R"((25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d))");
-    auto *p_reg = new QRegExpValidator(rx, this);
+//    auto *p_reg = new QRegExpValidator(rx, this);     QT6丢弃了
+    auto *p_reg = new QRegularExpressionValidator(rx,this);
+
     ui_->IP->setValidator(p_reg);
 }
 
