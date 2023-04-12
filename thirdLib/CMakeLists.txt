@@ -1,2 +1,3 @@
 add_subdirectory(qcustomplot)
 add_subdirectory(qmetarial)
+#add_subdirectory(qfluentwidgets)

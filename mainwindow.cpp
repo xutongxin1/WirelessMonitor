@@ -200,7 +200,8 @@ void MainWindow::DeviceWindowsInit() {
                     devices_info_[device_num].tab_widget->addTab("串口桥数据监视器");  // 添加tab栏
                     break;
 
-                default:break;
+                default:qCritical() << "配置了未知的窗口类型";
+                    break;
             }
         }
 #ifdef BEAUTIFY
