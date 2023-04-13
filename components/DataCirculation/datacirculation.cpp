@@ -71,7 +71,7 @@ DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, To
       //        QString path = QFileDialog::GetOpenFileName(this, "打开文件", "D:\\OneDriveFile\\bird\\OneDrive -
       //        xutongxin\\Competition\\xmbDebugTools\\QT\\thirdPartyTool");
       QFile file(
-          "E:\\Desktop\\WirelessMonitor\\thirdPartyTool\\result.txt");
+          "..\\thirdPartyTool\\result.txt");
       if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
           return;
       }
@@ -264,7 +264,6 @@ void DataCirculation::StopCirculation() {
 
 }
 
-
 /// 对目标数据进行过滤
 ///  \param data 过滤目标数据
 void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &data_time) {
@@ -276,7 +275,7 @@ void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &dat
     } else if (strtmp.indexOf("\n") != -1) {
         buffer = strtmp.split("\n");
     } else {
-        qCritical("解析数据时出错，没有找到\n符号");
+        qWarning("解析数据时出错，没有找到\n符号");
         return;
     }
     for (int i = 0; i < buffer.size(); i++) {

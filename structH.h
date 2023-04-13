@@ -34,7 +34,7 @@ enum WindowsType {
 //窗口配置信息结构体
 struct WindowsInfo {
     RepeaterWidget *widget;
-    int index;
+    int index = -1;
     WindowsType type;
 };
 
