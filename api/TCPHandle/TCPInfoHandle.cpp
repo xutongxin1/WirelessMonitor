@@ -43,7 +43,7 @@ bool TCPInfoHandle::EnableRecEmit() {
         disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
         connect(this, &QTcpSocket::readyRead, this, [&] {
           QByteArray buffer = this->readAll();
-          emit(RecNewData(buffer, ip_, io_port_, QDateTime::currentDateTime()));
+          emit(RecNewData(buffer, ip_, io_port_, QDateTime::currentDateTime()));//忽视TCP可能的延迟
         });
         return true;
     } else {

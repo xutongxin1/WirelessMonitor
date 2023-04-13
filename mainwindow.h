@@ -30,8 +30,10 @@ class MainWindow : public QMainWindow {
     int device_count_;//设备数量
 
  public slots:
-    void ReciveOrderExchangeWindow(int device, int windows_num);
+    void ReciveOrderExchangeWindow(int device_num, int windows_num);
  private:
+    int nowDevice_;
+    int nowWindows_;
     Ui::MainWindow *ui_;
     QCustomPlot *custom_plot_;
     QtMaterialDrawer *m_drawer_;
@@ -47,10 +49,11 @@ class MainWindow : public QMainWindow {
 
     void DeviceExchange(int device_num);
 
-    void DeviceWindowsExchange(int device_num, int win_num);
+    void DeviceWindowsExchange(int device_num, int windows_num = 1, bool is_init = false);
 
 //    void NewWindowCreate();
-
+    void GetConstructConfig();
+    void SaveConstructConfig();
 
 };
 

@@ -28,6 +28,7 @@ class ChannelConfiguration : public RepeaterWidget {
     void SaveConstructConfig() override;
 
  private:
+
     Ui::ChannelConfiguration *ui_;
 
     QString device_group_;

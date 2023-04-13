@@ -59,20 +59,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     for (int i = 1; i <= device_count_; i++) {
         device_select_[i] = new SideBarButton(i, cfg_);
         drawer_layout->addWidget(device_select_[i]);
-        connect(device_select_[i]->button_, &QPushButton::pressed, this, [=] { MainWindow::DeviceExchange(i); });
+        connect(device_select_[i]->button_, &QPushButton::pressed, this, [=] { DeviceWindowsExchange(i); });
     }
     connect(ui_->settingButton, SIGNAL(pressed()), m_drawer_, SLOT(openDrawer()));
+    GetConstructConfig();
 
     DeviceWindowsInit();
 
-    DeviceExchange(1);
+    if (nowWindows_ != 0 && nowDevice_ != 0) {
+        DeviceWindowsExchange(nowWindows_, nowDevice_, true);
+    }
+
+    //DeviceExchange(1);
     //    DeviceWindowsExchange(1, 1);
 
     //    DataCirculation *tmp = new DataCirculation(1,
     //                                               5,
     //                                               cfg_->config_device_ini_[1],
     //                                               &parent_info_);
-  //    ui_->FunctionWindow->setCurrentIndex(ui_->FunctionWindow->addWidget(tmp));
+    //    ui_->FunctionWindow->setCurrentIndex(ui_->FunctionWindow->addWidget(tmp));
 
   //    ui_->FunctionWindow->setCurrentIndex(2);
   //    devices_info_[1].tab_widget->setCurrentTab(2);
@@ -229,23 +234,27 @@ void MainWindow::DeviceWindowsInit() {
  * 设备切换,被侧边栏切换
  * @param num 设备号
  */
-void MainWindow::DeviceExchange(int device_num) {
-  ui_->TabStackedWidget->setCurrentIndex(devices_info_[device_num].tab_index);
-  DeviceWindowsExchange(device_num, 1);
-}
+//void MainWindow::DeviceExchange(int device_num) {
+//
+//  DeviceWindowsExchange(device_num, 1);
+//}
 
 /*!
  * 设备内Tab窗口切换
  * @param device_num 设备号
  * @param win_num 窗口号
  */
-void MainWindow::DeviceWindowsExchange(int device_num, int win_num) {
-    //    if(devices_windows_info_[Device_Num][win_num].index==0)
-    //    {
-    //        ErrorHandle("尝试打开不存在的窗口");
-    //    }
-    qDebug("try to switch %d device, %d windows", device_num, win_num);
-    //    devices_info_[device_num_].tab_widget->setTabActive(win_num);
+void MainWindow::DeviceWindowsExchange(int device_num, int windows_num, bool is_init) {
+    if (devices_windows_info_[device_num][windows_num].index == -1) {
+        qCritical("尝试打开不存在的窗口");
+        return;
+    }
+    qDebug("try to switch %d device, %d windows", device_num, windows_num);
+    if (nowDevice_ != device_num || is_init) {
+        ui_->TabStackedWidget->setCurrentIndex(devices_info_[device_num].tab_index);
+        nowDevice_ = device_num;
+    }
+    nowWindows_ = windows_num;
 #if DEBUG
 #else
     if (devices_info_[device_num].config_step < win_num) {
@@ -257,14 +266,27 @@ void MainWindow::DeviceWindowsExchange(int device_num, int win_num) {
         return;
     }
 #endif
-    ui_->FunctionWindow->setCurrentIndex(devices_windows_info_[device_num][win_num].index);
-    devices_info_[device_num].current_window = win_num;
+    ui_->FunctionWindow->setCurrentIndex(devices_windows_info_[device_num][windows_num].index);
+    devices_info_[device_num].current_window = windows_num;
+    if (is_init) {
+        devices_info_[device_num].tab_widget->setCurrentTab(windows_num - 1,
+                                                            false);//调整上面tab的视觉效果
+    }
 }
 
-//void MainWindow::NewWindowCreate() {
-//}
-void MainWindow::ReciveOrderExchangeWindow(int device, int windows_num) {
-    DeviceWindowsExchange(device, windows_num);
-    devices_info_[device].tab_widget->setCurrentTab(windows_num - 1,
-                                                    false);//调整上面tab的视觉效果
+void MainWindow::ReciveOrderExchangeWindow(int device_num, int windows_num) {
+    DeviceWindowsExchange(device_num, windows_num);
+    devices_info_[device_num].tab_widget->setCurrentTab(windows_num - 1,
+                                                        false);//调整上面tab的视觉效果
+}
+
+void MainWindow::GetConstructConfig() {
+    nowDevice_=cfg_->GetMainCfg("/Device/LastDevice").toInt();
+    nowWindows_=cfg_->GetMainCfg("/Device/LastWindows").toInt();
+}
+
+
+void MainWindow::SaveConstructConfig() {
+    cfg_->SaveMainCfg("/Device/LastDevice",QString(nowDevice_));
+    cfg_->SaveMainCfg("/Device/LastWindows",QString(nowWindows_));
 }
