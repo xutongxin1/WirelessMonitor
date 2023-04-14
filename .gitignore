@@ -93,3 +93,6 @@ cmake-build-debug/
 cmake-build-debug-coverage/
 
 CMakeLists.txt.user.*
+cmake-build-debug-visual-studio/
+
+CMakeLists.txt.user
