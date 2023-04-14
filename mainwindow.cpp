@@ -287,6 +287,6 @@ void MainWindow::GetConstructConfig() {
 
 
 void MainWindow::SaveConstructConfig() {
-    cfg_->SaveMainCfg("/Device/LastDevice",QString(nowDevice_));
-    cfg_->SaveMainCfg("/Device/LastWindows",QString(nowWindows_));
+    cfg_->SaveMainCfg("/Device/LastDevice", QString::number(nowDevice_));
+    cfg_->SaveMainCfg("/Device/LastWindows", QString::number(nowWindows_));
 }
