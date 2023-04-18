@@ -317,10 +317,22 @@ void TCPBridgeConfiguration::SetUart() {
           ui_->save->setEnabled(true);
           ui_->save->setText("保存并应用");
           (*(parent_info_->devices_info))[device_num_].config_step = 2;
+      } else {//解决收到OK后但INFO通道还没连上的时序问题
+          disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, nullptr, nullptr);
+          disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, nullptr, nullptr);
+          if ((tcp_info_handler_[1]->is_connected_ || mode_1_ == IO_MODE_CLOSED)
+              && (tcp_info_handler_[2]->is_connected_ || mode_2_ == IO_MODE_CLOSED)) {
+              QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
+                                       QMessageBox::Ok);
+              ui_->save->setEnabled(true);
+              ui_->save->setText("再次保存并应用");
+              (*(parent_info_->devices_info))[device_num_].config_step = 4;
+              emit(OrderExchangeWindow(device_num_, 3));
+          }
       }
     });
 
-    connect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, this, [=] {
+    connect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, this, [&] {
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, nullptr, nullptr);
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, nullptr, nullptr);
       StopAllInfoTCP();
@@ -328,7 +340,7 @@ void TCPBridgeConfiguration::SetUart() {
       ui_->save->setEnabled(true);
       ui_->save->setText("保存并应用");
     });
-    connect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, this, [=] {
+    connect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, this, [&] {
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, nullptr, nullptr);
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, nullptr, nullptr);
       if ((tcp_info_handler_[1]->is_connected_ || mode_1_ == IO_MODE_CLOSED)
