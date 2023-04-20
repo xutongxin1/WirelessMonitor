@@ -309,7 +309,9 @@ void TCPBridgeConfiguration::SetUart() {
     }
 
     // 检查消息线路有没有正确连接，指令执行超时由SendCommand内处理，发出SendCommandError信号
-    QTimer::singleShot(2000, this, [&] {
+    QTimer::singleShot(3000, this, [&] {
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, nullptr, nullptr);
+      disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, nullptr, nullptr);
       if ((!tcp_info_handler_[1]->is_connected_ && mode_1_ != IO_MODE_CLOSED)
           || (!tcp_info_handler_[2]->is_connected_ && mode_2_ != IO_MODE_CLOSED)) {
           StopAllInfoTCP();
@@ -317,18 +319,15 @@ void TCPBridgeConfiguration::SetUart() {
           ui_->save->setEnabled(true);
           ui_->save->setText("保存并应用");
           (*(parent_info_->devices_info))[device_num_].config_step = 2;
-      } else {//解决收到OK后但INFO通道还没连上的时序问题
-          disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, nullptr, nullptr);
-          disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, nullptr, nullptr);
-          if ((tcp_info_handler_[1]->is_connected_ || mode_1_ == IO_MODE_CLOSED)
-              && (tcp_info_handler_[2]->is_connected_ || mode_2_ == IO_MODE_CLOSED)) {
-              QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
-                                       QMessageBox::Ok);
-              ui_->save->setEnabled(true);
-              ui_->save->setText("再次保存并应用");
-              (*(parent_info_->devices_info))[device_num_].config_step = 4;
-              emit(OrderExchangeWindow(device_num_, 3));
-          }
+      } else if (get_command_reply_) {
+          //解决收到OK后但INFO通道还没连上的时序问题
+          QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
+                                   QMessageBox::Ok);
+          ui_->save->setEnabled(true);
+          ui_->save->setText("再次保存并应用");
+          (*(parent_info_->devices_info))[device_num_].config_step = 4;
+          emit(OrderExchangeWindow(device_num_, 3));
+          get_command_reply_ = false;
       }
     });
 
@@ -343,6 +342,7 @@ void TCPBridgeConfiguration::SetUart() {
     connect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, this, [&] {
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandSuccess, nullptr, nullptr);
       disconnect(tcp_command_handle_, &TCPCommandHandle::SendCommandError, nullptr, nullptr);
+      get_command_reply_ = true;
       if ((tcp_info_handler_[1]->is_connected_ || mode_1_ == IO_MODE_CLOSED)
           && (tcp_info_handler_[2]->is_connected_ || mode_2_ == IO_MODE_CLOSED)) {
           QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
@@ -351,6 +351,7 @@ void TCPBridgeConfiguration::SetUart() {
           ui_->save->setText("再次保存并应用");
           (*(parent_info_->devices_info))[device_num_].config_step = 4;
           emit(OrderExchangeWindow(device_num_, 3));
+          get_command_reply_ = false;
       }
     });
 

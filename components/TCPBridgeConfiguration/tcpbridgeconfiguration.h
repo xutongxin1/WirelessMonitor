@@ -37,6 +37,8 @@ class TCPBridgeConfiguration : public RepeaterWidget {
     IOMode mode_1_ = IO_MODE_CLOSED;
     IOMode mode_2_ = IO_MODE_CLOSED;
 
+    bool get_command_reply_ = false;
+
     QString ip_;
 
     int baud_rate_1_ = 115200;                //波特率1

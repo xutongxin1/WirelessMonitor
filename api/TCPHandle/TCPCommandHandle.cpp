@@ -195,10 +195,11 @@ void TCPCommandHandle::SendCommand(const QByteArray &command, const QString &rep
 //    has_receive_reply_ = false;
 
     heart_timer_->stop();
+    disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
     connect(this, &QTcpSocket::readyRead, this, [&, reply] {
               QByteArray t_2 = this->read(1024);
-              if (t_2 == reply) {
-                  //读取到心跳返回包
+              if (t_2.right(5) == reply) {
+                  //读取到指定的返回包
                   disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
 //                    has_receive_reply_ = true;
                   send_command_timer_->stop();
@@ -208,7 +209,7 @@ void TCPCommandHandle::SendCommand(const QByteArray &command, const QString &rep
               }
             }
     );
-    send_command_timer_->start(5000);
+    send_command_timer_->start(2000);
     this->write(command);
 }
 

@@ -45,10 +45,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     m_drawer_->setClickOutsideToClose(true);
     m_drawer_->setOverlayMode(true);
     m_drawer_->setDrawerWidth(250);
+    m_drawer_->setAutoRaise(true);
 
     //初始化侧边栏的布局
     auto *drawer_layout = new QVBoxLayout;
     m_drawer_->setDrawerLayout(drawer_layout);
+
 
     //往侧边栏添加第一个按钮（数据聚合窗口）
     device_select_[0] = new SideBarButton();
