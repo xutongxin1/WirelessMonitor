@@ -18,14 +18,18 @@ void LogMessageHandler(QtMsgType type, const QMessageLogContext &context, const 
 //            levelText = "Info";
             break;
         case QtWarningMsg:
+            type_str = QString("%1 \n(%2:%3, %4)\n").arg(type_str,
+                                                         context.file).arg(context.line).arg(context.function);
 //            levelText = "Warning";
             break;
-        case QtCriticalMsg:type_str = QString("%1 \n(%2:%3, %4)\n").arg(type_str,
-                                                                        context.file).arg(context.line).arg(context.function);
+        case QtCriticalMsg:
+            type_str = QString("%1 \n(%2:%3, %4)\n").arg(type_str,
+                                                         context.file).arg(context.line).arg(context.function);
 //            levelText = "Critical";
             break;
-        case QtFatalMsg:type_str = QString("%1 \n(%2:%3, %4)\n").arg(type_str,
-                                                                     context.file).arg(context.line).arg(context.function);
+        case QtFatalMsg:
+            type_str = QString("%1 \n(%2:%3, %4)\n").arg(type_str,
+                                                         context.file).arg(context.line).arg(context.function);
 //            levelText = "Fatal";
             break;
 

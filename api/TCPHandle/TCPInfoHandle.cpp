@@ -54,6 +54,7 @@ bool TCPInfoHandle::EnableRecEmit() {
 ///修改该通道的运行模式
 /// \param mode
 void TCPInfoHandle::ChangeTCPInfoMode(TCPInfoHandle::TCPInfoMode mode) {
+    qDebug("port %d change mode to %d", io_port_, mode);
     tcp_mode_ = mode;
     if (mode == TCP_INFO_MODE_SEND) {
         disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
