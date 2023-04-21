@@ -63,6 +63,7 @@ void TCPCommandHandle::SendHeart() {
         return;
     }
     is_heart_rec_ = false;
+#ifndef STOPHEART
     QTimer::singleShot(2000, this, [&] {
         if (is_heart_rec_) {
             is_heart_rec_ = false;//如果已经收到了心跳返回包，则不处理
@@ -93,6 +94,7 @@ void TCPCommandHandle::SendHeart() {
       }
     });
     this->write("COM\r\n");//心跳包
+#endif
 }
 
 /// 设置模式
@@ -125,7 +127,7 @@ void TCPCommandHandle::SetMode(int mode) {
     connect(this, &QTcpSocket::readyRead, this, [&, sf] {
       //此处的包是模式设置返回包，收到该包后调试器应当重启
       QByteArray t_2 = this->read(1024);
-      if (t_2.length() == 5 && t_2 == "OK!\r\n") {
+      if (t_2.right(5) == "OK!\r\n") {
           disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
           heart_timer_->stop();//关闭心跳包发送
           emit(ReadyReboot());//发送准备重启的信号
