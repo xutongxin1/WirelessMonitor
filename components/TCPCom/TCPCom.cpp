@@ -111,6 +111,14 @@ TCPCom::TCPCom(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_
 #else
     ui_->btnStartTest->setHidden(true);
 #endif
+
+    //高亮转义字符
+    highlighter1 = new Highlighter(ui_->SendDataEdit->document());
+    highlighter2 = new Highlighter(ui_->txtMain->document());
+
+    //表格自动拉宽
+    ui_->historyTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
 }
 
 TCPCom::~TCPCom() {
@@ -155,8 +163,16 @@ void TCPCom::Append(int type, const QString &data, bool clear) {
 
 //    //过滤回车换行符
     QString str_data = data;
-//    str_data = str_data.replace("\r", "");
-//    str_data = str_data.replace("\n", "");
+    str_data = str_data.replace("\a", "\\a");
+    str_data = str_data.replace("\b", "\\b");
+    str_data = str_data.replace("\f", "\\f");
+    str_data = str_data.replace("\t", "\\t");
+    str_data = str_data.replace("\v", "\\v");
+    str_data = str_data.replace("\\", "\\\\");
+    str_data = str_data.replace("\'", "\\'");
+    str_data = str_data.replace("\"", R"RX(\\")RX");
+    str_data = str_data.replace("\r", "\\r");
+    str_data = str_data.replace("\n", "\\n");
 
     //不同类型不同颜色显示
     QString str_type;
@@ -211,6 +227,39 @@ void TCPCom::SendData() {
     if (data.isEmpty()) {
         ui_->SendDataEdit->setFocus();
         return;
+    }
+
+    if (history_send_list_.contains(data)) {
+        if (ui_->ckHexSend->isChecked() != history_send_list_[data].is_Hex) {
+            history_send_list_[data].is_Hex = ui_->ckHexSend->isChecked();
+            history_send_list_[data].send_num = 1;
+        } else {
+            history_send_list_[data].send_num++;
+        }
+
+        history_send_list_[data].time = QDateTime::currentDateTime();
+    } else {
+        HistorySend tmp;
+        tmp.is_Hex = ui_->ckHexSend->isChecked();
+        tmp.data = data;
+        tmp.time = QDateTime::currentDateTime();
+        history_send_list_.insert(data, tmp);
+    }
+    UpdateSendHistory();
+
+    data = data.replace("\\n", "\n");
+    data = data.replace("\\a", "\a");
+    data = data.replace("\\b", "\b");
+    data = data.replace("\\f", "\f");
+    data = data.replace("\\r", "\r");
+    data = data.replace("\\t", "\t");
+    data = data.replace("\\v", "\v");
+    data = data.replace("\\\\", "\\");
+    data = data.replace("\\'", "\'");
+    data = data.replace(R"RX(\\")RX", "\"");
+
+    if (ui_->checkBox->isChecked()) {
+        data = data.append("\r\n");
     }
 
     QByteArray buffer;
@@ -302,4 +351,24 @@ void TCPCom::SaveConstructConfig() {
     cfg_->beginGroup(group_name_);
 
     cfg_->endGroup();
+}
+void TCPCom::UpdateSendHistory() {
+    ui_->historyTable->setRowCount(0);
+    ui_->historyTable->clearContents();
+    ui_->historyTable->setSortingEnabled(false);
+    int j = 0;
+    for (QHash<QString, HistorySend>::iterator i = history_send_list_.begin(); i != history_send_list_.end(); ++i) {
+        ui_->historyTable->insertRow(j);
+        HistorySend tmp = i.value();
+        ui_->historyTable->setItem(j, 0, new QTableWidgetItem(tmp.data));
+        ui_->historyTable->setItem(j, 1, new QTableWidgetItem(tmp.time.toString("yyyy-MM-dd HH:mm:ss")));
+        ui_->historyTable->setItem(j, 2, new QTableWidgetItem(QString::number(tmp.send_num)));
+        if (tmp.is_Hex) {
+            ui_->historyTable->setItem(j, 3, new QTableWidgetItem("hex"));
+        } else {
+            ui_->historyTable->setItem(j, 3, new QTableWidgetItem("str"));
+        }
+        j++;
+    }
+    ui_->historyTable->setSortingEnabled(true);
 }

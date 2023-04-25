@@ -256,7 +256,7 @@
            <item>
             <widget class="QLabel" name="btnSendCount">
              <property name="text">
-              <string>接收 : 0  字节</string>
+              <string>发送 : 0  字节</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -266,7 +266,7 @@
            <item>
             <widget class="QLabel" name="btnReceiveCount">
              <property name="text">
-              <string>发送 : 0 字节</string>
+              <string>接收 : 0  字节</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -326,6 +326,42 @@
           <attribute name="title">
            <string>历史发送</string>
           </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QTableWidget" name="historyTable">
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+             <column>
+              <property name="text">
+               <string>信息</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>最后发送时间</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>发送次数</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>格式</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="clearHistorySend">
+             <property name="text">
+              <string> 清空历史记录</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </widget>
        </item>

@@ -11,6 +11,7 @@
 #include <QtSerialPort/QtSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include "structH.h"
+#include "highlighter.h"
 //#include "ui_tcpcom.h"
 
 QT_BEGIN_NAMESPACE
@@ -65,13 +66,24 @@ class TCPCom : public RepeaterWidget {
 
     QTimer *timer_connect_;       //定时器重连
 
-
+    Highlighter *highlighter1;
+    Highlighter *highlighter2;
 
     void GetConstructConfig() override;
 
     void SaveConstructConfig() override;
 
+    void UpdateSendHistory();
+
     QString ip_;
+
+    typedef struct history_send {
+        QString data;
+        bool is_Hex = false;
+        int send_num = 1;
+        QDateTime time;
+    } HistorySend;
+    QHash<QString, HistorySend> history_send_list_;
 
  private slots:
 
