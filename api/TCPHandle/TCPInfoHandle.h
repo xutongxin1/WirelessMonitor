@@ -20,7 +20,7 @@ class TCPInfoHandle : public QTcpSocket {
  public:
     TCPInfoHandle(QObject *parent = nullptr);
 
-    bool is_connected_;
+    bool is_connected_ = false;
 
     void connectToHost(const QString &host_name, quint16 port, QIODevice::OpenMode protocol,
                        QAbstractSocket::NetworkLayerProtocol mode) override;

@@ -14,6 +14,10 @@ TCPCommandHandle::TCPCommandHandle(QObject *parent) : QTcpSocket(parent) {
 
     //绑定send_command_timer_的超时事件
     //该超时函数不会考虑断开整个连接，而只是重启心跳包发送。如果没有响应，由心跳包超时器负责
+
+    //解绑可能的错误响应
+    disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
+
     connect(send_command_timer_, &QTimer::timeout, this, [&] {
       send_command_timer_->stop();
       emit(SendCommandError());
@@ -59,6 +63,7 @@ void TCPCommandHandle::SendHeart() {
         return;
     }
     is_heart_rec_ = false;
+#ifndef STOPHEART
     QTimer::singleShot(2000, this, [&] {
         if (is_heart_rec_) {
             is_heart_rec_ = false;//如果已经收到了心跳返回包，则不处理
@@ -75,19 +80,21 @@ void TCPCommandHandle::SendHeart() {
             }
         }
     });
+    disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);//理论上可以不加的，但不加第二次连接会炸
     connect(this, &QTcpSocket::readyRead, this, [&] {
-        QByteArray t_2 = this->read(1024);
-        if (t_2.length() == 5 && t_2 == "OK!\r\n") {
-            //读取到心跳返回包
-            disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
-            is_heart_rec_ = true;
-            if (is_first_heart_) {//是第一次收到心跳返回包，发送信号
-                is_first_heart_ = false;
-                emit(ReceiveFirstHeart());
-            }
-        }
+      QByteArray t_2 = this->read(1024);
+      if (t_2.length() == 5 && t_2 == "OK!\r\n") {
+          //读取到心跳返回包
+          disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
+          is_heart_rec_ = true;
+          if (is_first_heart_) {//是第一次收到心跳返回包，发送信号
+              is_first_heart_ = false;
+              emit(ReceiveFirstHeart());
+          }
+      }
     });
     this->write("COM\r\n");//心跳包
+#endif
 }
 
 /// 设置模式
@@ -109,22 +116,30 @@ void TCPCommandHandle::SetMode(int mode) {
     });
     disconnect(this, &QTcpSocket::disconnected, nullptr, nullptr);
     connect(this, &QTcpSocket::disconnected, this, [=] {
-        disconnect(this, &QTcpSocket::disconnected, nullptr, nullptr);
-        qDebug("%s断开连接", qPrintable(ip_));
-        is_connected_ = false;
-        heart_timer_->stop();//关闭心跳包发送
-        this->WaitForMode(mode);
+      disconnect(this, &QTcpSocket::disconnected, nullptr, nullptr);
+      qDebug("%s断开连接", qPrintable(ip_));
+      is_connected_ = false;
+      heart_timer_->stop();//关闭心跳包发送
+      this->WaitForMode(mode);
     });//这里选择放在外面是因为服务端会先关闭
-    connect(this, &QTcpSocket::readyRead, this, [=] {
-        //此处的包是模式设置返回包，收到该包后调试器应当重启
-        QByteArray t_2 = this->read(1024);
-        if (t_2.length() == 5 && t_2 == "OK!\r\n") {
-            disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
-            heart_timer_->stop();//关闭心跳包发送
-            emit(ReadyReboot());//发送准备重启的信号
-            qDebug("准备断开连接");
-            QAbstractSocket::disconnectFromHost();
-        }
+    char sf[10];
+    sprintf(sf, "SF%d\r\n", mode);
+    connect(this, &QTcpSocket::readyRead, this, [&, sf] {
+      //此处的包是模式设置返回包，收到该包后调试器应当重启
+      QByteArray t_2 = this->read(1024);
+      if (t_2.right(5) == "OK!\r\n") {
+          disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
+          heart_timer_->stop();//关闭心跳包发送
+          emit(ReadyReboot());//发送准备重启的信号
+          qDebug("准备断开连接");
+          QAbstractSocket::disconnectFromHost();
+      } else if (t_2.length() == 5 && strncmp(sf, t_2.data(), strlen(sf)) == 0) {
+          disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr); //快速启动
+          emit(ReceiveFirstHeart());
+          is_mode_set_ = true;
+          this->SendHeart();//发送一个心跳包
+          heart_timer_->start(3000);//启动定时心跳
+      }
     });
     char tmp[100];
     sprintf(tmp, R"({"command":101,"attach":"%d"})", mode);
@@ -155,7 +170,7 @@ void TCPCommandHandle::WaitForMode(int mode) {
                 is_mode_set_ = true;//完成模式设置的置位
 //                this->SendHeart();//发送一个心跳包
 
-                //快发第一个包（未验证）
+                //快发第一个包
                 QTimer::singleShot(1000, this, [&] {
                     this->SendHeart();//发送一个心跳包
                     heart_timer_->start(3000);//启动定时心跳
@@ -182,10 +197,11 @@ void TCPCommandHandle::SendCommand(const QByteArray &command, const QString &rep
 //    has_receive_reply_ = false;
 
     heart_timer_->stop();
+    disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
     connect(this, &QTcpSocket::readyRead, this, [&, reply] {
               QByteArray t_2 = this->read(1024);
-              if (t_2 == reply) {
-                  //读取到心跳返回包
+              if (t_2.right(5) == reply) {
+                  //读取到指定的返回包
                   disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
 //                    has_receive_reply_ = true;
                   send_command_timer_->stop();
@@ -195,7 +211,7 @@ void TCPCommandHandle::SendCommand(const QByteArray &command, const QString &rep
               }
             }
     );
-    send_command_timer_->start(5000);
+    send_command_timer_->start(2000);
     this->write(command);
 }
 

@@ -539,14 +539,14 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QtMaterialRadioButton</class>
-   <extends>QRadioButton</extends>
-   <header>qtmaterialradiobutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>QtMaterialCheckBox</class>
    <extends>QCheckBox</extends>
    <header>qtmaterialcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QtMaterialRadioButton</class>
+   <extends>QRadioButton</extends>
+   <header>qtmaterialradiobutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

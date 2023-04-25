@@ -39,7 +39,7 @@ void TCPInfoHandle::connectToHost(const QString &host_name, quint16 port, QIODev
 /// 启动监听的connect
 /// \return
 bool TCPInfoHandle::EnableRecEmit() {
-    if (this->is_connected_ && this->tcp_mode_ != TCP_INFO_MODE_SEND) {
+    if (this->tcp_mode_ != TCP_INFO_MODE_SEND) {
         disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);
         connect(this, &QTcpSocket::readyRead, this, [&] {
           QByteArray buffer = this->readAll();
@@ -54,6 +54,7 @@ bool TCPInfoHandle::EnableRecEmit() {
 ///修改该通道的运行模式
 /// \param mode
 void TCPInfoHandle::ChangeTCPInfoMode(TCPInfoHandle::TCPInfoMode mode) {
+    qDebug("port %d change mode to %d", io_port_, mode);
     tcp_mode_ = mode;
     if (mode == TCP_INFO_MODE_SEND) {
         disconnect(this, &QTcpSocket::readyRead, nullptr, nullptr);

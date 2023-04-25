@@ -388,27 +388,6 @@ void ComTool::SendData() {
         return;
     }
 
-    data = data.replace("\\n", "\n");
-    data = data.replace("\\a", "\a");
-    data = data.replace("\\b", "\b");
-    data = data.replace("\\f", "\f");
-    data = data.replace("\\r", "\r");
-    data = data.replace("\\t", "\t");
-    data = data.replace("\\v", "\v");
-    data = data.replace("\\\\", "\\");
-    data = data.replace("\\'", "\'");
-    data = data.replace(R"RX(\\")RX", "\"");
-
-    QByteArray buffer;
-    if (ui_->ckHexSend->isChecked()) {
-        buffer = QUIHelperData::hexStrToByteArray(data);
-    } else {
-        buffer = QUIHelperData::asciiStrToByteArray(data);
-    }
-
-    Append(2, data);
-    my_serialport_->write(buffer);
-
     if (history_send_list_.contains(data)) {
         if (ui_->ckHexSend->isChecked() != history_send_list_[data].is_Hex) {
             history_send_list_[data].is_Hex = ui_->ckHexSend->isChecked();
@@ -426,6 +405,31 @@ void ComTool::SendData() {
         history_send_list_.insert(data, tmp);
     }
     UpdateSendHistory();
+
+    data = data.replace("\\n", "\n");
+    data = data.replace("\\a", "\a");
+    data = data.replace("\\b", "\b");
+    data = data.replace("\\f", "\f");
+    data = data.replace("\\r", "\r");
+    data = data.replace("\\t", "\t");
+    data = data.replace("\\v", "\v");
+    data = data.replace("\\\\", "\\");
+    data = data.replace("\\'", "\'");
+    data = data.replace(R"RX(\\")RX", "\"");
+
+    if (ui_->checkBox->isChecked()) {
+        data = data.append("\r\n");
+    }
+
+    QByteArray buffer;
+    if (ui_->ckHexSend->isChecked()) {
+        buffer = QUIHelperData::hexStrToByteArray(data);
+    } else {
+        buffer = QUIHelperData::asciiStrToByteArray(data);
+    }
+
+    Append(2, data);
+    my_serialport_->write(buffer);
 
     send_count_ = send_count_ + buffer.size();
 
