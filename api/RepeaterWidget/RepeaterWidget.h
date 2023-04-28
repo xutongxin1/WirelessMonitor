@@ -26,6 +26,7 @@ class RepeaterWidget : public QWidget {
  Q_OBJECT
  signals:
     void OrderExchangeWindow(int device, int windows_num);
+    void OrderShowSnackbar (const QString& message);
  public:
 //    QPushButtonMap button_;
     explicit RepeaterWidget(QWidget *parent = nullptr);

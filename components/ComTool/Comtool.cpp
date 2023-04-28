@@ -362,6 +362,7 @@ void ComTool::GetData() {
     if (my_serialport_->bytesAvailable() > 0)//判断等到读取的数据大小
     {
         QByteArray main_serial_recv_data = my_serialport_->readAll();
+
         QString buffer;
         if (ui_->ckHexReceive->isChecked()) {
             buffer = QUIHelperData::byteArrayToHexStr(main_serial_recv_data);

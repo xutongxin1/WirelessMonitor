@@ -111,8 +111,6 @@ class ComTool : public RepeaterWidget {
 
     void Append(int type, const QString &data, bool clear = false);
 
- private slots:
-
     void ReadErrorNet();
 
     void on_btnClear_clicked();

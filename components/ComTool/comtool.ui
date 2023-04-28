@@ -53,7 +53,7 @@
           </property>
          </widget>
          <widget class="QWidget" name="layoutWidget">
-          <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0">
+          <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="4,1">
            <item>
             <widget class="QTextEdit" name="SendDataEdit">
              <property name="styleSheet">
@@ -82,6 +82,47 @@
                    <height>16777215</height>
                   </size>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton, ToolButton {
+    color: black;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.073);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.183);
+    border-radius: 5px;
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+    padding: 5px 12px 6px 12px;
+    outline: none;
+}
+
+ToolButton {
+    padding: 5px 9px 6px 8px;
+}
+
+QPushButton[hasIcon=false] {
+    padding: 5px 12px 6px 12px;
+}
+
+QPushButton[hasIcon=true] {
+    padding: 5px 12px 6px 36px;
+}
+
+QPushButton:hover, ToolButton:hover {
+    background: rgba(249, 249, 249, 0.5);
+}
+
+QPushButton:pressed, ToolButton:pressed {
+    color: rgba(0, 0, 0, 0.63);
+    background: rgba(249, 249, 249, 0.3);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.073);
+}
+
+QPushButton:disabled, ToolButton:disabled {
+    color: rgba(0, 0, 0, 0.36);
+    background: rgba(249, 249, 249, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}</string>
+                 </property>
                  <property name="text">
                   <string>发送</string>
                  </property>
@@ -92,6 +133,47 @@
                  <property name="layoutDirection">
                   <enum>Qt::LeftToRight</enum>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton, ToolButton {
+    color: black;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.073);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.183);
+    border-radius: 5px;
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+    padding: 5px 12px 6px 12px;
+    outline: none;
+}
+
+ToolButton {
+    padding: 5px 9px 6px 8px;
+}
+
+QPushButton[hasIcon=false] {
+    padding: 5px 12px 6px 12px;
+}
+
+QPushButton[hasIcon=true] {
+    padding: 5px 12px 6px 36px;
+}
+
+QPushButton:hover, ToolButton:hover {
+    background: rgba(249, 249, 249, 0.5);
+}
+
+QPushButton:pressed, ToolButton:pressed {
+    color: rgba(0, 0, 0, 0.63);
+    background: rgba(249, 249, 249, 0.3);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.073);
+}
+
+QPushButton:disabled, ToolButton:disabled {
+    color: rgba(0, 0, 0, 0.36);
+    background: rgba(249, 249, 249, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}</string>
+                 </property>
                  <property name="text">
                   <string>  粘贴并发送</string>
                  </property>
@@ -101,6 +183,47 @@
              </item>
              <item>
               <widget class="QPushButton" name="ClearSendDataEdit">
+               <property name="styleSheet">
+                <string notr="true">QPushButton, ToolButton {
+    color: black;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.073);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.183);
+    border-radius: 5px;
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+    padding: 5px 12px 6px 12px;
+    outline: none;
+}
+
+ToolButton {
+    padding: 5px 9px 6px 8px;
+}
+
+QPushButton[hasIcon=false] {
+    padding: 5px 12px 6px 12px;
+}
+
+QPushButton[hasIcon=true] {
+    padding: 5px 12px 6px 36px;
+}
+
+QPushButton:hover, ToolButton:hover {
+    background: rgba(249, 249, 249, 0.5);
+}
+
+QPushButton:pressed, ToolButton:pressed {
+    color: rgba(0, 0, 0, 0.63);
+    background: rgba(249, 249, 249, 0.3);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.073);
+}
+
+QPushButton:disabled, ToolButton:disabled {
+    color: rgba(0, 0, 0, 0.36);
+    background: rgba(249, 249, 249, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}</string>
+               </property>
                <property name="text">
                 <string>  清空发送区</string>
                </property>

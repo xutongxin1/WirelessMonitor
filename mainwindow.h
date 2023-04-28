@@ -10,6 +10,7 @@
 #include <string>
 #include <QTcpSocket>
 #include "structH.h"
+#include "qtmaterialsnackbar.h"
 
 using namespace std;
 
@@ -30,13 +31,15 @@ class MainWindow : public QMainWindow {
     int device_count_;//设备数量
 
  public slots:
-    void ReciveOrderExchangeWindow(int device_num, int windows_num);
+    void ReceiveOrderExchangeWindow(int device_num, int windows_num);
+    void ReceiveOrderShowSnackbar (const QString& message);
  private:
     int nowDevice_;
     int nowWindows_;
     Ui::MainWindow *ui_;
     QCustomPlot *custom_plot_;
     QtMaterialDrawer *m_drawer_;
+    QtMaterialSnackbar *snackbar_ = new QtMaterialSnackbar(this);
     SideBarButton *device_select_[100];//侧边栏设备按钮指针
     CfgClass *cfg_;
     QTimer *new_window_create_timer_ = new QTimer(this);
@@ -54,6 +57,8 @@ class MainWindow : public QMainWindow {
 //    void NewWindowCreate();
     void GetConstructConfig();
     void SaveConstructConfig();
+
+    void ConnectSingal(RepeaterWidget *tmp_widget) const;
 
 };
 
