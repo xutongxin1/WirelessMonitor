@@ -6,7 +6,7 @@
 #define MAIN_COMPONENTS_SIDEBARBUTTON_SIDEBARBUTTON_H_
 
 #include <QWidget>
-#include "CfgClass.h"
+#include "ConfigClass.h"
 #include "RepeaterWidget.h"
 
 QT_BEGIN_NAMESPACE
@@ -18,7 +18,7 @@ class SideBarButton : public RepeaterWidget {
 
  public:
     explicit SideBarButton(RepeaterWidget *parent = nullptr);
-    explicit SideBarButton(int num, CfgClass *main_cfg, RepeaterWidget *parent = nullptr);
+    explicit SideBarButton(int num, ConfigClass *device_cfg, RepeaterWidget *parent = nullptr);
     QPushButton *button_;
 
     ~SideBarButton() override;

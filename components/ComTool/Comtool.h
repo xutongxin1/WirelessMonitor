@@ -7,7 +7,7 @@
 
 #include <QTcpSocket>
 #include "RepeaterWidget.h"
-#include "CfgClass.h"
+#include "ConfigClass.h"
 #include <QtSerialPort/QtSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include "structH.h"
@@ -110,8 +110,6 @@ class ComTool : public RepeaterWidget {
     void SaveData();            //保存串口数据
 
     void Append(int type, const QString &data, bool clear = false);
-
- private slots:
 
     void ReadErrorNet();
 

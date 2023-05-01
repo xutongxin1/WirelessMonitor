@@ -24,7 +24,7 @@ class ChartsNext;
 enum WindowsType {
     NONE = 0,
     CHANNEL_CONFIGURATION = 1,
-    Com_Tool = 50,
+    COM_TOOL = 50,
     MAIN_CHART = 51,
     DATA_CIRCULATION = 52,
     TCP_BRIDGE_CONFIGURATION = 201,
@@ -33,20 +33,21 @@ enum WindowsType {
 
 //窗口配置信息结构体
 struct WindowsInfo {
-    RepeaterWidget *widget;
+    RepeaterWidget *widget{};
     int index = -1;
-    WindowsType type;
+    WindowsType type=NONE;
 };
 
 //设备配置信息结构体
 struct DevicesInfo {
-    int windows_num;
-    int tab_index;
-    QtMaterialTabs *tab_widget;
-    TCPCommandHandle *tcp_command_handler;
-    TCPInfoHandle *tcp_info_handler[4];
+    int connect_mode=0;
+    int windows_num=-1;
+    int tab_index=-1;
+    QtMaterialTabs *tab_widget{};
+    TCPCommandHandle *tcp_command_handler{};
+    TCPInfoHandle *tcp_info_handler[4]{};
     bool has_chart = false;
-    ChartsNext *charts_windows;
+    ChartsNext *charts_windows{};
     int config_step = 1;
     int current_window = 1;
 };
@@ -66,7 +67,7 @@ enum TimeType {
 ///共用体,降低内存占用
 ///其实我很担心这一段会有一些奇怪的问题
 union DataTime {
-    QDateTime *date_time_;
+    QDateTime *date_time_{};
     double program_time_;
     DataTime() {
 
@@ -77,14 +78,10 @@ union DataTime {
 };
 
 struct singaldata {
-    double data;
+    double data{};
     DataTime time;
-    singaldata() {
-
-    }
-    ~singaldata() {
-
-    }
+    singaldata() = default;
+    ~singaldata() = default;
 };
 
 ///数据点

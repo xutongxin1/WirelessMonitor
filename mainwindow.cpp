@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 
-
 #include "./ui_mainwindow.h"
 #include "ChannelConfiguration/channelconfiguration.h"
 #include "ComTool/Comtool.h"
@@ -16,10 +15,10 @@
 int record_DeviceNum = 0, record_WinNum = 0;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainWindow) {
-  ui_->setupUi(this);
-  //    QVBoxLayout *layout = new QVBoxLayout;
-  //    this->setLayout(layout);
-  //    QWidget *widgetTmp = new QWidget;
+    ui_->setupUi(this);
+    //    QVBoxLayout *layout = new QVBoxLayout;
+    //    this->setLayout(layout);
+    //    QWidget *widgetTmp = new QWidget;
     //    layout->addWidget(widgetTmp);
     //
     //    QWidget *canvas = new QWidget;
@@ -37,15 +36,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
 
 #ifdef BEAUTIFY
     ui_->centralwidget->setStyleSheet(".QWidget{border-image: url(config/backgroud.png);}");
-    ui_->FunctionBar->setBackgroundColor(QColor(245, 180, 202, 100));
+    ui_->FunctionBar->setBackgroundColor(QColor(245, 180, 202, 0));
 #endif
     m_drawer_ = new QtMaterialDrawer;
-    cfg_ = new CfgClass;
+
+    InitConfig();
+
     m_drawer_->setParent(ui_->centralwidget);
     m_drawer_->setClickOutsideToClose(true);
     m_drawer_->setOverlayMode(true);
     m_drawer_->setDrawerWidth(250);
     m_drawer_->setAutoRaise(true);
+
+    snackbar_->setAutoHideDuration(1000);
+
 
     //初始化侧边栏的布局
     auto *drawer_layout = new QVBoxLayout;
@@ -57,11 +61,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     drawer_layout->addWidget(device_select_[0]);  // 初始化数据聚合窗口
 
     //绑定每个按钮的点击事件
-    device_count_ = cfg_->device_num_;
     for (int i = 1; i <= device_count_; i++) {
-        device_select_[i] = new SideBarButton(i, cfg_);
+        device_select_[i] = new SideBarButton(i, config_device_ini_[i]);
         drawer_layout->addWidget(device_select_[i]);
-        connect(device_select_[i]->button_, &QPushButton::pressed, this, [=] { DeviceWindowsExchange(i); });
+        connect(device_select_[i]->button_, &QPushButton::pressed, this, [=] {
+          DeviceWindowsExchange(i);
+        });
     }
     connect(ui_->settingButton, SIGNAL(pressed()), m_drawer_, SLOT(openDrawer()));
     GetConstructConfig();
@@ -81,13 +86,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     //                                               &parent_info_);
     //    ui_->FunctionWindow->setCurrentIndex(ui_->FunctionWindow->addWidget(tmp));
 
-  //    ui_->FunctionWindow->setCurrentIndex(2);
-  //    devices_info_[1].tab_widget->setCurrentTab(2);
+    //    ui_->FunctionWindow->setCurrentIndex(2);
+    //    devices_info_[1].tab_widget->setCurrentTab(2);
     //ui_->FunctionBar->setStyleSheet("background-color: rgba(255, 255, 255, 50);");
 }
 
 MainWindow::~MainWindow() {
-  delete ui_;
+    delete ui_;
 }
 
 /*!
@@ -107,17 +112,16 @@ void MainWindow::DeviceWindowsInit() {
     parent_info_.devices_windows_info = &devices_windows_info_;
 
     devices_windows_info_.emplace_back();  // 空占位
-
     devices_info_.emplace_back();                                     // Main窗口
     devices_info_[0].tab_index = 0;                                    // 在ui内默认创建,必定是0
     for (int device_num = 1; device_num <= device_count_; device_num++)  // 设备遍历初始化
     {
         // 创建Tab栏,初始化DevicesInfo内数据
         auto *new_tab = new QtMaterialTabs();//上方切换栏
-
         struct DevicesInfo tmp
             {
-                .windows_num = cfg_->GetMainCfg("/Device " + QString::number(device_num) + "/win").toInt(),
+                .connect_mode=config_device_ini_[device_num]->value("/All/connect_mode").toInt(),
+                .windows_num = config_device_ini_[device_num]->value("/All/win").toInt(),
                 .tab_index = ui_->TabStackedWidget->addWidget(new_tab), .tab_widget = new_tab
             };
         devices_info_.push_back(tmp);
@@ -130,7 +134,7 @@ void MainWindow::DeviceWindowsInit() {
         devices_info_[device_num].tcp_command_handler = new TCPCommandHandle;  // 都创建一个socket对象吧，防止空指针
         for (int win_num = 1; win_num <= devices_info_[device_num].windows_num; win_num++)  // 窗口遍历初始化
         {
-            int win_type = cfg_->GetDeviceCfg(device_num, "/Win" + QString::number(win_num) + "/type").toInt();
+            int win_type = config_device_ini_[device_num]->value("/Win" + QString::number(win_num) + "/type").toInt();
             if (win_type == 0) {
                 continue;
             }
@@ -140,19 +144,16 @@ void MainWindow::DeviceWindowsInit() {
             switch (win_type) {
                 case 1:devices_windows_info_[device_num][win_num].type = CHANNEL_CONFIGURATION;  // 结构体初始化
                     tmp_widget = new ChannelConfiguration(
-                        device_num, cfg_->config_device_ini_[0], cfg_->config_device_ini_[device_num], &parent_info_);
+                        device_num, config_device_ini_[0], config_device_ini_[device_num], &parent_info_);
                     devices_windows_info_[device_num][win_num].widget = tmp_widget;
-                    connect(tmp_widget,
-                            &RepeaterWidget::OrderExchangeWindow,
-                            this,
-                            &MainWindow::ReciveOrderExchangeWindow);//绑定切换窗口的有关事件
+                    ConnectSingal(tmp_widget);
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
                     devices_info_[device_num].tab_widget->addTab("通道配置");  // 添加tab栏
                     break;
-                case 50:devices_windows_info_[device_num][win_num].type = Com_Tool;  // 结构体初始化
+                case 50:devices_windows_info_[device_num][win_num].type = COM_TOOL;  // 结构体初始化
                     devices_windows_info_[device_num][win_num].widget =
-                        new ComTool(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
+                        new ComTool(device_num, win_num, config_device_ini_[device_num], &parent_info_);
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
                     devices_info_[device_num].tab_widget->addTab("本地串口监视器");  // 添加tab栏
@@ -164,7 +165,7 @@ void MainWindow::DeviceWindowsInit() {
                     devices_windows_info_[device_num][win_num].type = MAIN_CHART;  // 结构体初始化
                     ChartsNext
                         *test_1 =
-                        new ChartsNext(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
+                        new ChartsNext(device_num, win_num, config_device_ini_[device_num], &parent_info_);
                     devices_windows_info_[device_num][win_num].widget = test_1;
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
@@ -178,7 +179,7 @@ void MainWindow::DeviceWindowsInit() {
                 }
                 case 52:devices_windows_info_[device_num][win_num].type = DATA_CIRCULATION;  // 结构体初始化
                     devices_windows_info_[device_num][win_num].widget =
-                        new DataCirculation(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
+                        new DataCirculation(device_num, win_num, config_device_ini_[device_num], &parent_info_);
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
                     devices_info_[device_num].tab_widget->addTab("数据流过滤器配置");  // 添加tab栏
@@ -188,20 +189,18 @@ void MainWindow::DeviceWindowsInit() {
                     tmp_widget =
                         new TCPBridgeConfiguration(device_num,
                                                    win_num,
-                                                   cfg_->config_device_ini_[device_num],
+                                                   config_device_ini_[device_num],
                                                    &parent_info_);
                     devices_windows_info_[device_num][win_num].widget = tmp_widget;
-                    connect(tmp_widget,
-                            &RepeaterWidget::OrderExchangeWindow,
-                            this,
-                            &MainWindow::ReciveOrderExchangeWindow);//绑定切换窗口的有关事件
+                    ConnectSingal(tmp_widget);
+
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
                     devices_info_[device_num].tab_widget->addTab("串口桥配置");  // 添加tab栏
                     break;
                 case 202:devices_windows_info_[device_num][win_num].type = TCP_COM;  // 结构体初始化
                     devices_windows_info_[device_num][win_num].widget =
-                        new TCPCom(device_num, win_num, cfg_->config_device_ini_[device_num], &parent_info_);
+                        new TCPCom(device_num, win_num, config_device_ini_[device_num], &parent_info_);
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
                     devices_info_[device_num].tab_widget->addTab("串口桥数据监视器");  // 添加tab栏
@@ -218,7 +217,7 @@ void MainWindow::DeviceWindowsInit() {
         //        Charts test;  //图标界面测试
         //        test.show();
         // tab栏绑定
-        connect(new_tab, &QtMaterialTabs::currentChanged, this, [=](int num) {
+        connect(new_tab, &QtMaterialTabs::currentChanged, this, [=, this](int num) {
           // 这里的num从0开始，所以要+1
           DeviceWindowsExchange(device_num, num + 1);
         });
@@ -276,19 +275,48 @@ void MainWindow::DeviceWindowsExchange(int device_num, int windows_num, bool is_
     }
 }
 
-void MainWindow::ReciveOrderExchangeWindow(int device_num, int windows_num) {
+void MainWindow::ReceiveOrderExchangeWindow(int device_num, int windows_num) {
     DeviceWindowsExchange(device_num, windows_num);
     devices_info_[device_num].tab_widget->setCurrentTab(windows_num - 1,
                                                         false);//调整上面tab的视觉效果
 }
 
 void MainWindow::GetConstructConfig() {
-    nowDevice_=cfg_->GetMainCfg("/Device/LastDevice").toInt();
-    nowWindows_=cfg_->GetMainCfg("/Device/LastWindows").toInt();
+    now_device_ = config_main_ini_->value("/Device/LastDevice").toInt();
+    now_windows_ = config_main_ini_->value("/Device/LastWindows").toInt();
 }
 
-
 void MainWindow::SaveConstructConfig() {
-    cfg_->SaveMainCfg("/Device/LastDevice", QString::number(nowDevice_));
-    cfg_->SaveMainCfg("/Device/LastWindows", QString::number(nowWindows_));
+    config_main_ini_->setValue("/Device/LastDevice", QString::number(now_device_));
+    config_main_ini_->setValue("/Device/LastWindows", QString::number(now_windows_));
+}
+void MainWindow::ConnectSingal(RepeaterWidget *tmp_widget) const {
+    connect(tmp_widget,
+            &RepeaterWidget::OrderExchangeWindow,
+            this,
+            &MainWindow::ReceiveOrderExchangeWindow);//绑定切换窗口的有关事件
+    connect(tmp_widget,
+            &RepeaterWidget::OrderShowSnackbar,
+            this,
+            &MainWindow::ReceiveOrderShowSnackbar);//绑定弹出提示的有关事件
+
+}
+void MainWindow::ReceiveOrderShowSnackbar(const QString &message) {
+    snackbar_->addMessage(message);
+}
+
+void MainWindow::InitConfig() {
+    config_main_ini_ = new ConfigClass("main.ini", QSettings::IniFormat);
+    device_count_ = config_main_ini_->value("/Device/device_num").toInt();
+    config_device_ini_.emplace_back();
+    for (int i = 1; i <= device_count_; i++) {
+        config_device_ini_.push_back(new ConfigClass("Device" + QString::number(i) + ".ini",
+                                                     QSettings::IniFormat));
+//        QSettings *tmp=new QSettings("config/Device" + QString::number(i) + ".ini",
+//                                       QSettings::IniFormat);
+//        config_device_ini_[i]->setValue("/ee/connect_mode",123);
+//        config_device_ini_[i]->sync();
+
+    }
+
 }

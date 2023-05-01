@@ -8,23 +8,23 @@
 #include "./ui_SideBarButton.h"
 #include <string>
 
-SideBarButton::SideBarButton(int num, CfgClass *main_cfg, RepeaterWidget *parent) :
+SideBarButton::SideBarButton(int num, ConfigClass *device_cfg, RepeaterWidget *parent) :
     RepeaterWidget(parent), ui_(new Ui::SideBarButton) {
 
     ui_->setupUi(this);
-    QString tmp = "/Device ";
-    tmp.append(QString::number(num));
 
-    QString note = main_cfg->GetMainCfg(QString(tmp + "/note"));
-    QString way = main_cfg->GetMainCfg(QString(tmp + "/WayToConnect"));
-    if (way == "1") {
-        way = "XMB无线调试器";
-    } else if (way == "2") {
-        way = "有线串口设备";
-    } else if (way == "3") {
-        way = "TCP连接";
+    QString note = device_cfg->value("/All/note").toString();
+    QString connect_mode = device_cfg->value("/All/connect_mode").toString();
+    QString attach = "";
+    if (connect_mode == "1") {
+        attach = device_cfg->value("/All/ip").toString();
+        connect_mode = "XMB无线调试器";
+    } else if (connect_mode == "2") {
+        connect_mode = "有线串口设备";
+    } else if (connect_mode == "3") {
+        connect_mode = "TCP连接";
     }
-    ui_->button_->setText(note + "\n" + way);
+    ui_->button_->setText(note + "\n" + connect_mode + "\n" + attach);
     button_ = ui_->button_;
 }
 

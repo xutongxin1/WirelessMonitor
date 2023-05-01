@@ -82,17 +82,17 @@ ChannelConfiguration::~ChannelConfiguration() {
  * @return {*}
  */
 void ChannelConfiguration::GetConstructConfig() {
-    main_cfg_->beginGroup(device_group_);
-    if (main_cfg_->value("WayToConnect") == 1) {
+    cfg_->beginGroup("All");
+    if (cfg_->value("connect_mode") == 1) {
         ui_->ESPButton->setChecked(true);
         ReflashUi(true);
     } else {
         ui_->COMButton->setChecked(true);
         ReflashUi(false);
     }
-    ui_->IP->setText(main_cfg_->value("ip_").toString());
-    ui_->note->setText(main_cfg_->value("note").toString());
-    main_cfg_->endGroup();
+    ui_->IP->setText(cfg_->value("ip").toString());
+    ui_->note->setText(cfg_->value("note").toString());
+    cfg_->endGroup();
 
     cfg_->beginGroup(group_name_);
     ui_->FuncitonComboBox->setCurrentIndex(cfg_->value("mode").toInt());
@@ -104,15 +104,15 @@ void ChannelConfiguration::GetConstructConfig() {
  * @return {*}
  */
 void ChannelConfiguration::SaveConstructConfig() {
-    main_cfg_->beginGroup(device_group_);
+    cfg_->beginGroup("All");
     if (ui_->ESPButton->isChecked()) {
-        main_cfg_->setValue("WayToConnect", 1);
+        cfg_->setValue("connect_mode", 1);
     } else {
-        main_cfg_->setValue("WayToConnect", 2);
+        cfg_->setValue("connect_mode", 2);
     }
-    main_cfg_->setValue("note", ui_->note->text());
-    main_cfg_->setValue("ip_", ui_->IP->text());
-    main_cfg_->endGroup();
+    cfg_->setValue("note", ui_->note->text());
+    cfg_->setValue("ip", ui_->IP->text());
+    cfg_->endGroup();
 
     cfg_->beginGroup(group_name_);
     cfg_->setValue("mode", ui_->FuncitonComboBox->currentIndex());
