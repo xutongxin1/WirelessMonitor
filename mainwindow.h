@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include "qcustomplot.h"
 #include "qtmaterialdrawer.h"
-#include "CfgClass.h"
+#include "ConfigClass.h"
 #include "qtmaterialtabs.h"
 #include "SideBarButton/SideBarButton.h"
 #include <string>
@@ -28,7 +28,6 @@ class MainWindow : public QMainWindow {
 
     vector<vector<WindowsInfo>> devices_windows_info_;//设备下窗口信息
     vector<DevicesInfo> devices_info_;//设备信息
-    int device_count_;//设备数量
 
  public slots:
     void ReceiveOrderExchangeWindow(int device_num, int windows_num);
@@ -44,6 +43,9 @@ class MainWindow : public QMainWindow {
     CfgClass *cfg_;
     QTimer *new_window_create_timer_ = new QTimer(this);
     ToNewWidget parent_info_;//用于从父窗口传入到子窗口的所有信息的结构体
+    std::vector<ConfigClass *> config_device_ini_;
+    int device_count_;
+    ConfigClass *config_main_ini_;
 
 
 //    void ErrorHandle(const QString &reason);

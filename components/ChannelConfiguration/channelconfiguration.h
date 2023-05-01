@@ -6,7 +6,7 @@
 #define MAIN_COMPONENTS_CHANNELCONFIGURATION_CHANNELCONFIGURATION_H_
 
 #include <QWidget>
-#include "CfgClass.h"
+#include "ConfigClass.h"
 #include "RepeaterWidget.h"
 #include "structH.h"
 
