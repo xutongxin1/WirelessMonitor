@@ -73,8 +73,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
 
     DeviceWindowsInit();
 
-    if (nowWindows_ != 0 && nowDevice_ != 0) {
-        DeviceWindowsExchange(nowWindows_, nowDevice_, true);
+    if (now_windows_ != 0 && now_device_ != 0) {
+        DeviceWindowsExchange(now_windows_, now_device_, true);
     }
 
     //DeviceExchange(1);
@@ -251,11 +251,11 @@ void MainWindow::DeviceWindowsExchange(int device_num, int windows_num, bool is_
         return;
     }
     qDebug("try to switch %d device, %d windows", device_num, windows_num);
-    if (nowDevice_ != device_num || is_init) {
+    if (now_device_ != device_num || is_init) {
         ui_->TabStackedWidget->setCurrentIndex(devices_info_[device_num].tab_index);
-        nowDevice_ = device_num;
+        now_device_ = device_num;
     }
-    nowWindows_ = windows_num;
+    now_windows_ = windows_num;
 #if DEBUG
 #else
     if (devices_info_[device_num].config_step < win_num) {
