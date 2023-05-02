@@ -33,14 +33,13 @@ class MainWindow : public QMainWindow {
     void ReceiveOrderExchangeWindow(int device_num, int windows_num);
     void ReceiveOrderShowSnackbar (const QString& message);
  private:
-    int nowDevice_;
-    int nowWindows_;
+    int now_device_;
+    int now_windows_;
     Ui::MainWindow *ui_;
     QCustomPlot *custom_plot_;
     QtMaterialDrawer *m_drawer_;
     QtMaterialSnackbar *snackbar_ = new QtMaterialSnackbar(this);
     SideBarButton *device_select_[100];//侧边栏设备按钮指针
-    CfgClass *cfg_;
     QTimer *new_window_create_timer_ = new QTimer(this);
     ToNewWidget parent_info_;//用于从父窗口传入到子窗口的所有信息的结构体
     std::vector<ConfigClass *> config_device_ini_;
@@ -61,6 +60,8 @@ class MainWindow : public QMainWindow {
     void SaveConstructConfig();
 
     void ConnectSingal(RepeaterWidget *tmp_widget) const;
+
+    void InitConfig();
 
 };
 
