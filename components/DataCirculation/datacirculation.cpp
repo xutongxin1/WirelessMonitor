@@ -9,7 +9,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QFile>
-
+#include "ComTool/Comtool.h"
 #include "ui_DataCirculation.h"
 
 DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent)
@@ -25,7 +25,7 @@ DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, To
     this->tcp_info_handler_[1] = (*(parent_info->devices_info))[device_num].tcp_info_handler[1];
     this->tcp_info_handler_[2] = (*(parent_info->devices_info))[device_num].tcp_info_handler[2];
     this->tcp_info_handler_[3] = (*(parent_info->devices_info))[device_num].tcp_info_handler[3];
-
+    this->connect_mode = (*(parent_info->devices_info))[device_num].connect_mode;
 
     DataCirculation::GetConstructConfig();
     ui_->comProcessMode->setCurrentIndex(process_mode_);
@@ -60,11 +60,11 @@ DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, To
     });
 
     connect(ui_->btnStart, &QPushButton::clicked, this, [&] {
-        if (ui_->btnStart->text()=="停止数据流处理"){
-            StopCirculation();
-        }else {
-            StartCirculation();
-        }
+      if (ui_->btnStart->text() == "停止数据流处理") {
+          StopCirculation();
+      } else {
+          StartCirculation();
+      }
     });
 
     connect(ui_->btnTestFlow, &QPushButton::clicked, this, [&] {
@@ -79,24 +79,22 @@ DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, To
       while (!file.atEnd()) {
           QByteArray line = file.readLine();
           this->DoCirculation(line, QDateTime::currentDateTime());
-        }
-        //        QByteArray allArray = file.readAll();
-        //        QString allStr = QString(allArray);
-        file.close();
-        //
-        //        qDebug("准备把以下数据注入文件 %s", qPrintable(allStr));
-        //        this->DoCirculation(allArray);
+      }
+      //        QByteArray allArray = file.readAll();
+      //        QString allStr = QString(allArray);
+      file.close();
+      //
+      //        qDebug("准备把以下数据注入文件 %s", qPrintable(allStr));
+      //        this->DoCirculation(allArray);
     });
 }
 
-DataCirculation::~DataCirculation()
-{
+DataCirculation::~DataCirculation() {
     delete ui_;
 }
 
 /// 数据过滤测试按钮
-void DataCirculation::TestCirculationMode()
-{
+void DataCirculation::TestCirculationMode() {
     bool b_ok = false;
     QString test_data =
         QInputDialog::getMultiLineText(this, "QInputDialog_Intro", "请输入测试数据",
@@ -188,8 +186,7 @@ void DataCirculation::RefreshBox() {
 
 /// 启动数据流过滤，绑定通道（开启数据流处理）
 
-void DataCirculation::StartCirculation()
-{
+void DataCirculation::StartCirculation() {
     // 检查界面是否存在
     if (!(*(parent_info_->devices_info))[device_num_].has_chart) {
         qCritical("不存在绘图界面");
@@ -224,6 +221,7 @@ void DataCirculation::StartCirculation()
     chart_window_->paint_timer_->start();
 
     /// 加载变量到charts
+//    chart_window_->GetChartConfig();           // 读配置文件
     chart_window_->LoadInfo();
 
 
@@ -245,6 +243,18 @@ void DataCirculation::StartCirculation()
                     const QDateTime &time) { this->DoCirculation(data); });
     }
 
+    if (connect_mode == 2) {
+        qDebug() << "本地串口解析";
+        /// 这里应写成一个ComTool的变量，connect_mode在里面存着
+        if ((*(this->parent_info_->devices_info))[this->device_num_].com_tool == nullptr) {
+            qFatal("ComTool pointer is null");
+        }
+
+        connect((*(this->parent_info_->devices_info))[this->device_num_].com_tool, &ComTool::RecNewData, this,
+                [&](const QByteArray &data,
+                    const QDateTime &time) { this->DoCirculation(data); });
+    }
+
     // 完成绑定
     qDebug() << "完成数据流绑定";
     (*(parent_info_->devices_info))[device_num_].config_step = 5;
@@ -256,6 +266,10 @@ void DataCirculation::StartCirculation()
 
 void DataCirculation::StopCirculation() {
     ui_->btnStart->setEnabled(false);       // 按钮使能状态
+
+    chart_window_->DeleteWidget();          // 删除控件
+
+    chart_window_->SaveConstructConfig();   // 保存图像信息
 
     chart_window_->AntiRegisterAllDataPoint();
 //    qDebug() << "关闭数据流过滤" << endl;
