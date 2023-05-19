@@ -16,6 +16,7 @@
 
 //TODO:可选的点绘制，颜色，线的显示与颜色
 bool hide_flag = 1;//1是关闭隐藏，0是开启隐藏
+bool rolling_flag = true;
 /*颜色笔可选颜色，默认为红
  */
 //enum Pen_color {
@@ -70,12 +71,12 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
     //chart配置               ui_chart_->widget->graph(i)->setName();
     ui_chart_->widget->xAxis->setLabel("Time/秒");
     ui_chart_->widget->yAxis->setLabel("ADC");
-    ui_chart_->widget->xAxis->setRange(0, 100);
+    ui_chart_->widget->xAxis->setRange(0, 100);     // 设置默认范围
     ui_chart_->widget->yAxis->setRange(0, 100);
-    ui_chart_->widget->legend->setVisible(true);
+    ui_chart_->widget->legend->setVisible(true);           // 是否显示图例，legend是管理图例的类
 
-    ui_chart_->widget->xAxis2->setVisible(true);
-    ui_chart_->widget->xAxis2->setTickLabels(false);
+    ui_chart_->widget->xAxis2->setVisible(true);            // 上边轴
+    ui_chart_->widget->xAxis2->setTickLabels(false);        // 不显示刻度
     ui_chart_->widget->yAxis2->setVisible(true);
     ui_chart_->widget->yAxis2->setTickLabels(false);
     connect(ui_chart_->widget->xAxis,
@@ -85,7 +86,7 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
     connect(ui_chart_->widget->yAxis,
             SIGNAL(rangeChanged(QCPRange)),
             ui_chart_->widget->yAxis2,
-            SLOT(setRange(QCPRange)));
+            SLOT(setRange(QCPRange)));                  // 将上边右边轴与左边下边轴同步变化
 
     //设置基本坐标轴（左侧Y轴和下方X轴）可拖动、可缩放、曲线可选、legend可选、设置伸缩比例，使所有图例可见
     ui_chart_->widget->setInteractions(
@@ -94,10 +95,41 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
     connect(ui_chart_->widget, SIGNAL(mouseMove(QMouseEvent * )), this, SLOT(myMoveEvent(QMouseEvent * )));
 
     //设置legend只能选择图例
-    ui_chart_->widget->legend->setSelectableParts(QCPLegend::spItems);
+    ui_chart_->widget->legend->setSelectableParts(QCPLegend::spItems);      //好像失效了
     connect(ui_chart_->widget, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged()));
     custom_plot_ = ui_chart_->widget;
     UpdateLine();
+
+    // 图表右键菜单
+    ui_chart_->widget->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui_chart_->widget, &QWidget::customContextMenuRequested, this, [&](const QPoint pos) {
+
+      QMenu *menu = new QMenu(ui_chart_->widget);
+
+      QCheckBox *control = new QCheckBox("是否滚动",ui_chart_->widget);
+      rolling_flag ? control->setCheckState(Qt::Checked) : control->setCheckState(Qt::Unchecked);         // 设置选择框的默认状态
+      QWidgetAction *choice = new QWidgetAction(ui_chart_->widget);
+      choice->setDefaultWidget(control);                                       // 在Action对象中添加控件
+
+      QAction *restore = new QAction("自动", ui_chart_->widget);
+      connect(control, &QCheckBox::stateChanged, this, [&,this](int state) {
+        state==Qt::Checked ? rolling_flag = true : rolling_flag = false;        // 设置是否滚动
+      });
+
+      connect(restore, &QAction::triggered, this, [&] {
+        //默认是不滚动的
+        qDebug() << "auto()";
+        for (int i = 0; i < data_pool_.size(); ++i) {
+            custom_plot_->graph(i)->rescaleAxes();              // 自动调整图像，首尾点都显示出来
+        }
+
+      });
+      menu->addAction(choice);
+      menu->addAction(restore);
+      menu->move(cursor().pos());           // 将菜单窗口移动到鼠标的坐标
+      menu->show();
+
+    });
 
 }
 
@@ -105,6 +137,8 @@ ChartsNext::~ChartsNext() {
     delete ui_chart_;
 }
 
+// 绘制图线
+/// 触发条件为时间，所以函数一直都会运行。当关闭数据流过滤的时候，data_pool_size()=0，循环就不能执行，相当于函数不运行了。
 void ChartsNext::UpdateLine() {
     for (int i = 0; i < data_pool_.size(); i++) {
         if (data_pool_.at(i).last_draw_index == -1)//首次绘制(或修改颜色后首次)
@@ -132,20 +166,29 @@ void ChartsNext::UpdateLine() {
                     custom_plot_->graph(i)->addData(data_pool_[i].data_list.at(j).time.date_time_->toMSecsSinceEpoch(),
                                                     data_pool_[i].data_list.at(j).data
                     );
+
                 } else {
                     custom_plot_->graph(i)->addData(
                         data_pool_[i].data_list.at(j).time.program_time_,
                         data_pool_[i].data_list.at(j).data);
+
                 }
+
+            }
+            if (rolling_flag) {
+                double x = data_pool_[i].data_list.last().time.program_time_;       // 获取最新的X值
+                double y = data_pool_[i].data_list.last().data;                     // 获取最新的y值
+                double y_lower = ui_chart_->widget->yAxis->range().lower;           // 获取坐标轴当前最小的y值
+                ui_chart_->widget->xAxis->setRange(x - 30, x);          // 刷新x的范围
+                ui_chart_->widget->yAxis->setRange(y_lower, y + 20);    // 刷新y的范围  这些加减都是随便设的
             }
             data_pool_[i].last_draw_index = data_pool_[i].data_list.size();
-            custom_plot_->graph(0)->rescaleAxes();
+
         }
     }
 
     custom_plot_->replot(QCustomPlot::rpQueuedReplot);
 }
-
 
 void ChartsNext::myMoveEvent(QMouseEvent *event) {
     //获取鼠标坐标，相对父窗体坐标
@@ -190,10 +233,9 @@ void ChartsNext::myMoveEvent(QMouseEvent *event) {
         /// 这里这么写是有什么用吗，选中之后提示有什么作用？
         QToolTip::showText(mapToGlobal(QPoint(out_x, out_value)), strToolTip, ui_chart_->widget);
 
-    }
-    else {
+    } else {
         /// 这部分是默认逻辑
-       str = QString::number(y_val, 10, 3);
+        str = QString::number(y_val, 10, 3);
         strToolTip += "ADC: ";
         strToolTip += str;
         strToolTip += "\n";
@@ -403,53 +445,67 @@ void ChartsNext::test(const QVector<double> &addDate) {
 /// 加载右边的信息框
 /// 变量名可以手动改？
 
-void ChartsNext::LoadInfo(){
-
+void ChartsNext::LoadInfo() {
     ui_chart_->line_table->setRowCount(data_pool_.size());
     ui_chart_->line_table->setColumnCount(3);
 
     /// 动态创建控件
-    for(int i=0;i<data_pool_.size();i++)
-    {
-        struct ChartsList node;
+    for (int i = 0; i < data_pool_.size(); i++) {
+        ChartsList node;
+        // 设置按钮颜色
+        QPalette plet = node.choose_color->palette();
+        plet.setColor(QPalette::Button, data_pool_[i].line_color);
+        node.choose_color->setPalette(plet);
         node.choose_color->setText("颜色选择");
-        node.check_visible->setCheckState(Qt::Checked);
+
+        // 设置默认选择框属性
+        data_pool_[i].is_visible ? node.check_visible->setCheckState(Qt::Checked) : node.check_visible->setCheckState(Qt::Unchecked);
+
         line_info_.append(node);
-        disconnect(line_info_[i].choose_color,0,0,0);
-        disconnect(line_info_[i].check_visible,0,0,0);
-        connect(line_info_[i].check_visible,&QCheckBox::stateChanged,this,[=](int state){
-            VisibleChanged(state,i);
+        disconnect(line_info_[i].choose_color, 0, 0, 0);            // 防止重复connect
+        disconnect(line_info_[i].check_visible, 0, 0, 0);
+
+        connect(line_info_[i].check_visible, &QCheckBox::stateChanged, this, [=, this](int state) {
+          VisibleChanged(state, i);
         });
-        connect(line_info_[i].choose_color,&QPushButton::clicked,this,[&,i]{
-            SelectColor(i);
+        connect(line_info_[i].choose_color, &QPushButton::clicked, this, [&, i] {
+          SelectColor(i);
         });
     }
 
     /// 渲染右侧信息
-    int count = 0;
-    for (QList<DataNode>::iterator i = data_pool_.begin(); i != data_pool_.end(); ++i,count++) {
-        ui_chart_->line_table->setItem(count,0,new QTableWidgetItem(data_pool_.at(count).data_name));
-        ui_chart_->line_table->setCellWidget(count,1,line_info_[count].choose_color);
-        ui_chart_->line_table->setCellWidget(count,2,line_info_[count].check_visible);
-//        line_info_[0].check_visible->setCheckState(Qt::Checked);
+    for (int i = 0; i < data_pool_.size(); ++i) {
+        // QTable添加文字，控件
+        ui_chart_->line_table->setItem(i, 0, new QTableWidgetItem(data_pool_.at(i).data_name));     // 添加变量名
+        ui_chart_->line_table->setCellWidget(i, 1, line_info_[i].choose_color);                         // 颜色选择控件
+        ui_chart_->line_table->setCellWidget(i, 2, line_info_[i].check_visible);                        // 显示选择框
+
     }
 }
 
-
+/// 删除表格中的控件
+/// 先删除控件，再删除行，控件是动态创建的，要delete
+void ChartsNext::DeleteWidget() {
+    for (int i = 0; i< data_pool_.size(); ++i) {
+        ui_chart_->line_table->removeRow(0);
+    }
+    line_info_.clear();
+    qDebug() << "DeleteWidget\n";
+}
 /// 颜色选择窗口
 /// TODO:
 ///     1. 小bug：颜色选择黑色之后，要在左侧选择框点才能成功切换，不过颜色采集可以用。
 
-void ChartsNext::SelectColor(int i){
-    /// 这里的初始化颜色，改为data_pool_里面的
+void ChartsNext::SelectColor(int i) {
 
     QPalette plet = line_info_[i].choose_color->palette();
-    QColor currentColor = plet.color(QPalette::Button);    // 当前颜色
-    QColor color = QColorDialog::getColor(currentColor, this,("颜色选择"));
+    QColor current_color = plet.color(QPalette::Button);    // 当前颜色
+    QColor color = QColorDialog::getColor(current_color, this, ("颜色选择"));
 
-    if (color.isValid()){
-        plet.setColor (QPalette::Button, color);
-        line_info_[i].choose_color->setPalette (plet);
+    if (color.isValid()) {
+        // 改变按钮颜色
+        plet.setColor(QPalette::Button, color);
+        line_info_[i].choose_color->setPalette(plet);
         data_pool_[i].line_color = color;
 
         // 改变图像属性
@@ -458,33 +514,23 @@ void ChartsNext::SelectColor(int i){
         pen.setColor(data_pool_.at(i).line_color);//设置线条红色
         ui_chart_->widget->graph(i)->setPen(pen);
 
-
     }
 
-
-
-//    LoadInfo();
-
-    qDebug() << "button:" << i;
-    ///更改后要重新渲染
-    qDebug() << "choose color:" << color << "\r\n";
 }
 
-
 /// 是否可见选择
-/// TODO: 1. 关闭数据流之后，点checkbox会闪退
 
-void ChartsNext::VisibleChanged(int state,int location) {
-    if (state==Qt::Checked){
+void ChartsNext::VisibleChanged(int state, int location) {
+    if (state == Qt::Checked) {
 //        qDebug() << "changed visible \r\n";
         ui_chart_->widget->graph(location)->setVisible(true);     // 不需要重新渲染其实也可以改变
 
-    }else if(state==Qt::Unchecked){
+    } else if (state == Qt::Unchecked) {
+        data_pool_[location].is_visible = false;
         ui_chart_->widget->graph(location)->setVisible(false);
 //        qDebug() << "changed unvisible \r\n";
     }
 }
-
 
 void ChartsNext::selectionChanged() {
     // 将图形的选择与相应图例项的选择同步
@@ -521,3 +567,49 @@ bool ChartsNext::AntiRegisterAllDataPoint() {
     custom_plot_->clearGraphs();
     return true;
 }
+
+/// 保存图像配置
+/// notes: groupname不能写中文
+
+void ChartsNext::SaveConstructConfig() {
+    qDebug("写入Charts配置文件");
+
+    for (int i = 0; i < data_pool_.size(); i++) {
+//        cfg_->beginGroup("value" + QString::number(i + 1));
+        cfg_->beginGroup(group_name_);
+        /// TODO: 当用户改变变量名时，重新开启数据流并没有更改变量名。
+        /// 1. 如果保存就从控件窗口读取的话，可以直接读取修改后的值
+        /// 2. 写一个槽，当修改变量名时候触发，然后修改data_pool_里面的值
+        ///
+        cfg_->setValue("Value"+QString::number(i + 1), data_pool_.at(i).data_name);     /// 变量名
+        cfg_->setValue("Color"+QString::number(i + 1), data_pool_.at(i).line_color);      /// 颜色
+        cfg_->setValue("Visible"+QString::number(i + 1), data_pool_.at(i).is_visible);   /// 是否可见
+        cfg_->setValue("Width"+QString::number(i + 1), data_pool_.at(i).line_width);   /// 宽度
+        cfg_->endGroup();
+    }
+
+    qDebug() << "saveconfig success\n";
+
+}
+
+/// 读取图像配置
+
+void ChartsNext::GetConstructConfig() {
+    qDebug("Get charts config");
+
+    for (int i = 0; i < data_pool_.size(); i++) {
+        cfg_->beginGroup(group_name_);
+//        cfg_->beginGroup("value" + QString::number(i + 1));
+        data_pool_[i].data_name = cfg_->value("Value"+QString::number(i + 1)).toString();           /// 变量名
+        QVariant value = cfg_->value("Color"+QString::number(i + 1));        // 读出来的是color的hex值
+        QColor color = value.value<QColor>();           // 这是一个QColor(ARGB 1, 1, 0, 0)
+        data_pool_[i].line_color = color;                                                               /// 颜色
+        data_pool_[i].is_visible = cfg_->value("Visible"+QString::number(i + 1)).toBool();          /// 是否可见
+        data_pool_[i].line_width = cfg_->value("Width"+QString::number(i + 1)).toInt();             /// 宽度
+        cfg_->endGroup();
+    }
+
+    qDebug() << "getconfig success\n";
+
+}
+

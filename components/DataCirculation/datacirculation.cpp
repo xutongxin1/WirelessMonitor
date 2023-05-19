@@ -9,7 +9,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QFile>
-
+#include "ComTool/Comtool.h"
 #include "ui_DataCirculation.h"
 
 DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent)
@@ -25,7 +25,7 @@ DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, To
     this->tcp_info_handler_[1] = (*(parent_info->devices_info))[device_num].tcp_info_handler[1];
     this->tcp_info_handler_[2] = (*(parent_info->devices_info))[device_num].tcp_info_handler[2];
     this->tcp_info_handler_[3] = (*(parent_info->devices_info))[device_num].tcp_info_handler[3];
-
+    this->connect_mode = (*(parent_info->devices_info))[device_num].connect_mode;
 
     DataCirculation::GetConstructConfig();
     ui_->comProcessMode->setCurrentIndex(process_mode_);
@@ -60,11 +60,11 @@ DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, To
     });
 
     connect(ui_->btnStart, &QPushButton::clicked, this, [&] {
-        if (ui_->btnStart->text()=="停止数据流处理"){
-            StopCirculation();
-        }else {
-            StartCirculation();
-        }
+      if (ui_->btnStart->text() == "停止数据流处理") {
+          StopCirculation();
+      } else {
+          StartCirculation();
+      }
     });
 
     connect(ui_->btnTestFlow, &QPushButton::clicked, this, [&] {
@@ -79,24 +79,22 @@ DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, To
       while (!file.atEnd()) {
           QByteArray line = file.readLine();
           this->DoCirculation(line, QDateTime::currentDateTime());
-        }
-        //        QByteArray allArray = file.readAll();
-        //        QString allStr = QString(allArray);
-        file.close();
-        //
-        //        qDebug("准备把以下数据注入文件 %s", qPrintable(allStr));
-        //        this->DoCirculation(allArray);
+      }
+      //        QByteArray allArray = file.readAll();
+      //        QString allStr = QString(allArray);
+      file.close();
+      //
+      //        qDebug("准备把以下数据注入文件 %s", qPrintable(allStr));
+      //        this->DoCirculation(allArray);
     });
 }
 
-DataCirculation::~DataCirculation()
-{
+DataCirculation::~DataCirculation() {
     delete ui_;
 }
 
 /// 数据过滤测试按钮
-void DataCirculation::TestCirculationMode()
-{
+void DataCirculation::TestCirculationMode() {
     bool b_ok = false;
     QString test_data =
         QInputDialog::getMultiLineText(this, "QInputDialog_Intro", "请输入测试数据",
@@ -184,12 +182,21 @@ void DataCirculation::RefreshBox() {
     // 当不需要输出模式时关闭选项
     ui_->comOutputMode->setVisible(tmp_bool);
     ui_->labelOutputMode->setVisible(tmp_bool);
+
+    if (circulation_mode_ == CIRCULATION_MODE_DIRECTION) {           // 判断是否为直出模式
+        for (int i = 1; i < 16; i++) {
+            ui_->tableWidget->setRowHidden(i, true); // 隐藏后十五行
+        }
+    } else {
+        for (int i = 1; i < 16; i++) {
+            ui_->tableWidget->setRowHidden(i, false); // 显示后十五行
+        }
+    }
 }
 
 /// 启动数据流过滤，绑定通道（开启数据流处理）
 
-void DataCirculation::StartCirculation()
-{
+void DataCirculation::StartCirculation() {
     // 检查界面是否存在
     if (!(*(parent_info_->devices_info))[device_num_].has_chart) {
         qCritical("不存在绘图界面");
@@ -209,7 +216,8 @@ void DataCirculation::StartCirculation()
 
     chart_window_->AntiRegisterAllDataPoint();//反注册所有数据点
     values_.clear();
-    int row = ui_->tableWidget->rowCount();
+    int row;                        // 直接获取table的行数，来注册变量(改掉)
+    circulation_mode_ ? row = ui_->tableWidget->rowCount() : row = 1;
     for (int i = 0; i < row; i++) {
         struct value tmp_value
             {
@@ -224,6 +232,7 @@ void DataCirculation::StartCirculation()
     chart_window_->paint_timer_->start();
 
     /// 加载变量到charts
+    chart_window_->GetConstructConfig();           // 读配置文件
     chart_window_->LoadInfo();
 
 
@@ -245,6 +254,17 @@ void DataCirculation::StartCirculation()
                     const QDateTime &time) { this->DoCirculation(data); });
     }
 
+    if (connect_mode == 2) {
+        qDebug() << "本地串口解析";
+        if ((*(this->parent_info_->devices_info))[this->device_num_].com_tool == nullptr) {
+            qFatal("ComTool pointer is null");
+        }
+
+        connect((*(this->parent_info_->devices_info))[this->device_num_].com_tool, &ComTool::RecNewData, this,
+                [&](const QByteArray &data,
+                    const QDateTime &time) { this->DoCirculation(data); });         
+    }
+
     // 完成绑定
     qDebug() << "完成数据流绑定";
     (*(parent_info_->devices_info))[device_num_].config_step = 5;
@@ -256,6 +276,13 @@ void DataCirculation::StartCirculation()
 
 void DataCirculation::StopCirculation() {
     ui_->btnStart->setEnabled(false);       // 按钮使能状态
+
+    chart_window_->DeleteWidget();          // 删除控件
+    disconnect(tcp_info_handler_[1], 0, 0, 0);
+    disconnect(tcp_info_handler_[2], 0, 0, 0);
+    disconnect((*(this->parent_info_->devices_info))[this->device_num_].com_tool, 0, 0, 0);
+
+    chart_window_->SaveConstructConfig();   // 保存图像信息
 
     chart_window_->AntiRegisterAllDataPoint();
 //    qDebug() << "关闭数据流过滤" << endl;
@@ -271,7 +298,7 @@ void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &dat
     qDebug("准备解析数据%s,时间%s", qPrintable(strtmp), qPrintable(data_time.toString("h:m:s")));
     QStringList buffer;
     if (strtmp.indexOf("\r\n") != -1) {
-        buffer = strtmp.split("\r\n");
+        buffer = strtmp.split("\r\n");              // 把换行符过滤掉，将ByteArray转存QStringList
     } else if (strtmp.indexOf("\n") != -1) {
         buffer = strtmp.split("\n");
     } else {
@@ -279,7 +306,7 @@ void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &dat
         return;
     }
     for (int i = 0; i < buffer.size(); i++) {
-        QString circulation_str = buffer[i];
+        QString circulation_str = buffer[i];        // 将buffer每一位的数据传给circulation_str，然后进入数据解析
         if (circulation_str == "") {
             continue;
         }
@@ -296,7 +323,24 @@ void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &dat
                 }
                 break;
             }
-            case CIRCULATION_MODE_COMMA_SEPARATED:break;
+            case CIRCULATION_MODE_COMMA_SEPARATED: {
+                QStringList result = circulation_str.split(",");
+                int i=0;
+                foreach (QString circulation_data, result) {
+                    qDebug() << circulation_data;
+                    bool ok;
+                    double num = circulation_data.toDouble(&ok);
+                    if (ok) {
+                        qDebug("解析成功 %f", num);
+                        chart_window_->AddDataWithProgramTime(ui_->tableWidget->item(i, 0)->text(), num, data_time);
+                    } else {
+                        qCritical("%s 解析失败", qPrintable(circulation_str));
+                        QMessageBox::critical(this, tr("错误"), tr("解析错误"));
+                    }
+                    i++;
+                }
+                break;
+            }
             case CIRCULATION_MODE_KEY_VALUE:break;
             case CIRCULATION_MODE_SCANF:break;
             case CIRCULATION_MODE_REGULARITY:break;
