@@ -152,8 +152,10 @@ void MainWindow::DeviceWindowsInit() {
                     devices_info_[device_num].tab_widget->addTab("通道配置");  // 添加tab栏
                     break;
                 case 50:devices_windows_info_[device_num][win_num].type = COM_TOOL;  // 结构体初始化
-                    devices_windows_info_[device_num][win_num].widget =
+                    tmp_widget =
                         new ComTool(device_num, win_num, config_device_ini_[device_num], &parent_info_);
+                    ConnectSingal(tmp_widget);
+                    devices_windows_info_[device_num][win_num].widget = tmp_widget;
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
                     devices_info_[device_num].tab_widget->addTab("本地串口监视器");  // 添加tab栏

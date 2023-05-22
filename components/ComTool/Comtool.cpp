@@ -251,7 +251,12 @@ void ComTool::ReflashComCombo() {
     timer_for_port_->start();
 }
 
-bool ComTool::StartSerial() {
+bool ComTool::OpenSerial() {
+    if(ui_->COMCombo->currentText()=="")
+    {
+        emit(OrderShowSnackbar("没有有效的串口"));
+        return false;
+    }
     qDebug() << ui_->COMCombo->currentText();
     my_serialport_->setPortName(ui_->COMCombo->currentText());
     my_serialport_->setBaudRate(baud_rate_);
@@ -268,6 +273,8 @@ bool ComTool::StartSerial() {
         return true;
     } else {
         qDebug() << my_serialport_->error();
+        my_serialport_->close();
+        emit(OrderShowSnackbar("串口打开失败，请检查是否被占用或权限不足"));
         return false;
     }
 }
@@ -290,7 +297,8 @@ void ComTool::StartTool() {
 
     } else {
         if (ui_->COMButton->isChecked()) {
-            StartSerial();
+            if(!OpenSerial())
+                return;
         }
 
         ui_->COMButton->setEnabled(false);
@@ -379,7 +387,7 @@ void ComTool::GetData() {
 ///发送发送栏里的数据
 void ComTool::SendData() {
     if (!is_start_) {
-        QMessageBox::warning(this, tr("错误"), tr("请先打开串口后再发送"));
+        emit(OrderShowSnackbar("请先打开串口再发送"));
         return;
     }
 
