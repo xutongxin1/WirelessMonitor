@@ -40,7 +40,7 @@ struct WindowsInfo {
 
 //设备配置信息结构体
 struct DevicesInfo {
-    int connect_mode=0;
+    int connect_mode=0;//0:无,1:调试器,2:COM,3:TCP
     int windows_num=-1;
     int tab_index=-1;
     QtMaterialTabs *tab_widget{};
