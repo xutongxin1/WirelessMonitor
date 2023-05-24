@@ -81,7 +81,7 @@ signals:
 
     QStringList GetPortInfo();
     void ReflashComCombo();
-    bool StartSerial();
+    bool OpenSerial();
     QStringList my_serialportinfo_ = {};
 
     QSerialPort *my_serialport_;
