@@ -51,6 +51,8 @@ class RepeaterWidget : public QWidget {
     bool is_request_new_widget_ = false;
     RequestNewWidget new_widget_;
 
+    int connect_mode;
+
     TCPCommandHandle *tcp_command_handle_;
 
     TCPInfoHandle *tcp_info_handler_[4];

@@ -21,6 +21,9 @@ QT_END_NAMESPACE
 class ComTool : public RepeaterWidget {
  Q_OBJECT
 
+signals:
+    void RecNewData(QByteArray data, const QDateTime &time);
+
  public:
     explicit ComTool(int row, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent = nullptr);
 
@@ -106,6 +109,7 @@ class ComTool : public RepeaterWidget {
 //    void InitConfig();          //初始化配置文件
 //    void SaveConfig();          //保存配置文件
     void GetData();            //读取串口数据
+    void ProcessData(QByteArray main_serial_recv_data);
     void SendData();            //发送串口数据
     void SaveData();            //保存串口数据
 
@@ -116,5 +120,16 @@ class ComTool : public RepeaterWidget {
     void on_btnClear_clicked();
 
 };
+
+//class ComToolSend : public QSerialPort{
+// Q_OBJECT
+//
+// signals:
+//    static void RecData(QByteArray data, const QDateTime &time);
+//
+// public:
+//    ~ComToolSend() override;
+//
+//};
 
 #endif //MAIN_COMPONENTS_ComTool_ComTool_H_

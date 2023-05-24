@@ -15,9 +15,8 @@
 
 #include "defineH.h"
 
-
 class RepeaterWidget;
-
+class ComTool;
 class ChartsNext;
 
 //窗口类型泛型
@@ -35,7 +34,7 @@ enum WindowsType {
 struct WindowsInfo {
     RepeaterWidget *widget{};
     int index = -1;
-    WindowsType type=NONE;
+    WindowsType type = NONE;
 };
 
 //设备配置信息结构体
@@ -46,6 +45,7 @@ struct DevicesInfo {
     QtMaterialTabs *tab_widget{};
     TCPCommandHandle *tcp_command_handler{};
     TCPInfoHandle *tcp_info_handler[4]{};
+    ComTool *com_tool{};
     bool has_chart = false;
     ChartsNext *charts_windows{};
     int config_step = 1;
@@ -107,11 +107,10 @@ struct DataNodeIndex {
 };
 
 /// charts中的变量信息
-struct ChartsList{
+struct ChartsList {
     QString data_name;
     QPushButton *choose_color = new QPushButton;
     QCheckBox *check_visible = new QCheckBox;
 };
-
 
 #endif //MAIN__STRUCTH_H_

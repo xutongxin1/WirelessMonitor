@@ -9,7 +9,6 @@
 #include "quihelper.h"
 #include "quihelperdata.h"
 
-
 /*
  * TODO:shell语法高亮，使用正则表达式https://c.runoob.com_/front-end/
  * TODO:以回车分隔
@@ -21,6 +20,8 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     this->config_file_path_ = "./config/Device" + QString::number(device_num) + ".ini";
 
     this->group_name_ = "Win" + QString::number(win_num);
+
+    (*(parent_info->devices_info))[device_num].com_tool = this;       // 试图理解
 
     timer_for_port_ = new QTimer(this);
     my_serialport_ = new QSerialPort(this);
@@ -159,7 +160,7 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Interactive);
 
-    //右键菜单
+    //历史发送框的右键菜单
     ui_->historyTable->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui_->historyTable, &QTableWidget::customContextMenuRequested, this, [&](const QPoint pos) {
       //获得鼠标点击的x，y坐标点
@@ -184,11 +185,6 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
       }
 
     });
-
-    connect(ui_->ClearSendDataEdit, &QPushButton::clicked, this, [&] {
-      ui_->SendDataEdit->clear();
-    });
-
 }
 
 void ComTool::UpdateComSetting() {
@@ -366,22 +362,25 @@ void ComTool::Append(int type, const QString &data, bool clear) {
 /// \param data 数据
 /// \param port 端口
 void ComTool::GetData() {
-
     if (my_serialport_->bytesAvailable() > 0)//判断等到读取的数据大小
     {
         QByteArray main_serial_recv_data = my_serialport_->readAll();
-
-        QString buffer;
-        if (ui_->ckHexReceive->isChecked()) {
-            buffer = QUIHelperData::byteArrayToHexStr(main_serial_recv_data);
-        } else {
-            buffer = QString::fromLocal8Bit(main_serial_recv_data);
-        }
-        Append(1, buffer);
-        receive_count_ = receive_count_ + main_serial_recv_data.size();
-        ui_->ReceiveCount->setText(QString("接收 : %1 字节").arg(receive_count_));
+        ProcessData(main_serial_recv_data);
+        emit(RecNewData(main_serial_recv_data, QDateTime::currentDateTime()));
     }
+}
 
+/// 处理收到的数据
+void ComTool::ProcessData(const QByteArray main_serial_recv_data) {
+    QString buffer;
+    if (ui_->ckHexReceive->isChecked()) {
+        buffer = QUIHelperData::byteArrayToHexStr(main_serial_recv_data);
+    } else {
+        buffer = QString::fromLocal8Bit(main_serial_recv_data);
+    }
+    Append(1, buffer);             // 往日志窗口添加数据
+    receive_count_ = receive_count_ + main_serial_recv_data.size();
+    ui_->ReceiveCount->setText(QString("接收 : %1 字节").arg(receive_count_));
 }
 
 ///发送发送栏里的数据

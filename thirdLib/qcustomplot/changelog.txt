@@ -523,7 +523,7 @@ Other after beta:
     - selectionChangedByUser on QCustomPlot
     - selectionChanged on QCPAbstractPlottable
     - selectionChanged on QCPAxis
-    - selectionChanged on QCPLegend and QCPAbstractLegendItem
+    - SelectionChanged on QCPLegend and QCPAbstractLegendItem
     - plottableClick, legendClick, axisClick, titleClick, plottableDoubleClick, legendDoubleClick, axisDoubleClick, titleDoubleClick on QCustomPlot
   - QCustomPlot::deselectAll (deselects everything, i.e. axes and plottables)
   - QCPAbstractPlottable::pixelsToCoords (inverse function to the already existing coordsToPixels function)

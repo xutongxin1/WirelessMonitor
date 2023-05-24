@@ -110,7 +110,13 @@ class ChartsNext : public RepeaterWidget {
 
     void VisibleChanged(int state, int location);
 
-    void selectionChanged();      // 显示选择
+    void SelectionChanged();      // 显示选择
+
+    void DeleteWidget();            // 控件删除
+
+    void GetConstructConfig() override;     // 读取配置文件
+
+    void SaveConstructConfig() override;    // 保存配置文件
 
     QTimer *paint_timer_;
 
