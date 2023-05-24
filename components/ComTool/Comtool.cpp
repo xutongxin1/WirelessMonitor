@@ -9,7 +9,6 @@
 #include "quihelper.h"
 #include "quihelperdata.h"
 
-
 /*
  * TODO:shell语法高亮，使用正则表达式https://c.runoob.com_/front-end/
  * TODO:以回车分隔
@@ -22,7 +21,7 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 
     this->group_name_ = "Win" + QString::number(win_num);
 
-    (*(parent_info->devices_info))[device_num].com_tool=this;       // 试图理解
+    (*(parent_info->devices_info))[device_num].com_tool = this;       // 试图理解
 
     timer_for_port_ = new QTimer(this);
     my_serialport_ = new QSerialPort(this);

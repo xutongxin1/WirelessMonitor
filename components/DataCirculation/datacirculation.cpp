@@ -224,7 +224,7 @@ void DataCirculation::StartCirculation() {
                 ui_->tableWidget->item(i, 0)->text(), ""
             };
         values_.emplace_back(tmp_value);
-        chart_window_->RegisterDataPoint(tmp_value.name);
+        chart_window_->RegisterDataPoint(tmp_value.name);           // 这里把数据的名称
     }
 
     chart_window_->UpdateDataPoolIndex();
@@ -262,7 +262,7 @@ void DataCirculation::StartCirculation() {
 
         connect((*(this->parent_info_->devices_info))[this->device_num_].com_tool, &ComTool::RecNewData, this,
                 [&](const QByteArray &data,
-                    const QDateTime &time) { this->DoCirculation(data); });         
+                    const QDateTime &time) { this->DoCirculation(data); });
     }
 
     // 完成绑定
@@ -325,20 +325,20 @@ void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &dat
             }
             case CIRCULATION_MODE_COMMA_SEPARATED: {
                 QStringList result = circulation_str.split(",");
-                int i=0;
-                foreach (QString circulation_data, result) {
-                    qDebug() << circulation_data;
-                    bool ok;
-                    double num = circulation_data.toDouble(&ok);
-                    if (ok) {
-                        qDebug("解析成功 %f", num);
-                        chart_window_->AddDataWithProgramTime(ui_->tableWidget->item(i, 0)->text(), num, data_time);
-                    } else {
-                        qCritical("%s 解析失败", qPrintable(circulation_str));
-                        QMessageBox::critical(this, tr("错误"), tr("解析错误"));
+                int i = 0;
+                    foreach (QString circulation_data, result) {
+                        qDebug() << circulation_data;
+                        bool ok;
+                        double num = circulation_data.toDouble(&ok);
+                        if (ok) {
+                            qDebug("解析成功 %f", num);
+                            chart_window_->AddDataWithProgramTime(ui_->tableWidget->item(i, 0)->text(), num, data_time);
+                        } else {
+                            qCritical("%s 解析失败", qPrintable(circulation_str));
+                            QMessageBox::critical(this, tr("错误"), tr("解析错误"));
+                        }
+                        i++;
                     }
-                    i++;
-                }
                 break;
             }
             case CIRCULATION_MODE_KEY_VALUE:break;

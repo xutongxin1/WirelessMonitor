@@ -8177,7 +8177,7 @@ void QCPGrid::drawSubGridLines(QCPPainter *painter) const
   This signal is emitted when the scale type changes, by calls to \ref setScaleType
 */
 
-/*! \fn void QCPAxis::selectionChanged(QCPAxis::SelectableParts selection)
+/*! \fn void QCPAxis::SelectionChanged(QCPAxis::SelectableParts selection)
   
   This signal is emitted when the selection state of this axis has changed, either by user interaction
   or by a direct call to \ref setSelectedParts.
@@ -8433,7 +8433,7 @@ void QCPAxis::setSelectableParts(const SelectableParts &selectable)
   
   This function can change the selection state of a part, independent of the \ref setSelectableParts setting.
   
-  emits the \ref selectionChanged signal when \a selected is different from the previous selection state.
+  emits the \ref SelectionChanged signal when \a selected is different from the previous selection state.
   
   \see SelectablePart, setSelectableParts, selectTest, setSelectedBasePen, setSelectedTickPen, setSelectedSubTickPen,
   setSelectedTickLabelFont, setSelectedLabelFont, setSelectedTickLabelColor, setSelectedLabelColor
@@ -11377,22 +11377,22 @@ bool QCPSelectionDecorator::registerWithPlottable(QCPAbstractPlottable *plottabl
 /* end of documentation of pure virtual functions */
 /* start of documentation of signals */
 
-/*! \fn void QCPAbstractPlottable::selectionChanged(bool selected)
+/*! \fn void QCPAbstractPlottable::SelectionChanged(bool selected)
   
   This signal is emitted when the selection state of this plottable has changed, either by user
   interaction or by a direct call to \ref setSelection. The parameter \a selected indicates whether
   there are any points selected or not.
   
-  \see selectionChanged(const QCPDataSelection &selection)
+  \see SelectionChanged(const QCPDataSelection &selection)
 */
 
-/*! \fn void QCPAbstractPlottable::selectionChanged(const QCPDataSelection &selection)
+/*! \fn void QCPAbstractPlottable::SelectionChanged(const QCPDataSelection &selection)
   
   This signal is emitted when the selection state of this plottable has changed, either by user
   interaction or by a direct call to \ref setSelection. The parameter \a selection holds the
   currently selected data ranges.
   
-  \see selectionChanged(bool selected)
+  \see SelectionChanged(bool selected)
 */
 
 /*! \fn void QCPAbstractPlottable::selectableChanged(QCP::SelectionType selectable);
@@ -11550,7 +11550,7 @@ void QCPAbstractPlottable::setValueAxis(QCPAxis *axis)
   QCP::SelectionType set via \ref setSelectable, the resulting selection will be adjusted
   accordingly (see \ref QCPDataSelection::enforceType).
   
-  emits the \ref selectionChanged signal when \a selected is different from the previous selection state.
+  emits the \ref SelectionChanged signal when \a selected is different from the previous selection state.
   
   \see setSelectable, selectTest
 */
@@ -12918,7 +12918,7 @@ void QCPItemPosition::setPixelPosition(const QPointF &pixelPosition)
 /* end documentation of pure virtual functions */
 /* start documentation of signals */
 
-/*! \fn void QCPAbstractItem::selectionChanged(bool selected)
+/*! \fn void QCPAbstractItem::SelectionChanged(bool selected)
   This signal is emitted when the selection state of this item has changed, either by user interaction
   or by a direct call to \ref setSelected.
 */
@@ -13010,7 +13010,7 @@ void QCPAbstractItem::setSelectable(bool selectable)
   
   This function can change the selection state even when \ref setSelectable was set to false.
   
-  emits the \ref selectionChanged signal when \a selected is different from the previous selection state.
+  emits the \ref SelectionChanged signal when \a selected is different from the previous selection state.
   
   \see setSelectable, selectTest
 */
@@ -13439,7 +13439,7 @@ QCP::Interaction QCPAbstractItem::selectionCategory() const
   deselectAll.
   
   In addition to this signal, selectable objects also provide individual signals, for example \ref
-  QCPAxis::selectionChanged or \ref QCPAbstractPlottable::selectionChanged. Note that those signals
+  QCPAxis::SelectionChanged or \ref QCPAbstractPlottable::SelectionChanged. Note that those signals
   are emitted even if the selection state is changed programmatically.
   
   See the documentation of \ref setInteractions for details about the selection mechanism.
@@ -13852,7 +13852,7 @@ void QCustomPlot::setAutoAddPlottableToLegend(bool on)
   need to check their selected state explicitly.
   
   If the selection state has changed by user interaction, the \ref selectionChangedByUser signal is
-  emitted. Each selectable object additionally emits an individual selectionChanged signal whenever
+  emitted. Each selectable object additionally emits an individual SelectionChanged signal whenever
   their selection state has changed, i.e. not only by user interaction.
   
   To allow multiple objects to be selected by holding the selection modifier (\ref
@@ -15074,7 +15074,7 @@ QList<QCPLegend*> QCustomPlot::selectedLegends() const
   Deselects all layerables (plottables, items, axes, legends,...) of the QCustomPlot.
   
   Since calling this function is not a user interaction, this does not emit the \ref
-  selectionChangedByUser signal. The individual selectionChanged signals are emitted though, if the
+  selectionChangedByUser signal. The individual SelectionChanged signals are emitted though, if the
   objects were previously selected.
   
   \see setInteractions, selectedPlottables, selectedItems, selectedAxes, selectedLegends
@@ -18737,7 +18737,7 @@ void QCPAxisRect::wheelEvent(QWheelEvent *event)
 
 /* start of documentation of signals */
 
-/*! \fn void QCPAbstractLegendItem::selectionChanged(bool selected)
+/*! \fn void QCPAbstractLegendItem::SelectionChanged(bool selected)
   
   This signal is emitted when the selection state of this legend item has changed, either by user
   interaction or by a direct call to \ref setSelected.
@@ -19055,7 +19055,7 @@ QSize QCPPlottableLegendItem::minimumOuterSizeHint() const
 
 /* start of documentation of signals */
 
-/*! \fn void QCPLegend::selectionChanged(QCPLegend::SelectableParts selection);
+/*! \fn void QCPLegend::SelectionChanged(QCPLegend::SelectableParts selection);
 
   This signal is emitted when the selection state of this legend has changed.
   
@@ -19246,7 +19246,7 @@ void QCPLegend::setSelectableParts(const SelectableParts &selectable)
   This function can change the selection state of a part even when \ref setSelectableParts was set to a
   value that actually excludes the part.
   
-  emits the \ref selectionChanged signal when \a selected is different from the previous selection state.
+  emits the \ref SelectionChanged signal when \a selected is different from the previous selection state.
   
   Note that it doesn't make sense to set the selected state \ref spItems here when it wasn't set
   before, because there's no way to specify which exact items to newly select. Do this by calling
@@ -19647,7 +19647,7 @@ void QCPLegend::parentPlotInitialized(QCustomPlot *parentPlot)
 
 /* start documentation of signals */
 
-/*! \fn void QCPTextElement::selectionChanged(bool selected)
+/*! \fn void QCPTextElement::SelectionChanged(bool selected)
   
   This signal is emitted when the selection state has changed to \a selected, either by user
   interaction or by a direct call to \ref setSelected.
@@ -19881,7 +19881,7 @@ void QCPTextElement::setSelectable(bool selectable)
 
 /*!
   Sets the selection state of this text element to \a selected. If the selection has changed, \ref
-  selectionChanged is emitted.
+  SelectionChanged is emitted.
   
   Note that this function can change the selection state independently of the current \ref
   setSelectable state.
@@ -20668,7 +20668,7 @@ void QCPColorScaleAxisRectPrivate::updateGradientImage()
 
 /*! \internal
 
-  This slot is connected to the selectionChanged signals of the four axes in the constructor. It
+  This slot is connected to the SelectionChanged signals of the four axes in the constructor. It
   synchronizes the selection state of the axes.
 */
 void QCPColorScaleAxisRectPrivate::axisSelectionChanged(QCPAxis::SelectableParts selectedParts)
@@ -31074,7 +31074,7 @@ QPen QCPItemBracket::mainPen() const
   This signal is emitted when the scale type changes, by calls to \ref setScaleType
 */
 
-/*! \fn void QCPPolarAxisRadial::selectionChanged(QCPPolarAxisRadial::SelectableParts selection)
+/*! \fn void QCPPolarAxisRadial::SelectionChanged(QCPPolarAxisRadial::SelectableParts selection)
   
   This signal is emitted when the selection state of this axis has changed, either by user interaction
   or by a direct call to \ref setSelectedParts.
@@ -31311,7 +31311,7 @@ void QCPPolarAxisRadial::setSelectableParts(const SelectableParts &selectable)
   
   This function can change the selection state of a part, independent of the \ref setSelectableParts setting.
   
-  emits the \ref selectionChanged signal when \a selected is different from the previous selection state.
+  emits the \ref SelectionChanged signal when \a selected is different from the previous selection state.
   
   \see SelectablePart, setSelectableParts, selectTest, setSelectedBasePen, setSelectedTickPen, setSelectedSubTickPen,
   setSelectedTickLabelFont, setSelectedLabelFont, setSelectedTickLabelColor, setSelectedLabelColor
@@ -33251,7 +33251,7 @@ void QCPPolarAxisAngular::setSelectableParts(const SelectableParts &selectable)
   
   This function can change the selection state of a part, independent of the \ref setSelectableParts setting.
   
-  emits the \ref selectionChanged signal when \a selected is different from the previous selection state.
+  emits the \ref SelectionChanged signal when \a selected is different from the previous selection state.
   
   \see SelectablePart, setSelectableParts, selectTest, setSelectedBasePen, setSelectedTickPen, setSelectedSubTickPen,
   setSelectedTickLabelFont, setSelectedLabelFont, setSelectedTickLabelColor, setSelectedLabelColor
@@ -34625,7 +34625,7 @@ void QCPPolarGraph::setSelectable(QCP::SelectionType selectable)
   QCP::SelectionType set via \ref setSelectable, the resulting selection will be adjusted
   accordingly (see \ref QCPDataSelection::enforceType).
   
-  emits the \ref selectionChanged signal when \a selected is different from the previous selection state.
+  emits the \ref SelectionChanged signal when \a selected is different from the previous selection state.
   
   \see setSelectable, selectTest
 */

@@ -95,10 +95,16 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
     connect(ui_chart_->widget, SIGNAL(mouseMove(QMouseEvent * )), this, SLOT(myMoveEvent(QMouseEvent * )));
 
     //设置legend只能选择图例
-    ui_chart_->widget->legend->setSelectableParts(QCPLegend::spItems);      //好像失效了
-    connect(ui_chart_->widget, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged()));
+    ui_chart_->widget->legend->setSelectableParts(QCPLegend::spItems);
+    connect(ui_chart_->widget, &QCustomPlot::selectionChangedByUser, this,[&] {
+        // 这个信号貌似有值
+        SelectionChanged();
+    });
     custom_plot_ = ui_chart_->widget;
+    custom_plot_->axisRect()->insetLayout()->setInsetAlignment(0,Qt::AlignTop|Qt::AlignLeft);       // 设置图例在左上，这句不能放上去，要等整张图像画出来，才能设置位置
     UpdateLine();
+
+
 
     // 图表右键菜单
     ui_chart_->widget->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -106,14 +112,14 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
 
       QMenu *menu = new QMenu(ui_chart_->widget);
 
-      QCheckBox *control = new QCheckBox("是否滚动",ui_chart_->widget);
+      QCheckBox *control = new QCheckBox("是否滚动", ui_chart_->widget);
       rolling_flag ? control->setCheckState(Qt::Checked) : control->setCheckState(Qt::Unchecked);         // 设置选择框的默认状态
       QWidgetAction *choice = new QWidgetAction(ui_chart_->widget);
       choice->setDefaultWidget(control);                                       // 在Action对象中添加控件
 
       QAction *restore = new QAction("自动", ui_chart_->widget);
-      connect(control, &QCheckBox::stateChanged, this, [&,this](int state) {
-        state==Qt::Checked ? rolling_flag = true : rolling_flag = false;        // 设置是否滚动
+      connect(control, &QCheckBox::stateChanged, this, [&, this](int state) {
+        state == Qt::Checked ? rolling_flag = true : rolling_flag = false;        // 设置是否滚动
       });
 
       connect(restore, &QAction::triggered, this, [&] {
@@ -179,8 +185,8 @@ void ChartsNext::UpdateLine() {
                 double x = data_pool_[i].data_list.last().time.program_time_;       // 获取最新的X值
                 double y = data_pool_[i].data_list.last().data;                     // 获取最新的y值
                 double y_lower = ui_chart_->widget->yAxis->range().lower;           // 获取坐标轴当前最小的y值
-                ui_chart_->widget->xAxis->setRange(x - 30, x);          // 刷新x的范围
-                ui_chart_->widget->yAxis->setRange(y_lower, y + 20);    // 刷新y的范围  这些加减都是随便设的
+                ui_chart_->widget->xAxis->setRange(x*0.75, x);          // 刷新x的范围
+                ui_chart_->widget->yAxis->setRange(y_lower, abs(y)*2);    // 刷新y的范围  这些加减都是随便设的
             }
             data_pool_[i].last_draw_index = data_pool_[i].data_list.size();
 
@@ -459,7 +465,8 @@ void ChartsNext::LoadInfo() {
         node.choose_color->setText("颜色选择");
 
         // 设置默认选择框属性
-        data_pool_[i].is_visible ? node.check_visible->setCheckState(Qt::Checked) : node.check_visible->setCheckState(Qt::Unchecked);
+        data_pool_[i].is_visible ? node.check_visible->setCheckState(Qt::Checked)
+                                 : node.check_visible->setCheckState(Qt::Unchecked);
 
         line_info_.append(node);
         disconnect(line_info_[i].choose_color, 0, 0, 0);            // 防止重复connect
@@ -486,7 +493,7 @@ void ChartsNext::LoadInfo() {
 /// 删除表格中的控件
 /// 先删除控件，再删除行，控件是动态创建的，要delete
 void ChartsNext::DeleteWidget() {
-    for (int i = 0; i< data_pool_.size(); ++i) {
+    for (int i = 0; i < data_pool_.size(); ++i) {
         ui_chart_->line_table->removeRow(0);
     }
     line_info_.clear();
@@ -532,7 +539,8 @@ void ChartsNext::VisibleChanged(int state, int location) {
     }
 }
 
-void ChartsNext::selectionChanged() {
+void ChartsNext::SelectionChanged() {
+    // 好像失效了
     // 将图形的选择与相应图例项的选择同步
     for (int i = 0; i < ui_chart_->widget->graphCount(); ++i) {
         QCPGraph *graph = ui_chart_->widget->graph(i);
@@ -575,16 +583,11 @@ void ChartsNext::SaveConstructConfig() {
     qDebug("写入Charts配置文件");
 
     for (int i = 0; i < data_pool_.size(); i++) {
-//        cfg_->beginGroup("value" + QString::number(i + 1));
         cfg_->beginGroup(group_name_);
-        /// TODO: 当用户改变变量名时，重新开启数据流并没有更改变量名。
-        /// 1. 如果保存就从控件窗口读取的话，可以直接读取修改后的值
-        /// 2. 写一个槽，当修改变量名时候触发，然后修改data_pool_里面的值
-        ///
-        cfg_->setValue("Value"+QString::number(i + 1), data_pool_.at(i).data_name);     /// 变量名
-        cfg_->setValue("Color"+QString::number(i + 1), data_pool_.at(i).line_color);      /// 颜色
-        cfg_->setValue("Visible"+QString::number(i + 1), data_pool_.at(i).is_visible);   /// 是否可见
-        cfg_->setValue("Width"+QString::number(i + 1), data_pool_.at(i).line_width);   /// 宽度
+        cfg_->setValue("Value" + QString::number(i + 1), data_pool_.at(i).data_name);     /// 变量名
+        cfg_->setValue("Color" + QString::number(i + 1), data_pool_.at(i).line_color);      /// 颜色
+        cfg_->setValue("Visible" + QString::number(i + 1), data_pool_.at(i).is_visible);   /// 是否可见
+        cfg_->setValue("Width" + QString::number(i + 1), data_pool_.at(i).line_width);   /// 宽度
         cfg_->endGroup();
     }
 
@@ -599,13 +602,11 @@ void ChartsNext::GetConstructConfig() {
 
     for (int i = 0; i < data_pool_.size(); i++) {
         cfg_->beginGroup(group_name_);
-//        cfg_->beginGroup("value" + QString::number(i + 1));
-        data_pool_[i].data_name = cfg_->value("Value"+QString::number(i + 1)).toString();           /// 变量名
-        QVariant value = cfg_->value("Color"+QString::number(i + 1));        // 读出来的是color的hex值
+        QVariant value = cfg_->value("Color" + QString::number(i + 1));        // 读出来的是color的hex值
         QColor color = value.value<QColor>();           // 这是一个QColor(ARGB 1, 1, 0, 0)
         data_pool_[i].line_color = color;                                                               /// 颜色
-        data_pool_[i].is_visible = cfg_->value("Visible"+QString::number(i + 1)).toBool();          /// 是否可见
-        data_pool_[i].line_width = cfg_->value("Width"+QString::number(i + 1)).toInt();             /// 宽度
+        data_pool_[i].is_visible = cfg_->value("Visible" + QString::number(i + 1)).toBool();          /// 是否可见
+        data_pool_[i].line_width = cfg_->value("Width" + QString::number(i + 1)).toInt();             /// 宽度
         cfg_->endGroup();
     }
 

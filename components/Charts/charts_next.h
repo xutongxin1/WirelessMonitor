@@ -110,7 +110,7 @@ class ChartsNext : public RepeaterWidget {
 
     void VisibleChanged(int state, int location);
 
-    void selectionChanged();      // 显示选择
+    void SelectionChanged();      // 显示选择
 
     void DeleteWidget();            // 控件删除
 
