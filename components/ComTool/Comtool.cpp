@@ -369,7 +369,6 @@ void ComTool::GetData() {
     {
         QByteArray main_serial_recv_data = my_serialport_->readAll();
         ProcessData(main_serial_recv_data);
-        emit(RecNewData(main_serial_recv_data, QDateTime::currentDateTime()));
     }
 }
 
@@ -381,9 +380,11 @@ void ComTool::ProcessData(const QByteArray main_serial_recv_data) {
     } else {
         buffer = QString::fromLocal8Bit(main_serial_recv_data);
     }
-    Append(1, buffer);             // 往日志窗口添加数据
+    if (buffer.length() == 0) { return; }
+    Append(1, buffer);             // 往接收窗口添加数据
     receive_count_ = receive_count_ + main_serial_recv_data.size();
     ui_->ReceiveCount->setText(QString("接收 : %1 字节").arg(receive_count_));
+    emit(RecNewData(main_serial_recv_data, QDateTime::currentDateTime()));
 }
 
 ///发送发送栏里的数据

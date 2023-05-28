@@ -319,7 +319,7 @@ void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &dat
                     chart_window_->AddDataWithProgramTime(ui_->tableWidget->item(0, 0)->text(), num, data_time);
                 } else {
                     qCritical("%s 解析失败", qPrintable(circulation_str));
-                    QMessageBox::critical(this, tr("错误"), tr("解析错误"));
+                    emit(OrderShowSnackbar(circulation_str + "解析失败"));
                 }
                 break;
             }
@@ -335,7 +335,7 @@ void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &dat
                             chart_window_->AddDataWithProgramTime(ui_->tableWidget->item(i, 0)->text(), num, data_time);
                         } else {
                             qCritical("%s 解析失败", qPrintable(circulation_str));
-                            QMessageBox::critical(this, tr("错误"), tr("解析错误"));
+                            emit(OrderShowSnackbar(circulation_str + "解析失败"));
                         }
                         i++;
                     }
