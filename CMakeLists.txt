@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(
-  Main
+  WirelessMonitor
   VERSION 0.1
   LANGUAGES CXX)
 
@@ -40,12 +40,12 @@ file(GLOB_RECURSE SOURCES ${SOURCES} "./config/*.ini")
 #endif()
 
 
-add_executable(${PROJECT_NAME} ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
+add_executable(${PROJECT_NAME} WIN32 ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
 add_subdirectory(api)
 add_subdirectory(components)
 add_subdirectory(thirdLib)
 add_library(whatever STATIC ${SOURCES})
-
+add_link_options(${PROJECT_NAME} PRIVATE -mwindows)
 target_include_directories(${PROJECT_NAME} PUBLIC ./components)
 target_include_directories(${PROJECT_NAME} PUBLIC ./config)
 

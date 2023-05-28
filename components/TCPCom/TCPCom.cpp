@@ -172,7 +172,7 @@ void TCPCom::Append(int type, const QString &data, bool clear) {
     str_data = str_data.replace("\'", "\\'");
     str_data = str_data.replace("\"", R"RX(\\")RX");
     str_data = str_data.replace("\r", "\\r");
-    str_data = str_data.replace("\n", "\\n");
+    str_data = str_data.replace("\n", "\\n\n");
 
     //不同类型不同颜色显示
     QString str_type;
@@ -194,7 +194,12 @@ void TCPCom::Append(int type, const QString &data, bool clear) {
         ui_->txtMain->setTextColor(QColor(100, 184, 255));
     }
 
-    str_data = QString("时间[%1] %2 %3").arg(TIMEMS, str_type, str_data);
+    if (str_data.at(str_data.length() - 1) != '\n') {
+        str_data = QString("时间[%1] %2 %3\n").arg(TIMEMS, str_type, str_data);
+    } else {
+        str_data = QString("时间[%1] %2 %3").arg(TIMEMS, str_type, str_data);
+    }
+
     ui_->txtMain->append(str_data);
     current_count++;
 }
