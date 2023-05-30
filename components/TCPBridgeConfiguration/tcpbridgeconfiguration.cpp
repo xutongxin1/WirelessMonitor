@@ -321,8 +321,9 @@ void TCPBridgeConfiguration::SetUart() {
           (*(parent_info_->devices_info))[device_num_].config_step = 2;
       } else if (get_command_reply_) {
           //解决收到OK后但INFO通道还没连上的时序问题
-          QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
-                                   QMessageBox::Ok);
+//          QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
+//                                   QMessageBox::Ok);
+          emit(OrderShowSnackbar("(*^▽^*)\n设置串口完成，进入串口监视界面"));
           ui_->save->setEnabled(true);
           ui_->save->setText("再次保存并应用");
           (*(parent_info_->devices_info))[device_num_].config_step = 4;
@@ -345,8 +346,9 @@ void TCPBridgeConfiguration::SetUart() {
       get_command_reply_ = true;
       if ((tcp_info_handler_[1]->is_connected_ || mode_1_ == IO_MODE_CLOSED)
           && (tcp_info_handler_[2]->is_connected_ || mode_2_ == IO_MODE_CLOSED)) {
-          QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
-                                   QMessageBox::Ok);
+//          QMessageBox::information(this, tr("(*^▽^*)"), tr("设置串口完成，进入串口监视界面"), QMessageBox::Ok,
+//                                   QMessageBox::Ok);
+
           ui_->save->setEnabled(true);
           ui_->save->setText("再次保存并应用");
           (*(parent_info_->devices_info))[device_num_].config_step = 4;

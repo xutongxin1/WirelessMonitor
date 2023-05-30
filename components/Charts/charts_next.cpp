@@ -249,25 +249,25 @@ void ChartsNext::myMoveEvent(QMouseEvent *event) {
     }
 }
 
-void ChartsNext::on_pushButton_clicked() {
-    if (checked == 0) {
-        //开启，不可以放缩和移动
-        //qDebug() << "开始画图 \r\n";
-        ui_chart_->start_stop->setText("暂停显示");
-        //timerChart->start();//每200ms重绘一次折线图
-        //ui_chart_->widget->setInteractions(QCP::iNone);
-        ui_chart_->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-        hide_flag = 1;
-        checked = 1;
-    } else {
-        //关闭，可以放缩和移动
-        ui_chart_->start_stop->setText("开始显示");
-        //timerChart->stop();
-        ui_chart_->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-        hide_flag = 0;
-        checked = 0;
-    }
-}
+//void ChartsNext::on_pushButton_clicked() {
+//    if (checked == 0) {
+//        //开启，不可以放缩和移动
+//        //qDebug() << "开始画图 \r\n";
+//        ui_chart_->start_stop->setText("暂停显示");
+//        //timerChart->start();//每200ms重绘一次折线图
+//        //ui_chart_->widget->setInteractions(QCP::iNone);
+//        ui_chart_->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+//        hide_flag = 1;
+//        checked = 1;
+//    } else {
+//        //关闭，可以放缩和移动
+//        ui_chart_->start_stop->setText("开始显示");
+//        //timerChart->stop();
+//        ui_chart_->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+//        hide_flag = 0;
+//        checked = 0;
+//    }
+//}
 
 //void ChartsNext::on_pushButton_add_clicked() {
 //
@@ -306,17 +306,17 @@ bool ChartsNext::RegisterDataPoint(const QString &point_name) {
 
 }
 
-void ChartsNext::on_pushButton_yincang_clicked() {
-//    //点击鼠标然后隐藏
-//    for (int i = 0; i < ui_chart_->widget->graphCount(); ++i) {
-//        QCPGraph *graph = ui_chart_->widget->graph(i);
-//        if (graph->selected()) {
-//            DataPairs[i].flag = 2;
-//            ui_chart_->widget->graph(i)->setVisible(false);//隐藏
-//        }
-//    }
-//    ui_chart_->widget->replot();//重绘图形
-}
+//void ChartsNext::on_pushButton_yincang_clicked() {
+////    //点击鼠标然后隐藏
+////    for (int i = 0; i < ui_chart_->widget->graphCount(); ++i) {
+////        QCPGraph *graph = ui_chart_->widget->graph(i);
+////        if (graph->selected()) {
+////            DataPairs[i].flag = 2;
+////            ui_chart_->widget->graph(i)->setVisible(false);//隐藏
+////        }
+////    }
+////    ui_chart_->widget->replot();//重绘图形
+//}
 
 /*****
  * antiRegisterData是给外界的接口作用是删除可以绘图的变量，因此不用ui界面互动。
@@ -428,10 +428,10 @@ void ChartsNext::UpdateDataPoolIndex() {
 *****/
 [[maybe_unused]] bool ChartsNext::IsDataPointRegistter(const QString &addname) {
     if (data_pool_index_.contains(addname)) {
-        qDebug() << "check: find！\r\n";
+//        qDebug() << "check: find！\r\n";
         return true;
     } else {
-        qDebug() << "check: find fail！\r\n";
+//        qDebug() << "check: find fail！\r\n";
         return false;
     }
 }

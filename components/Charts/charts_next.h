@@ -127,11 +127,11 @@ class ChartsNext : public RepeaterWidget {
     void myMoveEvent(QMouseEvent *event);
     //本例中用于修改实时数据，并调用ShowLine函数
 
- private slots:
-
-    void on_pushButton_clicked();
-
-    void on_pushButton_yincang_clicked();
+// private slots:
+//
+//    void on_pushButton_clicked();
+//
+//    void on_pushButton_yincang_clicked();
 //    void keep_monitor();
 
 
