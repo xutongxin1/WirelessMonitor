@@ -184,11 +184,16 @@ void DataCirculation::RefreshBox() {
     ui_->labelOutputMode->setVisible(tmp_bool);
 
     if (circulation_mode_ == CIRCULATION_MODE_DIRECTION) {           // 判断是否为直出模式
+        ui_->tableWidget->setRowHidden(0, false);
         for (int i = 1; i < 16; i++) {
             ui_->tableWidget->setRowHidden(i, true); // 隐藏后十五行
         }
+    } else if ((circulation_mode_ == CIRCULATION_MODE_KEY_VALUE)) {
+        for (int i = 0; i < 16; ++i) {
+            ui_->tableWidget->setRowHidden(i, true);
+        }
     } else {
-        for (int i = 1; i < 16; i++) {
+        for (int i = 0; i < 16; i++) {
             ui_->tableWidget->setRowHidden(i, false); // 显示后十五行
         }
     }
@@ -216,18 +221,20 @@ void DataCirculation::StartCirculation() {
 
     chart_window_->AntiRegisterAllDataPoint();//反注册所有数据点
     values_.clear();
-    int row;                        // 直接获取table的行数，来注册变量(改掉)
-    circulation_mode_ ? row = ui_->tableWidget->rowCount() : row = 1;
-    for (int i = 0; i < row; i++) {
-        struct value tmp_value
-            {
-                ui_->tableWidget->item(i, 0)->text(), ""
-            };
-        values_.emplace_back(tmp_value);
-        chart_window_->RegisterDataPoint(tmp_value.name);           // 这里把数据的名称
+    if (circulation_mode_ != CIRCULATION_MODE_KEY_VALUE) {
+        int row;        // 直接获取table的行数，来注册变量
+        circulation_mode_ ? row = ui_->tableWidget->rowCount() : row = 1;       // 根据模式而调整了行数，实际上获取到的还是16行。
+        for (int i = 0; i < row; i++) {
+            struct value tmp_value
+                {
+                    ui_->tableWidget->item(i, 0)->text(), ""
+                };
+            values_.emplace_back(tmp_value);            // 这里直接读取qtable里面的变量名。
+            chart_window_->RegisterDataPoint(tmp_value.name);           // 注册的只带变量名的数据点
+        }
+        chart_window_->UpdateDataPoolIndex();
     }
 
-    chart_window_->UpdateDataPoolIndex();
     chart_window_->SetProgramTime();
     chart_window_->paint_timer_->start();
 
@@ -284,7 +291,8 @@ void DataCirculation::StopCirculation() {
 
     chart_window_->SaveConstructConfig();   // 保存图像信息
 
-    chart_window_->AntiRegisterAllDataPoint();
+    chart_window_->AntiRegisterAllDataPoint();          // 反注册全部变量
+    chart_window_->UpdateDataPoolIndex();               // 关闭数据流的同时，更新data_pool_index_
 //    qDebug() << "关闭数据流过滤" << endl;
     ui_->btnStart->setText("启动数据流处理");
     ui_->btnStart->setEnabled(true);
@@ -334,14 +342,40 @@ void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &dat
                             qDebug("解析成功 %f", num);
                             chart_window_->AddDataWithProgramTime(ui_->tableWidget->item(i, 0)->text(), num, data_time);
                         } else {
-                            qCritical("%s 解析失败", qPrintable(circulation_str));
+                            qCritical("%s 解析失败", qPrintable(circulation_str));          // 可以任意格式的打印出来
                             QMessageBox::critical(this, tr("错误"), tr("解析错误"));
                         }
                         i++;
                     }
                 break;
             }
-            case CIRCULATION_MODE_KEY_VALUE:break;
+            case CIRCULATION_MODE_KEY_VALUE: {
+                QStringList
+                    result = circulation_str.split(",");            // 先把每个变量分开，在分离变量，分成"name1:value","name2:value"的形式
+                for (int i = 0; i < result.size(); ++i) {
+                    QStringList value;
+                    value = result.at(i).split(":");            // 分成"name","value"的形式
+                    bool is_contain = chart_window_->IsDataPointRegistter(value.at(0));
+                    if (!is_contain) {
+                        chart_window_->RegisterDataPoint(value.at(0));              // 注册数据点，放在这里有个问题，如果没有新的变量名进来，数据的点就不会被注册
+                        while (chart_window_->SetColor());                                              // 设置颜色
+                        chart_window_->UpdateDataPoolIndex();                                   // 更新数据池索引
+
+                    }
+
+                    bool ok;
+                    double num = value.at(1).toDouble(&ok);
+                    if (ok) {
+                        qDebug("解析成功 %f", num);
+                        chart_window_->AddDataWithProgramTime(value.at(0), num, data_time);
+                    } else {
+                        qCritical("%s 解析失败", qPrintable(circulation_str));
+                        QMessageBox::critical(this, tr("错误"), tr("解析错误"));
+                    }
+                }
+                chart_window_->LoadInfo();
+                break;
+            }
             case CIRCULATION_MODE_SCANF:break;
             case CIRCULATION_MODE_REGULARITY:break;
             case CIRCULATION_MODE_PYTHON:break;

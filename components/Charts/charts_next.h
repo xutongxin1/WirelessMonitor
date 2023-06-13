@@ -83,7 +83,9 @@ class ChartsNext : public RepeaterWidget {
     bool AntiRegisterDataPoint(const QString &point_name);
     bool AntiRegisterAllDataPoint();
 
-    [[maybe_unused]] bool IsDataPointRegistter(const QString &addname);
+    bool IsDataPointRegistter(const QString &addname);         // 检查数据点是否存在
+
+    bool SetColor();        // 检查颜色是否存在
 
     bool AddDataAuto(const QString &point_name, double data);
 

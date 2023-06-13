@@ -248,8 +248,7 @@ void ComTool::ReflashComCombo() {
 }
 
 bool ComTool::OpenSerial() {
-    if(ui_->COMCombo->currentText()=="")
-    {
+    if (ui_->COMCombo->currentText() == "") {
         emit(OrderShowSnackbar("没有有效的串口"));
         return false;
     }
@@ -293,8 +292,9 @@ void ComTool::StartTool() {
 
     } else {
         if (ui_->COMButton->isChecked()) {
-            if(!OpenSerial())
+            if (!OpenSerial()) {
                 return;
+            }
         }
 
         ui_->COMButton->setEnabled(false);
@@ -376,7 +376,7 @@ void ComTool::ProcessData(const QByteArray main_serial_recv_data) {
     if (ui_->ckHexReceive->isChecked()) {
         buffer = QUIHelperData::byteArrayToHexStr(main_serial_recv_data);
     } else {
-        buffer = QString::fromLocal8Bit(main_serial_recv_data);
+        buffer = QString::fromUtf8(main_serial_recv_data);              // 修复接收数据打印乱码问题
     }
     Append(1, buffer);             // 往日志窗口添加数据
     receive_count_ = receive_count_ + main_serial_recv_data.size();
