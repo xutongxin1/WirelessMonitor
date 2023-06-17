@@ -33,6 +33,7 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     AppData::ReadDeviceData();
 
     ui_->setupUi(this);
+    ui_->TranslateEdit->hide();
 
     receive_count_ = 0;
     send_count_ = 0;
@@ -154,6 +155,20 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
       ui_->SendDataEdit->setText(ui_->historyTable->item(row, 0)->text());
       this->SendData();
     });//双击
+
+    // 切换发送区控件
+    connect(ui_->ckHexSend, &QRadioButton::toggled, this, [&] {
+      if (ui_->ckHexSend->isChecked()) {
+          connect(ui_->SendDataEdit, &QTextEdit::textChanged, this, [&] {
+            InputProcess();
+          });
+          ui_->TranslateEdit->show();
+      } else {
+          disconnect(ui_->SendDataEdit,0,0,0);
+          ui_->TranslateEdit->hide();
+      }
+    });
+
 
     //列宽
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
@@ -528,4 +543,14 @@ void ComTool::UpdateSendHistory() {
         j++;
     }
     ui_->historyTable->setSortingEnabled(true);
+}
+
+
+/// TODO: 1. 当错误输入的时候，下方出现提示框（超出F）
+///       2. 将有的小写转换为大写
+///       3. 如果输入有0x，自动去除
+void ComTool::InputProcess() {
+    qDebug() << "Process";
+
+
 }

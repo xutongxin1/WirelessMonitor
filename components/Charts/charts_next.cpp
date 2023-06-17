@@ -499,6 +499,7 @@ void ChartsNext::LoadInfo() {
     for (int i = 0; i < data_pool_.size(); ++i) {
         // QTable添加文字，控件
         ui_chart_->line_table->setItem(i, 0, new QTableWidgetItem(data_pool_.at(i).data_name));     // 添加变量名
+        ui_chart_->line_table->item(i,0)->setTextAlignment(Qt::AlignCenter);                        // 文字居中
         ui_chart_->line_table->setCellWidget(i, 1, line_info_[i].choose_color);                         // 颜色选择控件
         ui_chart_->line_table->setCellWidget(i, 2, line_info_[i].check_visible);                        // 显示选择框
 
