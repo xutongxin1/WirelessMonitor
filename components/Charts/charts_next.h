@@ -53,6 +53,7 @@ signals:
 
 class ChartsNext : public RepeaterWidget {
  Q_OBJECT
+ protected:
 
     //friend bool AddDate(QString addname, const QVector<double> &addDate, ChartsNext *Chart);
     friend class MainWindow;
@@ -94,11 +95,11 @@ class ChartsNext : public RepeaterWidget {
                                 double data,
                                 const QDateTime &time);
 
-    bool AddDataWithDateTime(const QString &point_name, double data, QDateTime *date_time);
+    bool AddDataWithDateTime(const QString &point_name, double data, const QDateTime &date_time);
 
 //    bool updateData2(QString addname, double ChangeTime , double ChangeData);
 
-
+    bool AddDataWithDataTime(const QString &point_name, double data, int data_time);
 
     void test(const QVector<double> &addDate);
 
@@ -122,6 +123,8 @@ class ChartsNext : public RepeaterWidget {
 
     QTimer *paint_timer_;
 
+    TimeType chart_time_type_ = PROGRAM_TIME;
+
  public slots:
 
     void UpdateLine();
@@ -129,11 +132,11 @@ class ChartsNext : public RepeaterWidget {
     void myMoveEvent(QMouseEvent *event);
     //本例中用于修改实时数据，并调用ShowLine函数
 
- private slots:
-
-    void on_pushButton_clicked();
-
-    void on_pushButton_yincang_clicked();
+// private slots:
+//
+//    void on_pushButton_clicked();
+//
+//    void on_pushButton_yincang_clicked();
 //    void keep_monitor();
 
 
@@ -150,7 +153,7 @@ class ChartsNext : public RepeaterWidget {
 
     QHash<QString, DataNodeIndex> data_pool_index_;         //指针索引，加快添加数据时的速度
 
-    TimeType chart_time_type_ = PROGRAM_TIME;
+
 
     int flag;
     double timer_count = 0.0;

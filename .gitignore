@@ -102,3 +102,5 @@ cmake-build-debug-visual-studio/
 
 CMakeLists.txt.user
 
+
+cmake-build-release-visual-studio/

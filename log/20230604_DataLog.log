@@ -1,0 +1,475 @@
+2023-06-04 22:16:03 [debug]:"Downloading https://github.xutongxin.me/https://raw.githubusercontent.com/xutongxin1/XMB_WirelessMonitor_UpdateData/master/WirelessMonitor_V1.0Pre4.1.2.exe..."
+2023-06-04 22:16:04 [debug]:"0.73" %     0 MB / 1 MB
+2023-06-04 22:16:04 [debug]:"6.58" %     0 MB / 1 MB
+2023-06-04 22:16:04 [debug]:"11.57" %     0 MB / 1 MB
+2023-06-04 22:16:04 [debug]:"16.69" %     0 MB / 1 MB
+2023-06-04 22:16:04 [debug]:"22.53" %     0 MB / 1 MB
+2023-06-04 22:16:04 [debug]:"26.19" %     0 MB / 1 MB
+2023-06-04 22:16:05 [debug]:"32.03" %     0 MB / 1 MB
+2023-06-04 22:16:05 [debug]:"36.41" %     0 MB / 1 MB
+2023-06-04 22:16:05 [debug]:"41.53" %     0 MB / 1 MB
+2023-06-04 22:16:05 [debug]:"46.64" %     0 MB / 1 MB
+2023-06-04 22:16:05 [debug]:"52.49" %     0 MB / 1 MB
+2023-06-04 22:16:05 [debug]:"53.95" %     0 MB / 1 MB
+2023-06-04 22:16:05 [debug]:"60.52" %     0 MB / 1 MB
+2023-06-04 22:16:05 [debug]:"64.18" %     0 MB / 1 MB
+2023-06-04 22:16:05 [debug]:"67.83" %     0 MB / 1 MB
+2023-06-04 22:16:06 [debug]:"74.40" %     0 MB / 1 MB
+2023-06-04 22:16:06 [debug]:"76.60" %     0 MB / 1 MB
+2023-06-04 22:16:06 [debug]:"81.71" %     0 MB / 1 MB
+2023-06-04 22:16:06 [debug]:"87.55" %     0 MB / 1 MB
+2023-06-04 22:16:06 [debug]:"93.40" %     0 MB / 1 MB
+2023-06-04 22:16:06 [debug]:"99.24" %     1 MB / 1 MB
+2023-06-04 22:16:06 [debug]:"100.00" %     1 MB / 1 MB
+2023-06-04 22:16:06 [debug]:Finish
+2023-06-04 22:16:06 [debug]:"Downloaded 1121280 bytes to WirelessMonitor.exe in D:\\OneDriveFile\\bird\\OneDrive - xutongxin\\Competition\\xmbDebugTools\\QT\\TEMP"
+2023-06-04 22:16:06 [debug]:Finished
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:15 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [debug]:22:16:16 116 QStyleFactory::keys QList("windowsvista", "Windows", "Fusion")
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [debug]:读取DataCirculation配置文件
+2023-06-04 22:16:16 [debug]:注册数据点 test
+2023-06-04 22:16:16 [debug]:RegisterDataPoint:register success!
+
+2023-06-04 22:16:16 [debug]:1 
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [debug]:22:16:16 458 QStyleFactory::keys QList("windowsvista", "Windows", "Fusion")
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:16 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_checked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [warning][unknown]:Cannot open file 'D:/OneDriveFile/bird/OneDrive - xutongxin/Competition/xmbDebugTools/QT/resource/icons/toggle/svg/production/ic_radio_button_unchecked_24px.svg', because: ϵͳ�Ҳ���ָ����·���� 
+(:0, )
+
+2023-06-04 22:16:17 [debug]:读取DataCirculation配置文件
+2023-06-04 22:16:17 [debug]:注册数据点 test
+2023-06-04 22:16:17 [debug]:RegisterDataPoint:register success!
+
+2023-06-04 22:16:17 [debug]:1 
+
+2023-06-04 22:16:17 [debug]:try to switch 1 device, 1 windows
+2023-06-04 22:16:23 [debug]:try to switch 1 device, 1 windows
+2023-06-04 22:16:23 [debug]:try to switch 1 device, 1 windows

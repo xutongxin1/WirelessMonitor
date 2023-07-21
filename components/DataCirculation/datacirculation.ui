@@ -13,422 +13,474 @@
   <property name="windowTitle">
    <string>DataCirculation</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-   <item>
-    <widget class="QSplitter" name="splitter">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+  <widget class="QSplitter" name="splitter">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>9</y>
+     <width>1021</width>
+     <height>551</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <widget class="QWidget" name="verticalLayoutWidget_2">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <property name="spacing">
+      <number>0</number>
      </property>
-     <widget class="QWidget" name="verticalLayoutWidget_2">
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="spacing">
-        <number>0</number>
+     <item>
+      <layout class="QVBoxLayout" name="grpProcessMode">
+       <item>
+        <widget class="QLabel" name="labelProcessMode">
+         <property name="text">
+          <string>数据处理</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comProcessMode">
+         <item>
+          <property name="text">
+           <string>无</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>进行数据过滤</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>直接发送给外部</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="grpCirculationMode">
+       <item>
+        <widget class="QLabel" name="labelCirculationMode">
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>数据过滤模式</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comCirculationMode">
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="insertPolicy">
+          <enum>QComboBox::InsertAtCurrent</enum>
+         </property>
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+         </property>
+         <item>
+          <property name="text">
+           <string>直出模式</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>逗号分隔模式</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>键值对模式</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>JustFloat模式(兼容vofa++)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>scanf模式</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>正则表达式模式</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>外置python函数</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="grpDateFlowMode">
+       <item>
+        <widget class="QLabel" name="labelDateFlowMode">
+         <property name="text">
+          <string>过滤后的数据去向</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comDateFlowMode">
+         <item>
+          <property name="text">
+           <string>发去绘图</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>发送给外部设备</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="grpOutputMode">
+       <item>
+        <widget class="QLabel" name="labelOutputMode">
+         <property name="text">
+          <string>外部去向</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comOutputMode">
+         <item>
+          <property name="text">
+           <string>发送给外部TCP服务器</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>构建为POST数据包发送数据</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="grpTimeMode">
+       <item>
+        <widget class="QLabel" name="labelTimeMode">
+         <property name="text">
+          <string>绘图时间轴模式</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comTimeMode">
+         <item>
+          <property name="text">
+           <string>根据绘图开始时间计时</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>根据日期与时间计时</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>按数据点均匀分布计时</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="missError">
+       <property name="text">
+        <string>忽略解析错误不提示</string>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnTestFlow">
+       <property name="text">
+        <string>测试数据流</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QtMaterialRaisedButton" name="btnStart">
+       <property name="text">
+        <string>启动数据流处理</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <layout class="QVBoxLayout" name="grpProcessMode">
-         <item>
-          <widget class="QLabel" name="labelProcessMode">
-           <property name="text">
-            <string>数据处理</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comProcessMode">
-           <item>
-            <property name="text">
-             <string>无</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>进行数据过滤</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>直接发送给外部</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="grpCirculationMode">
-         <item>
-          <widget class="QLabel" name="labelCirculationMode">
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="text">
-            <string>数据过滤模式</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comCirculationMode">
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="insertPolicy">
-            <enum>QComboBox::InsertAtCurrent</enum>
-           </property>
-           <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
-           </property>
-           <item>
-            <property name="text">
-             <string>直出模式</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>逗号分隔模式</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>键值对模式</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>scanf模式</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>正则表达式模式</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>外置python函数</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="grpDateFlowMode">
-         <item>
-          <widget class="QLabel" name="labelDateFlowMode">
-           <property name="text">
-            <string>过滤后的数据去向</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comDateFlowMode">
-           <item>
-            <property name="text">
-             <string>发去绘图</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>发送给外部设备</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="grpOutputMode">
-         <item>
-          <widget class="QLabel" name="labelOutputMode">
-           <property name="text">
-            <string>外部去向</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comOutputMode">
-           <item>
-            <property name="text">
-             <string>发送给外部TCP服务器</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>构建为POST数据包发送数据</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btnTestFlow">
+        <widget class="QPushButton" name="btnSelectFile">
          <property name="text">
-          <string>测试数据流</string>
+          <string>选择文件</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QtMaterialRaisedButton" name="btnStart">
+        <widget class="QLabel" name="labelSelectFile">
          <property name="text">
-          <string>启动数据流处理</string>
+          <string>已选择：xxx.py</string>
          </property>
         </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QPushButton" name="btnSelectFile">
-           <property name="text">
-            <string>选择文件</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelSelectFile">
-           <property name="text">
-            <string>已选择：xxx.py</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </item>
       </layout>
-     </widget>
-     <widget class="QWidget" name="verticalLayoutWidget">
-      <layout class="QVBoxLayout" name="verticalLayout">
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QTableWidget" name="tableWidget">
+       <row>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>2</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>3</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>4</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>5</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>6</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>7</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>8</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>9</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>10</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>11</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>12</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>13</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>14</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>15</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>16</string>
+        </property>
+       </row>
+       <column>
+        <property name="text">
+         <string>变量命名</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>上次变量结果</string>
+        </property>
+       </column>
+       <item row="0" column="0">
+        <property name="text">
+         <string>V1</string>
+        </property>
+       </item>
+       <item row="0" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="1" column="0">
+        <property name="text">
+         <string>V2</string>
+        </property>
+       </item>
+       <item row="1" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="2" column="0">
+        <property name="text">
+         <string>V3</string>
+        </property>
+       </item>
+       <item row="3" column="0">
+        <property name="text">
+         <string>V4</string>
+        </property>
+       </item>
+       <item row="4" column="0">
+        <property name="text">
+         <string>V5</string>
+        </property>
+       </item>
+       <item row="5" column="0">
+        <property name="text">
+         <string>V6</string>
+        </property>
+       </item>
+       <item row="6" column="0">
+        <property name="text">
+         <string>V7</string>
+        </property>
+       </item>
+       <item row="7" column="0">
+        <property name="text">
+         <string>V8</string>
+        </property>
+       </item>
+       <item row="8" column="0">
+        <property name="text">
+         <string>V9</string>
+        </property>
+       </item>
+       <item row="9" column="0">
+        <property name="text">
+         <string>V10</string>
+        </property>
+       </item>
+       <item row="10" column="0">
+        <property name="text">
+         <string>V11</string>
+        </property>
+       </item>
+       <item row="11" column="0">
+        <property name="text">
+         <string>V12</string>
+        </property>
+       </item>
+       <item row="12" column="0">
+        <property name="text">
+         <string>V13</string>
+        </property>
+       </item>
+       <item row="13" column="0">
+        <property name="text">
+         <string>V14</string>
+        </property>
+       </item>
+       <item row="14" column="0">
+        <property name="text">
+         <string>V15</string>
+        </property>
+       </item>
+       <item row="15" column="0">
+        <property name="text">
+         <string>V16</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QTableWidget" name="tableWidget">
-         <row>
-          <property name="text">
-           <string>1</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>2</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>3</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>4</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>5</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>6</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>7</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>8</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>9</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>10</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>11</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>12</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>13</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>14</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>15</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>16</string>
-          </property>
-         </row>
-         <column>
-          <property name="text">
-           <string>变量命名</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>上次变量结果</string>
-          </property>
-         </column>
-         <item row="0" column="0">
-          <property name="text">
-           <string>V1</string>
-          </property>
-         </item>
-         <item row="0" column="1">
-          <property name="text">
-           <string/>
-          </property>
-         </item>
-         <item row="1" column="0">
-          <property name="text">
-           <string>V2</string>
-          </property>
-         </item>
-         <item row="1" column="1">
-          <property name="text">
-           <string/>
-          </property>
-         </item>
-         <item row="2" column="0">
-          <property name="text">
-           <string>V3</string>
-          </property>
-         </item>
-         <item row="3" column="0">
-          <property name="text">
-           <string>V4</string>
-          </property>
-         </item>
-         <item row="4" column="0">
-          <property name="text">
-           <string>V5</string>
-          </property>
-         </item>
-         <item row="5" column="0">
-          <property name="text">
-           <string>V6</string>
-          </property>
-         </item>
-         <item row="6" column="0">
-          <property name="text">
-           <string>V7</string>
-          </property>
-         </item>
-         <item row="7" column="0">
-          <property name="text">
-           <string>V8</string>
-          </property>
-         </item>
-         <item row="8" column="0">
-          <property name="text">
-           <string>V9</string>
-          </property>
-         </item>
-         <item row="9" column="0">
-          <property name="text">
-           <string>V10</string>
-          </property>
-         </item>
-         <item row="10" column="0">
-          <property name="text">
-           <string>V11</string>
-          </property>
-         </item>
-         <item row="11" column="0">
-          <property name="text">
-           <string>V12</string>
-          </property>
-         </item>
-         <item row="12" column="0">
-          <property name="text">
-           <string>V13</string>
-          </property>
-         </item>
-         <item row="13" column="0">
-          <property name="text">
-           <string>V14</string>
-          </property>
-         </item>
-         <item row="14" column="0">
-          <property name="text">
-           <string>V15</string>
-          </property>
-         </item>
-         <item row="15" column="0">
-          <property name="text">
-           <string>V16</string>
-          </property>
-         </item>
+        <widget class="QPushButton" name="btnTest">
+         <property name="text">
+          <string>测试</string>
+         </property>
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QPushButton" name="btnTest">
-           <property name="text">
-            <string>测试</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btnGenerateKey">
-           <property name="text">
-            <string>根据测试数据生成数据名</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QPushButton" name="btnGenerateKey">
+         <property name="text">
+          <string>根据测试数据生成数据名</string>
+         </property>
+        </widget>
        </item>
       </layout>
-     </widget>
-    </widget>
-   </item>
-  </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>

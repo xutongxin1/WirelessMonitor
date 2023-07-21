@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(
-  Main
+  WirelessMonitor
   VERSION 0.1
   LANGUAGES CXX)
 
@@ -26,6 +26,7 @@ find_package(Qt6 REQUIRED COMPONENTS Gui)               # QT6
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets)
 
 
+
 file(GLOB HEADER "*.h")
 file(GLOB RSOURCE "*.cpp")
 file(GLOB UI "*.ui")
@@ -39,22 +40,27 @@ file(GLOB_RECURSE SOURCES ${SOURCES} "./config/*.ini")
 #    EXECUTE_PROCESS(COMMAND cp -f ${PROJECT_SOURCE_DIR}/main/config/*.ini ${CMAKE_CURRENT_BINARY_DIR}/config/*.config)
 #endif()
 
-
-add_executable(${PROJECT_NAME} ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
+if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    add_executable(${PROJECT_NAME} WIN32 info.o ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
+else ()
+    add_executable(${PROJECT_NAME} info.o ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
+endif ()
 add_subdirectory(api)
 add_subdirectory(components)
 add_subdirectory(thirdLib)
 add_library(whatever STATIC ${SOURCES})
-
+if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    add_link_options(${PROJECT_NAME} PRIVATE -mwindows)
+endif ()
 target_include_directories(${PROJECT_NAME} PUBLIC ./components)
 target_include_directories(${PROJECT_NAME} PUBLIC ./config)
 
 
 target_link_libraries(
 
-  ${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-                          Qt${QT_VERSION_MAJOR}::Core Qt6::PrintSupport Qt6::SerialPort
-                          Qt6::Network components Qt6::Core5Compat Qt6::Gui)
+        ${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
+        Qt${QT_VERSION_MAJOR}::Core Qt6::PrintSupport Qt6::SerialPort
+        Qt6::Network components Qt6::Core5Compat Qt6::Gui)
 
 
 set_target_properties(

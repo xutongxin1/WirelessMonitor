@@ -18,6 +18,7 @@
 class RepeaterWidget;
 class ComTool;
 class ChartsNext;
+class MainWindow;
 
 //窗口类型泛型
 enum WindowsType {
@@ -54,21 +55,24 @@ struct DevicesInfo {
 
 //传递给新建窗口的结构体
 struct ToNewWidget {
+    MainWindow *main_window;
     std::vector<std::vector<WindowsInfo>> *devices_windows_info;//设备下窗口信息
     std::vector<DevicesInfo> *devices_info;//设备信息
 };
 
 ///时间格式
 enum TimeType {
-    DATA_TIME,
-    PROGRAM_TIME
+    PROGRAM_TIME = 0,//程序启动时间
+    DATE_TIME,//日期时间
+    DATA_TIME//数据排列时间
 };
 
 ///共用体,降低内存占用
 ///其实我很担心这一段会有一些奇怪的问题
 union DataTime {
-    QDateTime *date_time_{};
+    const QDateTime *date_time_{};
     double program_time_;
+    int data_time_;
     DataTime() {
 
     }

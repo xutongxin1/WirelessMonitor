@@ -200,6 +200,7 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
       }
 
     });
+    ui_->tabWidget->setCurrentIndex(0);
 }
 
 void ComTool::UpdateComSetting() {
@@ -340,6 +341,15 @@ void ComTool::Append(int type, const QString &data, bool clear) {
         current_count = 0;
     }
 
+    QString str_type;
+    if (type == 1) {
+        str_type = "接收 <<";
+        ui_->txtMain->setTextColor(QColor("dodgerblue"));
+    } else if (type == 2) {
+        str_type = "发送 >>";
+        ui_->txtMain->setTextColor(QColor("black"));
+    }
+
     //过滤回车换行符
     QString str_data = data;
     str_data = str_data.replace("\a", "\\a");
@@ -351,17 +361,10 @@ void ComTool::Append(int type, const QString &data, bool clear) {
     str_data = str_data.replace("\'", "\\'");
     str_data = str_data.replace("\"", R"RX(\\")RX");
     str_data = str_data.replace("\r", "\\r");
-    str_data = str_data.replace("\n", "\\n");
+    str_data = str_data.replace("\n", "\\n\n");
 
     //不同类型不同颜色显示
-    QString str_type;
-    if (type == 1) {
-        str_type = "接收 <<";
-        ui_->txtMain->setTextColor(QColor("dodgerblue"));
-    } else if (type == 2) {
-        str_type = "发送 >>";
-        ui_->txtMain->setTextColor(QColor("black"));
-    }
+
 
     if (str_data.at(str_data.length() - 1) != '\n') {
         str_data = QString("时间[%1] %2 %3\n").arg(TIMEMS, str_type, str_data);
@@ -381,7 +384,6 @@ void ComTool::GetData() {
     {
         QByteArray main_serial_recv_data = my_serialport_->readAll();
         ProcessData(main_serial_recv_data);
-        emit(RecNewData(main_serial_recv_data, QDateTime::currentDateTime()));
     }
 }
 
@@ -393,9 +395,11 @@ void ComTool::ProcessData(const QByteArray main_serial_recv_data) {
     } else {
         buffer = QString::fromUtf8(main_serial_recv_data);              // 修复接收数据打印乱码问题
     }
-    Append(1, buffer);             // 往日志窗口添加数据
+    if (buffer.length() == 0) { return; }
+    Append(1, buffer);             // 往接收窗口添加数据
     receive_count_ = receive_count_ + main_serial_recv_data.size();
     ui_->ReceiveCount->setText(QString("接收 : %1 字节").arg(receive_count_));
+    emit(RecNewData(main_serial_recv_data, QDateTime::currentDateTime()));
 }
 
 ///发送发送栏里的数据
