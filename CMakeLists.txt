@@ -26,6 +26,7 @@ find_package(Qt6 REQUIRED COMPONENTS Gui)               # QT6
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets)
 
 
+
 file(GLOB HEADER "*.h")
 file(GLOB RSOURCE "*.cpp")
 file(GLOB UI "*.ui")
@@ -40,9 +41,9 @@ file(GLOB_RECURSE SOURCES ${SOURCES} "./config/*.ini")
 #endif()
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-    add_executable(${PROJECT_NAME} WIN32 ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
+    add_executable(${PROJECT_NAME} WIN32 info.o ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
 else ()
-    add_executable(${PROJECT_NAME} ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
+    add_executable(${PROJECT_NAME} info.o ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
 endif ()
 add_subdirectory(api)
 add_subdirectory(components)

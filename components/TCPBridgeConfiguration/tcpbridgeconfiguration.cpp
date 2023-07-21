@@ -142,6 +142,7 @@ TCPBridgeConfiguration::TCPBridgeConfiguration(int device_num, int win_num, QSet
 
     // 应用配置
     connect(ui_->save, &QPushButton::clicked, this, [&] { this->SetUart(); });
+    connect(this, &RepeaterWidget::UseHistory, this, [&] { this->SetUart(); });
 }
 /**
  * @description: 获取配置文件
@@ -252,7 +253,7 @@ void TCPBridgeConfiguration::RefreshBox() {
  * @return {*}
  */
 void TCPBridgeConfiguration::SetUart() {
-    //TODO: 当只有一个串口打开时仍然连接两个服务器
+    //TODO: 当只有一个串口打开时仍然连接两个服务器?
     if (!tcp_command_handle_->GetConnectionState()) {
         qDebug() << "No connection found";
         return;

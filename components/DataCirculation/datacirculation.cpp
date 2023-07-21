@@ -11,6 +11,7 @@
 #include <QFile>
 #include "ComTool/Comtool.h"
 #include "ui_DataCirculation.h"
+#include "dataengineinterface.h"
 
 DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent)
     : RepeaterWidget(parent), ui_(new Ui::DataCirculation) {
@@ -56,6 +57,10 @@ DataCirculation::DataCirculation(int device_num, int win_num, QSettings *cfg, To
     });
     connect(ui_->comOutputMode, fp, this, [&](int num) {
       output_mode_ = OutputMode(num);
+      SaveConstructConfig();
+    });
+    connect(ui_->comTimeMode, fp, this, [&](int num) {
+      time_type_ = TimeType(num);
       SaveConstructConfig();
     });
 
@@ -122,6 +127,7 @@ void DataCirculation::TestCirculationMode() {
                 break;
             case CIRCULATION_MODE_COMMA_SEPARATED:break;
             case CIRCULATION_MODE_KEY_VALUE:break;
+            case CIRCULATION_MODE_JUST_FLOAT:break;
             case CIRCULATION_MODE_SCANF:break;
             case CIRCULATION_MODE_REGULARITY:break;
             case CIRCULATION_MODE_PYTHON:break;
@@ -138,6 +144,7 @@ void DataCirculation::GetConstructConfig() {
     date_flow_mode_ = DateFlowMode(cfg_->value("date_flow_mode_", date_flow_mode_).toInt());
     output_mode_ = OutputMode(cfg_->value("output_mode_", output_mode_).toInt());
     cfg_->endGroup();
+
 }
 
 /// 保存配置文件
@@ -234,6 +241,21 @@ void DataCirculation::StartCirculation() {
     /// 加载变量到charts
     chart_window_->GetConstructConfig();           // 读配置文件
     chart_window_->LoadInfo();
+    chart_window_->chart_time_type_=time_type_;
+
+    if (ui_->missError->isChecked()) {
+        disconnect(this,
+                   &RepeaterWidget::OrderShowSnackbar,
+                   nullptr,
+                   nullptr);//不再绑定弹出提示的有关事件，即不提示错误
+    }
+    else
+    {
+        connect(this,
+                &RepeaterWidget::OrderShowSnackbar,
+                parent_info_->main_window,
+                &MainWindow::ReceiveOrderShowSnackbar);//不再绑定弹出提示的有关事件，即不提示错误
+    }
 
 
     // 绑定数据进入过滤
@@ -305,6 +327,7 @@ void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &dat
         qWarning("解析数据时出错，没有找到\n符号");
         return;
     }
+    bool is_analyzed_success = true;
     for (int i = 0; i < buffer.size(); i++) {
         QString circulation_str = buffer[i];        // 将buffer每一位的数据传给circulation_str，然后进入数据解析
         if (circulation_str == "") {
@@ -316,9 +339,10 @@ void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &dat
                 double num = circulation_str.toDouble(&ok);
                 if (ok) {
                     qDebug("解析成功 %f", num);
-                    chart_window_->AddDataWithProgramTime(ui_->tableWidget->item(0, 0)->text(), num, data_time);
+                    GetData(ui_->tableWidget->item(0, 0)->text(), num, data_time);
                 } else {
                     qCritical("%s 解析失败", qPrintable(circulation_str));
+                    is_analyzed_success = false;
                     emit(OrderShowSnackbar(circulation_str + "解析失败"));
                 }
                 break;
@@ -332,9 +356,10 @@ void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &dat
                         double num = circulation_data.toDouble(&ok);
                         if (ok) {
                             qDebug("解析成功 %f", num);
-                            chart_window_->AddDataWithProgramTime(ui_->tableWidget->item(i, 0)->text(), num, data_time);
+                            GetData(ui_->tableWidget->item(i, 0)->text(), num, data_time);
                         } else {
                             qCritical("%s 解析失败", qPrintable(circulation_str));
+                            is_analyzed_success = false;
                             emit(OrderShowSnackbar(circulation_str + "解析失败"));
                         }
                         i++;
@@ -342,9 +367,168 @@ void DataCirculation::DoCirculation(const QByteArray &data, const QDateTime &dat
                 break;
             }
             case CIRCULATION_MODE_KEY_VALUE:break;
+            case CIRCULATION_MODE_JUST_FLOAT: {
+                if (circulation_str.right(4) == "\x00\x00\x80\x7f" && circulation_str.length() % 4 == 0) {
+                    JustFloat(circulation_str, data_time);
+                } else {
+                    is_analyzed_success = false;
+                    qCritical("%s 解析失败", qPrintable(circulation_str));
+                    emit(OrderShowSnackbar(circulation_str + "解析失败"));
+                }
+                break;
+            }
             case CIRCULATION_MODE_SCANF:break;
             case CIRCULATION_MODE_REGULARITY:break;
             case CIRCULATION_MODE_PYTHON:break;
         }
+
+        if (is_analyzed_success && time_type_ == DATA_TIME) {
+            data_time_now_++;
+        }
+        is_analyzed_success=true;
     }
 }
+
+void DataCirculation::JustFloat(const QString &str, const QDateTime &data_time) {
+    const char *c_str = str.toLocal8Bit().data();
+    float num;
+    for (int i = 0; i < (str.length() / 4 - 1); i++) {
+        memcpy(&num, c_str + i * 4, 4);
+        qDebug("解析成功 %f", num);
+        GetData(ui_->tableWidget->item(i, 0)->text(), num, data_time);
+    }
+}
+void DataCirculation::GetData(const QString &point_name, double data, const QDateTime &time) {
+    switch (time_type_) {
+        case DATE_TIME: {
+            chart_window_->AddDataWithDateTime(point_name, data, time);
+            break;
+        }
+        case PROGRAM_TIME: {
+            chart_window_->AddDataWithProgramTime(point_name, data, time);
+            break;
+        }
+        case DATA_TIME: {
+            //在这里面不负责处理data_time_now_的递增问题
+            chart_window_->AddDataWithDataTime(point_name, data, data_time_now_);
+            break;
+        }
+
+    }
+}
+
+
+//bool DataCirculation::ProcessingFrame(char *data, int count, QVector<float> &dd)
+//{
+//    if (count <= 0)
+//        return false;
+//
+//    if (count % 4 == 0) {
+//        // 只有数据长度是4的倍数，才是合法的浮点数组
+//        for (int i = 0; i < count - 4; i += 4) {
+//            //            double value = datas[i].trimmed().toDouble();
+//            float value;
+//            memcpy(&value, data + i, 4);
+//            dd.append(value);
+//        }
+//        return true;
+//    }
+//    return false;
+//}
+
+//// 帧结构：小端浮点数组 0x7f800000
+//void DataCirculation::ProcessingDatas(char *data, int count)
+//{
+//
+//    frame_list_.clear();
+//
+//
+//    int begin = 0, end = 0;
+//    for (int i = 3; i < count; i++) {
+//        char *data_ptr = data + i - 3;
+//        int frame_tail_data;
+//        bool frame_is_valid = false;
+//
+//        memcpy(&frame_tail_data, data_ptr, 4);
+//        if (frame_tail_data != static_cast<int>(0x7F800000))
+//            continue;
+//
+//        // 已经匹配到帧尾 0x7f800000
+//        end = i;
+//
+//        int image_size = 0;
+//        Frame frame;
+//
+//        if ((i + 4) < count) {
+//            int frame_tail_data2;
+//            memcpy(&frame_tail_data2, data + i + 1, 4);
+//            if (frame_tail_data2 == static_cast<int>(0x7F800000)) {
+//                // 匹配到2个连续的0x7f800000，这是个图片前导帧
+//                i += 4;
+//                if ((i - begin + 1) != 28) {
+//                    // 5个图片前导帧参数 + 2个帧尾，共7个整型数据，28byte
+//                    // 如果帧长度不等于28byte，说明图片前导帧格式错误
+//                    break;
+//                }
+//
+//
+//                // 获取图片信息
+//                int image_id;
+//                int image_width;
+//                int image_height;
+//                RawImage::Format image_format;
+//                memcpy(&image_id, data + i - 27, 4);
+//                memcpy(&image_size, data + i - 23, 4);
+//                memcpy(&image_width, data + i - 19, 4);
+//                memcpy(&image_height, data + i - 15, 4);
+//                memcpy(&image_format, data + i - 11, 4);
+//                // !获取图片信息
+//
+//
+//                if ((i + image_size) >= count) {
+//                    // 图片长度超过缓冲区长度，可能还没接收完，直接返回，下次再来
+//                    return;
+//                }
+//                if (image_id > (image_channels_.length() - 1)) {
+//                    // 图片id > 图片通道数量，扩充图片通道
+//                    // 在扩充图片通道之前，为过滤异常情况，保证发送了6帧大id的图片之后，再进行扩充
+//
+//                    image_count_mutation_count_++;
+//                    if (image_id < 6 || image_count_mutation_count_ >= 6) {
+//                        image_count_mutation_count_ = 0;
+//                        while (image_channels_.length() < image_id + 1) {
+//                            image_channels_.append(new RawImage());
+//                        }
+//                    }
+//                }
+//                if (image_id < image_channels_.length()) {
+//                    // 图片id合法，把图片数据放到图片通道中
+//                    image_channels_[image_id]->set((uchar*)data + i + 1, image_size,
+//                                                   image_width, image_height, image_format);
+//                }
+//
+//                // 把图片数据结尾记录为帧尾，图片前导帧+图片数据，构成了一个图片数据包
+//                end = i + image_size;
+//                i = end;
+//                frame_is_valid = true;  // 至此，可以确定这是一个合法的图片数据包
+//            } else {
+//                // 解析浮点数组，将其转换为采样数据
+//                frame_is_valid = ProcessingFrame(data + begin, (i - begin) + 1, frame.datas_);
+//            }
+//        } else {
+//            // 解析浮点数组，将其转换为采样数据
+//            frame_is_valid = ProcessingFrame(data + begin, (i - begin) + 1, frame.datas_);
+//        }
+//
+//        // 记录帧 是否合法，开始位置，结束位置，图片尺寸（如果为0，标识其不是图片数据包）
+//        frame.is_valid_ = frame_is_valid;
+//        frame.start_index_ = begin;
+//        frame.end_index_ = end;
+//        frame.image_size_ = image_size;
+//        frame_list_.append(frame);
+//        // !记录帧
+//
+//        begin = i+1;
+//
+//    }
+//}

@@ -63,6 +63,8 @@ class MainWindow : public QMainWindow {
 
     void InitConfig();
 
+    QString version_;
+
 };
 
 #endif // MAIN__MAINWINDOW_H_

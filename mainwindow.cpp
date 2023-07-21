@@ -69,7 +69,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
         });
     }
     connect(ui_->settingButton, SIGNAL(pressed()), m_drawer_, SLOT(openDrawer()));
+
     GetConstructConfig();
+    version_=config_main_ini_->value("/Device/Version").toString();
+    if(VERSION!=version_)
+    {
+        config_main_ini_->setValue("/Device/Version",VERSION);
+    }
+    this->setWindowTitle(this->windowTitle()+" "+version_);
+    this->setWindowIcon(QIcon("./config/Icon.ico"));
 
     DeviceWindowsInit();
 
@@ -108,6 +116,7 @@ MainWindow::~MainWindow() {
  * 窗口结构体初始化
  */
 void MainWindow::DeviceWindowsInit() {
+    parent_info_.main_window=this;
     parent_info_.devices_info = &devices_info_;
     parent_info_.devices_windows_info = &devices_windows_info_;
 

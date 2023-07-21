@@ -13,6 +13,7 @@
 #include <QRegularExpressionValidator>
 #include <QValidator>
 #include "ui_ChannelConfiguration.h"
+#include "QPushButtonWithMouse.h"
 
 ChannelConfiguration::ChannelConfiguration(int device_num, QSettings *main_cfg, QSettings *device_cfg,
                                            ToNewWidget *parent_info, RepeaterWidget *parent)
@@ -58,7 +59,11 @@ ChannelConfiguration::ChannelConfiguration(int device_num, QSettings *main_cfg, 
       ui_->IP->setStyleSheet("QLineEdit{border:1px solid gray border-radius:1px}");
     });
 
-    connect(ui_->Connect, &QPushButton::clicked, this, &ChannelConfiguration::OnConnect);
+    connect(ui_->Connect, &QPushButton::clicked, this, &ChannelConfiguration::OnConnect);//正常启动
+    connect(ui_->Connect, &QPushButtonWithMouse::MidClicked, this, [&] {
+      use_histroy_ = true;
+      OnConnect();
+    });//按上次连接启动
     connect(ui_->Disconnect, &QPushButton::clicked, this, [&] {
       tcp_command_handle_->disconnectFromHost();
 //      ChannelConfiguration::OnDisconnect();
@@ -68,7 +73,7 @@ ChannelConfiguration::ChannelConfiguration(int device_num, QSettings *main_cfg, 
     QRegularExpression const rx(
         R"((25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d))");
 //    auto *p_reg = new QRegExpValidator(rx, this);     QT6丢弃了
-    auto *p_reg = new QRegularExpressionValidator(rx,this);
+    auto *p_reg = new QRegularExpressionValidator(rx, this);
 
     ui_->IP->setValidator(p_reg);
 }
@@ -124,6 +129,7 @@ void ChannelConfiguration::SaveConstructConfig() {
  * @return {*}
  */
 void ChannelConfiguration::OnConnect() {
+
     if (!(ui_->IP->hasAcceptableInput())) {
         QToolTip::showText(ui_->IP->mapToGlobal(QPoint(100, 0)), "IP地址输入有误");
         // 设置LineEdit变为红色
@@ -215,7 +221,11 @@ void ChannelConfiguration::OnConnect() {
                 ui_->Disconnect->setEnabled(true);
 
                 emit(OrderExchangeWindow(device_num_, 2));//基本可以肯定这是第一个窗口
-
+                if(use_histroy_)
+                {
+                    use_histroy_=false;
+                    emit(UseHistory());
+                }
               });
       tcp_command_handle_->SetMode(ui_->FuncitonComboBox->currentIndex());
     });
@@ -265,7 +275,7 @@ void ChannelConfiguration::OnConnect() {
 // }
 
 /**
- * @description: 断开指令通道后的行为（如果从未连接上指令通道，该函数不会执行）
+ * @description: 断开指令通道后的行为（如果从未连接上指令通道，该函数不会执行?）
  * @return {*}
  */
 void ChannelConfiguration::OnDisconnect() {
@@ -273,6 +283,7 @@ void ChannelConfiguration::OnDisconnect() {
     QMessageBox::information(this, tr("提示"), tr("连接已断开"));
     qDebug("关闭了连接");
     emit(OrderExchangeWindow(device_num_, 1));
+    use_histroy_=false;
     ui_->progressBar->setValue(0);
     ui_->connectionTip->setText("");
     ui_->IP->setEnabled(true);
