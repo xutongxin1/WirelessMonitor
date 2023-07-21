@@ -75,6 +75,8 @@ signals:
 
     void SaveConstructConfig() override;
 
+    void InputProcess();
+
     QString ip_;
 
     void UpdateComSetting();

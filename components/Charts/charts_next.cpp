@@ -5,7 +5,6 @@
 #include <QPair>
 #include <QColorDialog>
 
-
 //QList方便与图例顺序对应
 
 //打开通道不能移动和放缩，默认和关闭可以
@@ -103,12 +102,14 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
 
     //设置legend只能选择图例
     ui_chart_->widget->legend->setSelectableParts(QCPLegend::spItems);
-    connect(ui_chart_->widget, &QCustomPlot::selectionChangedByUser, this,[&] {
-        // 这个信号貌似有值
-        SelectionChanged();
+    connect(ui_chart_->widget, &QCustomPlot::selectionChangedByUser, this, [&] {
+      // 这个信号貌似有值
+      SelectionChanged();
     });
     custom_plot_ = ui_chart_->widget;
-    custom_plot_->axisRect()->insetLayout()->setInsetAlignment(0,Qt::AlignTop|Qt::AlignLeft);       // 设置图例在左上，这句不能放上去，要等整张图像画出来，才能设置位置
+    custom_plot_->axisRect()->insetLayout()->setInsetAlignment(0,
+                                                               Qt::AlignTop
+                                                                   | Qt::AlignLeft);       // 设置图例在左上，这句不能放上去，要等整张图像画出来，才能设置位置
     UpdateLine();
 
 
@@ -461,7 +462,7 @@ void ChartsNext::UpdateDataPoolIndex() {
  * 检测是否注册过的接口
  * 成功找到返回1，失败0
 *****/
-[[maybe_unused]] bool ChartsNext::IsDataPointRegistter(const QString &addname) {
+bool ChartsNext::IsDataPointRegistter(const QString &addname) {
     if (data_pool_index_.contains(addname)) {
 //        qDebug() << "check: find！\r\n";
         return true;
@@ -469,6 +470,22 @@ void ChartsNext::UpdateDataPoolIndex() {
 //        qDebug() << "check: find fail！\r\n";
         return false;
     }
+}
+
+// 随机设置颜色
+bool ChartsNext::SetColor() {
+    int r = rand() % 256;
+    int g = rand() % 256;
+    int b = rand() % 256;
+    QColor data_color = QColor(r, g, b);
+    for (int i = 0; i < data_pool_.size(); ++i) {
+        if (data_color == data_pool_.at(i).line_color) {
+            return true;            // 有重复的，再次执行
+        }
+    }
+    data_pool_.last().line_color = data_color;      // 新增的应该是在最后吧
+    qDebug() << data_pool_.last().data_name << " " << data_pool_.last().line_color;
+    return false;
 }
 
 void ChartsNext::test(const QVector<double> &addDate) {
@@ -482,14 +499,12 @@ void ChartsNext::test(const QVector<double> &addDate) {
     qDebug() << temp[3] << "\r\n";
 }
 
-
 /// 加载右边的信息框
 /// 变量名可以手动改？
-
 void ChartsNext::LoadInfo() {
     ui_chart_->line_table->setRowCount(data_pool_.size());
     ui_chart_->line_table->setColumnCount(3);
-
+    line_info_.clear();         // 清空上一次的line_info_，防止重复渲染叠加
     /// 动态创建控件
     for (int i = 0; i < data_pool_.size(); i++) {
         ChartsList node;
@@ -519,6 +534,7 @@ void ChartsNext::LoadInfo() {
     for (int i = 0; i < data_pool_.size(); ++i) {
         // QTable添加文字，控件
         ui_chart_->line_table->setItem(i, 0, new QTableWidgetItem(data_pool_.at(i).data_name));     // 添加变量名
+        ui_chart_->line_table->item(i,0)->setTextAlignment(Qt::AlignCenter);                        // 文字居中
         ui_chart_->line_table->setCellWidget(i, 1, line_info_[i].choose_color);                         // 颜色选择控件
         ui_chart_->line_table->setCellWidget(i, 2, line_info_[i].check_visible);                        // 显示选择框
 
@@ -564,13 +580,12 @@ void ChartsNext::SelectColor(int i) {
 
 void ChartsNext::VisibleChanged(int state, int location) {
     if (state == Qt::Checked) {
-//        qDebug() << "changed visible \r\n";
+        data_pool_[location].is_visible = true;
         ui_chart_->widget->graph(location)->setVisible(true);     // 不需要重新渲染其实也可以改变
 
     } else if (state == Qt::Unchecked) {
         data_pool_[location].is_visible = false;
         ui_chart_->widget->graph(location)->setVisible(false);
-//        qDebug() << "changed unvisible \r\n";
     }
 }
 
@@ -607,7 +622,7 @@ bool ChartsNext::AntiRegisterAllDataPoint() {
         i = data_pool_.erase(i);
         i--;//让迭代器去指向下一个元素，这样for循环才不会出错
     }
-    custom_plot_->clearGraphs();
+    custom_plot_->clearGraphs();            // 清除图像
     return true;
 }
 

@@ -92,7 +92,7 @@ struct singaldata {
 struct DataNode {
     QString data_name;                  ///数据名称
     QColor line_color = Qt::red;        ///线条颜色
-    int line_width = 2;
+    int line_width = 3;
 //  QList<double> *double_list;
     QVector<singaldata> data_list;
     bool is_visible = true;             ///是否可见

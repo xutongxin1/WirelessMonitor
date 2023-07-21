@@ -33,6 +33,7 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     AppData::ReadDeviceData();
 
     ui_->setupUi(this);
+    ui_->TranslateEdit->hide();
 
     receive_count_ = 0;
     send_count_ = 0;
@@ -155,6 +156,20 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
       this->SendData();
     });//双击
 
+    // 切换发送区控件
+    connect(ui_->ckHexSend, &QRadioButton::toggled, this, [&] {
+      if (ui_->ckHexSend->isChecked()) {
+          connect(ui_->SendDataEdit, &QTextEdit::textChanged, this, [&] {
+            InputProcess();
+          });
+          ui_->TranslateEdit->show();
+      } else {
+          disconnect(ui_->SendDataEdit,0,0,0);
+          ui_->TranslateEdit->hide();
+      }
+    });
+
+
     //列宽
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
@@ -249,8 +264,7 @@ void ComTool::ReflashComCombo() {
 }
 
 bool ComTool::OpenSerial() {
-    if(ui_->COMCombo->currentText()=="")
-    {
+    if (ui_->COMCombo->currentText() == "") {
         emit(OrderShowSnackbar("没有有效的串口"));
         return false;
     }
@@ -294,8 +308,9 @@ void ComTool::StartTool() {
 
     } else {
         if (ui_->COMButton->isChecked()) {
-            if(!OpenSerial())
+            if (!OpenSerial()) {
                 return;
+            }
         }
 
         ui_->COMButton->setEnabled(false);
@@ -378,7 +393,7 @@ void ComTool::ProcessData(const QByteArray main_serial_recv_data) {
     if (ui_->ckHexReceive->isChecked()) {
         buffer = QUIHelperData::byteArrayToHexStr(main_serial_recv_data);
     } else {
-        buffer = QString::fromLocal8Bit(main_serial_recv_data);
+        buffer = QString::fromUtf8(main_serial_recv_data);              // 修复接收数据打印乱码问题
     }
     if (buffer.length() == 0) { return; }
     Append(1, buffer);             // 往接收窗口添加数据
@@ -532,4 +547,14 @@ void ComTool::UpdateSendHistory() {
         j++;
     }
     ui_->historyTable->setSortingEnabled(true);
+}
+
+
+/// TODO: 1. 当错误输入的时候，下方出现提示框（超出F）
+///       2. 将有的小写转换为大写
+///       3. 如果输入有0x，自动去除
+void ComTool::InputProcess() {
+    qDebug() << "Process";
+
+
 }
