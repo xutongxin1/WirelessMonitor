@@ -47,7 +47,9 @@ TCPCom::TCPCom(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_
           ui_->channelToSend->setItemData(1, -1, Qt::UserRole - 1);
           connect(tcp_info_handler_[1], &TCPInfoHandle::RecNewData, this,
                   [&](const QByteArray &data, const QString &ip, int port, const QDateTime &time) {
-                    this->GetData(data, port);
+                    if (data.length() != 0) {
+                        this->GetData(data, port);
+                    }
                   });
       } else {
           ui_->channelToSend->setItemData(1, 0, Qt::UserRole - 1);
@@ -55,7 +57,9 @@ TCPCom::TCPCom(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_
       if (tcp_info_handler_[2]->tcp_mode_ == TCPInfoHandle::TCP_INFO_MODE_BOTH) {
           connect(tcp_info_handler_[2], &TCPInfoHandle::RecNewData, this,
                   [&](const QByteArray &data, const QString &ip, int port, const QDateTime &time) {
-                    this->GetData(data, port);
+                    if (data.length() != 0) {
+                        this->GetData(data, port);
+                    }
                   });
           ui_->channelToSend->setItemData(2, -1, Qt::UserRole - 1);
       } else {
@@ -161,7 +165,7 @@ void TCPCom::Append(int type, const QString &data, bool clear) {
         return;
     }
 
-//    //过滤回车换行符
+    //过滤回车换行符
     QString str_data = data;
     str_data = str_data.replace("\a", "\\a");
     str_data = str_data.replace("\b", "\\b");
@@ -172,7 +176,7 @@ void TCPCom::Append(int type, const QString &data, bool clear) {
     str_data = str_data.replace("\'", "\\'");
     str_data = str_data.replace("\"", R"RX(\\")RX");
     str_data = str_data.replace("\r", "\\r");
-    str_data = str_data.replace("\n", "\\n");
+    str_data = str_data.replace("\n", "\\n\n");
 
     //不同类型不同颜色显示
     QString str_type;
@@ -194,7 +198,12 @@ void TCPCom::Append(int type, const QString &data, bool clear) {
         ui_->txtMain->setTextColor(QColor(100, 184, 255));
     }
 
-    str_data = QString("时间[%1] %2 %3").arg(TIMEMS, str_type, str_data);
+    if (str_data.at(str_data.length() - 1) != '\n') {
+        str_data = QString("时间[%1] %2 %3\n").arg(TIMEMS, str_type, str_data);
+    } else {
+        str_data = QString("时间[%1] %2 %3").arg(TIMEMS, str_type, str_data);
+    }
+
     ui_->txtMain->append(str_data);
     current_count++;
 }

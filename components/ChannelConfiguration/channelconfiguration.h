@@ -35,6 +35,8 @@ class ChannelConfiguration : public RepeaterWidget {
 
     bool has_give_up_ = false;
 
+    bool use_histroy_=false;
+
     QString ip_;
 //    int port_ = 0;
 //    int connect_step_ = 0;

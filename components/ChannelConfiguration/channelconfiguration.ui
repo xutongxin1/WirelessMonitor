@@ -194,7 +194,7 @@
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
      <item>
-      <widget class="QtMaterialRaisedButton" name="Connect">
+      <widget class="QPushButtonWithMouse" name="Connect">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -212,6 +212,9 @@
          <width>16777215</width>
          <height>50</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string extracomment="按中键则使用上次的配置"/>
        </property>
        <property name="text">
         <string>连接</string>
@@ -305,6 +308,11 @@ background: #1D5573 ;
    <class>QtMaterialRaisedButton</class>
    <extends>QPushButton</extends>
    <header>qtmaterialraisedbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QPushButtonWithMouse</class>
+   <extends>QPushButton</extends>
+   <header>QPushButtonWithMouse.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

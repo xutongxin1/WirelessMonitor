@@ -22,7 +22,7 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QCustomPlot" name="widget" native="true">
+     <widget class="QCustomPlotWithMouse" name="widget" native="true">
       <property name="minimumSize">
        <size>
         <width>720</width>
@@ -70,9 +70,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QCustomPlot</class>
+   <class>QCustomPlotWithMouse</class>
    <extends>QWidget</extends>
-   <header location="global">qcustomplot.h</header>
+   <header location="global">QCustomPlotWithMouse.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

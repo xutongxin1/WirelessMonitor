@@ -5,7 +5,6 @@
 #include <QPair>
 #include <QColorDialog>
 
-
 //QList方便与图例顺序对应
 
 //打开通道不能移动和放缩，默认和关闭可以
@@ -69,6 +68,13 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
 
 // Allow user to drag axis ranges with mouse, zoom with mouse wheel and select graphs by clicking:
     //chart配置               ui_chart_->widget->graph(i)->setName();
+//    ui_chart_->widget->setOpenGl(true);
+//    ui_chart_->widget->setNoAntialiasingOnDrag(true);
+    ui_chart_->widget->setNotAntialiasedElements(
+        QCP::aeAxes | QCP::aeGrid | QCP::aeSubGrid | QCP::aeLegend | QCP::aeLegendItems | QCP::aeZeroLine
+            | QCP::aeOther);
+//    ui_chart_->widget->setAntialiasedElements(QCP::aeItems);
+
     ui_chart_->widget->xAxis->setLabel("Time/秒");
     ui_chart_->widget->yAxis->setLabel("ADC");
     ui_chart_->widget->xAxis->setRange(0, 100);     // 设置默认范围
@@ -96,12 +102,14 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
 
     //设置legend只能选择图例
     ui_chart_->widget->legend->setSelectableParts(QCPLegend::spItems);
-    connect(ui_chart_->widget, &QCustomPlot::selectionChangedByUser, this,[&] {
-        // 这个信号貌似有值
-        SelectionChanged();
+    connect(ui_chart_->widget, &QCustomPlot::selectionChangedByUser, this, [&] {
+      // 这个信号貌似有值
+      SelectionChanged();
     });
     custom_plot_ = ui_chart_->widget;
-    custom_plot_->axisRect()->insetLayout()->setInsetAlignment(0,Qt::AlignTop|Qt::AlignLeft);       // 设置图例在左上，这句不能放上去，要等整张图像画出来，才能设置位置
+    custom_plot_->axisRect()->insetLayout()->setInsetAlignment(0,
+                                                               Qt::AlignTop
+                                                                   | Qt::AlignLeft);       // 设置图例在左上，这句不能放上去，要等整张图像画出来，才能设置位置
     UpdateLine();
 
 
@@ -146,6 +154,7 @@ ChartsNext::~ChartsNext() {
 // 绘制图线
 /// 触发条件为时间，所以函数一直都会运行。当关闭数据流过滤的时候，data_pool_size()=0，循环就不能执行，相当于函数不运行了。
 void ChartsNext::UpdateLine() {
+    bool has_update = false;
     for (int i = 0; i < data_pool_.size(); i++) {
         if (data_pool_.at(i).last_draw_index == -1)//首次绘制(或修改颜色后首次)
         {
@@ -153,6 +162,7 @@ void ChartsNext::UpdateLine() {
             pen.setWidth(data_pool_.at(i).line_width);//设置线宽,默认是2
             pen.setColor(data_pool_.at(i).line_color);//设置线条红色
             custom_plot_->addGraph();
+            custom_plot_->graph()->setAntialiased(true);//抗锯齿
             custom_plot_->graph(i)->setPen(pen);
             custom_plot_->graph(i)->setName(data_pool_.at(i).data_name);
             if (data_pool_.at(i).is_visible) {
@@ -163,37 +173,47 @@ void ChartsNext::UpdateLine() {
             data_pool_[i].last_draw_index = 0;
 
         }
+
         if (data_pool_.at(i).is_update) {
+            has_update = true;
             this->data_pool_[i].is_update = false;
 
             for (int j = data_pool_.at(i).last_draw_index; j < data_pool_.at(i).data_list.size(); j++) {
+                switch (chart_time_type_) {
 
-                if (chart_time_type_ == DATA_TIME) {
-                    custom_plot_->graph(i)->addData(data_pool_[i].data_list.at(j).time.date_time_->toMSecsSinceEpoch(),
-                                                    data_pool_[i].data_list.at(j).data
-                    );
-
-                } else {
-                    custom_plot_->graph(i)->addData(
-                        data_pool_[i].data_list.at(j).time.program_time_,
-                        data_pool_[i].data_list.at(j).data);
-
+                    case PROGRAM_TIME: {
+                        custom_plot_->graph(i)->addData(
+                            data_pool_[i].data_list.at(j).time.program_time_,
+                            data_pool_[i].data_list.at(j).data);
+                        break;
+                    }
+                    case DATE_TIME: {
+                        custom_plot_->graph(i)->addData(data_pool_[i].data_list.at(j).time.date_time_->toMSecsSinceEpoch(),
+                                                        data_pool_[i].data_list.at(j).data);
+                        break;
+                    }
+                    case DATA_TIME: {
+                        custom_plot_->graph(i)->addData(
+                            double(data_pool_[i].data_list.at(j).time.data_time_),
+                            data_pool_[i].data_list.at(j).data);
+                        break;
+                    }
                 }
-
             }
             if (rolling_flag) {
                 double x = data_pool_[i].data_list.last().time.program_time_;       // 获取最新的X值
                 double y = data_pool_[i].data_list.last().data;                     // 获取最新的y值
                 double y_lower = ui_chart_->widget->yAxis->range().lower;           // 获取坐标轴当前最小的y值
-                ui_chart_->widget->xAxis->setRange(x*0.75, x);          // 刷新x的范围
-                ui_chart_->widget->yAxis->setRange(y_lower, abs(y)*2);    // 刷新y的范围  这些加减都是随便设的
+                ui_chart_->widget->xAxis->setRange(x * 0.75, x);          // 刷新x的范围
+                ui_chart_->widget->yAxis->setRange(y_lower, abs(y) * 2);    // 刷新y的范围  这些加减都是随便设的
             }
             data_pool_[i].last_draw_index = data_pool_[i].data_list.size();
 
         }
     }
-
-    custom_plot_->replot(QCustomPlot::rpQueuedReplot);
+    if (has_update) {
+        custom_plot_->replot(QCustomPlot::rpQueuedReplot);
+    }
 }
 
 void ChartsNext::myMoveEvent(QMouseEvent *event) {
@@ -229,45 +249,45 @@ void ChartsNext::myMoveEvent(QMouseEvent *event) {
     strToolTip += "\n";
 
     /// 显示提示框
-    // c_flag
-    if (0) {
-        /// 这部分是选中逻辑
-        str = QString::number(line_y_val, 10, 3);
-        strToolTip += "ADC: ";
-        strToolTip += str;
-        strToolTip += "\n";
-        /// 这里这么写是有什么用吗，选中之后提示有什么作用？
-        QToolTip::showText(mapToGlobal(QPoint(out_x, out_value)), strToolTip, ui_chart_->widget);
-
-    } else {
-        /// 这部分是默认逻辑
-        str = QString::number(y_val, 10, 3);
-        strToolTip += "ADC: ";
-        strToolTip += str;
-        strToolTip += "\n";
-        QToolTip::showText(mapToGlobal(QPoint(out_x, out_y)), strToolTip, ui_chart_->widget);
-    }
+//    // c_flag
+//    if (0) {
+//        /// 这部分是选中逻辑
+//        str = QString::number(line_y_val, 10, 3);
+//        strToolTip += "ADC: ";
+//        strToolTip += str;
+//        strToolTip += "\n";
+//        /// 这里这么写是有什么用吗，选中之后提示有什么作用？
+//        QToolTip::showText(mapToGlobal(QPoint(out_x, out_value)), strToolTip, ui_chart_->widget);
+//
+//    } else {
+//        /// 这部分是默认逻辑
+//        str = QString::number(y_val, 10, 3);
+//        strToolTip += "ADC: ";
+//        strToolTip += str;
+//        strToolTip += "\n";
+//        QToolTip::showText(mapToGlobal(QPoint(out_x, out_y)), strToolTip, ui_chart_->widget);
+//    }
 }
 
-void ChartsNext::on_pushButton_clicked() {
-    if (checked == 0) {
-        //开启，不可以放缩和移动
-        //qDebug() << "开始画图 \r\n";
-        ui_chart_->start_stop->setText("暂停显示");
-        //timerChart->start();//每200ms重绘一次折线图
-        //ui_chart_->widget->setInteractions(QCP::iNone);
-        ui_chart_->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-        hide_flag = 1;
-        checked = 1;
-    } else {
-        //关闭，可以放缩和移动
-        ui_chart_->start_stop->setText("开始显示");
-        //timerChart->stop();
-        ui_chart_->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-        hide_flag = 0;
-        checked = 0;
-    }
-}
+//void ChartsNext::on_pushButton_clicked() {
+//    if (checked == 0) {
+//        //开启，不可以放缩和移动
+//        //qDebug() << "开始画图 \r\n";
+//        ui_chart_->start_stop->setText("暂停显示");
+//        //timerChart->start();//每200ms重绘一次折线图
+//        //ui_chart_->widget->setInteractions(QCP::iNone);
+//        ui_chart_->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+//        hide_flag = 1;
+//        checked = 1;
+//    } else {
+//        //关闭，可以放缩和移动
+//        ui_chart_->start_stop->setText("开始显示");
+//        //timerChart->stop();
+//        ui_chart_->widget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+//        hide_flag = 0;
+//        checked = 0;
+//    }
+//}
 
 //void ChartsNext::on_pushButton_add_clicked() {
 //
@@ -306,17 +326,17 @@ bool ChartsNext::RegisterDataPoint(const QString &point_name) {
 
 }
 
-void ChartsNext::on_pushButton_yincang_clicked() {
-//    //点击鼠标然后隐藏
-//    for (int i = 0; i < ui_chart_->widget->graphCount(); ++i) {
-//        QCPGraph *graph = ui_chart_->widget->graph(i);
-//        if (graph->selected()) {
-//            DataPairs[i].flag = 2;
-//            ui_chart_->widget->graph(i)->setVisible(false);//隐藏
-//        }
-//    }
-//    ui_chart_->widget->replot();//重绘图形
-}
+//void ChartsNext::on_pushButton_yincang_clicked() {
+////    //点击鼠标然后隐藏
+////    for (int i = 0; i < ui_chart_->widget->graphCount(); ++i) {
+////        QCPGraph *graph = ui_chart_->widget->graph(i);
+////        if (graph->selected()) {
+////            DataPairs[i].flag = 2;
+////            ui_chart_->widget->graph(i)->setVisible(false);//隐藏
+////        }
+////    }
+////    ui_chart_->widget->replot();//重绘图形
+//}
 
 /*****
  * antiRegisterData是给外界的接口作用是删除可以绘图的变量，因此不用ui界面互动。
@@ -329,7 +349,7 @@ bool ChartsNext::AntiRegisterDataPoint(const QString &point_name) {
     QList<DataNode>::iterator i;
     for (i = data_pool_.begin(); i != data_pool_.end(); ++i) {
         if (i->data_name == point_name) {
-            if (chart_time_type_ == DATA_TIME) {//释放DataTime里的对象（如果使用了DATA_TIME）
+            if (chart_time_type_ == DATE_TIME) {//释放DataTime里的对象（如果使用了DATA_TIME）
                 for (QVector<singaldata>::iterator j = i->data_list.begin(); j != i->data_list.end(); j++) {
                     delete j->time.date_time_;
                 }
@@ -353,16 +373,16 @@ bool ChartsNext::AntiRegisterDataPoint(const QString &point_name) {
  * 中介是Data_pools
  * 成功返回1，失败0
 *****/
-bool ChartsNext::AddDataAuto(const QString &point_name, double data) {
-    if (chart_time_type_ == PROGRAM_TIME) {
-        return AddDataWithProgramTime(point_name,
-                                      data,
-                                      double(QDateTime::currentMSecsSinceEpoch() / (long double) 1000
-                                                 - program_begin_time_));//上限精度
-    } else {
-        return AddDataWithDateTime(point_name, data, new QDateTime(QDateTime::currentDateTime()));
-    }
-}
+//bool ChartsNext::AddDataAuto(const QString &point_name, double data) {
+//    if (chart_time_type_ == PROGRAM_TIME) {
+//        return AddDataWithProgramTime(point_name,
+//                                      data,
+//                                      double(QDateTime::currentMSecsSinceEpoch() / (long double) 1000
+//                                                 - program_begin_time_));//上限精度
+//    } else {
+//        return AddDataWithDateTime(point_name, data, new QDateTime(QDateTime::currentDateTime()));
+//    }
+//}
 
 bool ChartsNext::AddDataWithProgramTime(const QString &point_name,
                                         double data,
@@ -394,14 +414,30 @@ bool ChartsNext::AddDataWithProgramTime(const QString &point_name, double data, 
 
 }
 
-bool ChartsNext::AddDataWithDateTime(const QString &point_name, double data, QDateTime *date_time) {
+bool ChartsNext::AddDataWithDataTime(const QString &point_name, double data, int data_time) {
     if (data_pool_index_.contains(point_name)) {
         struct singaldata tmp;
         tmp.data = data;
-        tmp.time.date_time_ = date_time;
+        tmp.time.data_time_ = data_time;
         struct DataNodeIndex index_tmp = data_pool_index_.value(point_name);
         index_tmp.data_list->append(tmp);
-        qDebug("添加数据%.02f,时间%s", data, qPrintable(date_time->toString("dd.MM.yyyy h:m:s ap")));
+        *(index_tmp.is_update) = true;
+        qDebug("添加数据%.02f,时间%d", data, data_time);
+        return true;
+    } else {
+        qDebug() << "AddDataWithDateTime: find point fail！\r\n";
+        return false;
+    }
+}
+
+bool ChartsNext::AddDataWithDateTime(const QString &point_name, double data, const QDateTime &date_time) {
+    if (data_pool_index_.contains(point_name)) {
+        struct singaldata tmp;
+        tmp.data = data;
+        tmp.time.date_time_ = &date_time;
+        struct DataNodeIndex index_tmp = data_pool_index_.value(point_name);
+        index_tmp.data_list->append(tmp);
+        qDebug("添加数据%.02f,时间%s", data, qPrintable(date_time.toString("dd.MM.yyyy h:m:s ap")));
         return true;
     } else {
         qDebug() << "AddDataWithDateTime: find point fail！\r\n";
@@ -426,14 +462,30 @@ void ChartsNext::UpdateDataPoolIndex() {
  * 检测是否注册过的接口
  * 成功找到返回1，失败0
 *****/
-[[maybe_unused]] bool ChartsNext::IsDataPointRegistter(const QString &addname) {
+bool ChartsNext::IsDataPointRegistter(const QString &addname) {
     if (data_pool_index_.contains(addname)) {
-        qDebug() << "check: find！\r\n";
+//        qDebug() << "check: find！\r\n";
         return true;
     } else {
-        qDebug() << "check: find fail！\r\n";
+//        qDebug() << "check: find fail！\r\n";
         return false;
     }
+}
+
+// 随机设置颜色
+bool ChartsNext::SetColor() {
+    int r = rand() % 256;
+    int g = rand() % 256;
+    int b = rand() % 256;
+    QColor data_color = QColor(r, g, b);
+    for (int i = 0; i < data_pool_.size(); ++i) {
+        if (data_color == data_pool_.at(i).line_color) {
+            return true;            // 有重复的，再次执行
+        }
+    }
+    data_pool_.last().line_color = data_color;      // 新增的应该是在最后吧
+    qDebug() << data_pool_.last().data_name << " " << data_pool_.last().line_color;
+    return false;
 }
 
 void ChartsNext::test(const QVector<double> &addDate) {
@@ -447,14 +499,12 @@ void ChartsNext::test(const QVector<double> &addDate) {
     qDebug() << temp[3] << "\r\n";
 }
 
-
 /// 加载右边的信息框
 /// 变量名可以手动改？
-
 void ChartsNext::LoadInfo() {
     ui_chart_->line_table->setRowCount(data_pool_.size());
     ui_chart_->line_table->setColumnCount(3);
-
+    line_info_.clear();         // 清空上一次的line_info_，防止重复渲染叠加
     /// 动态创建控件
     for (int i = 0; i < data_pool_.size(); i++) {
         ChartsList node;
@@ -484,6 +534,7 @@ void ChartsNext::LoadInfo() {
     for (int i = 0; i < data_pool_.size(); ++i) {
         // QTable添加文字，控件
         ui_chart_->line_table->setItem(i, 0, new QTableWidgetItem(data_pool_.at(i).data_name));     // 添加变量名
+        ui_chart_->line_table->item(i,0)->setTextAlignment(Qt::AlignCenter);                        // 文字居中
         ui_chart_->line_table->setCellWidget(i, 1, line_info_[i].choose_color);                         // 颜色选择控件
         ui_chart_->line_table->setCellWidget(i, 2, line_info_[i].check_visible);                        // 显示选择框
 
@@ -529,13 +580,12 @@ void ChartsNext::SelectColor(int i) {
 
 void ChartsNext::VisibleChanged(int state, int location) {
     if (state == Qt::Checked) {
-//        qDebug() << "changed visible \r\n";
+        data_pool_[location].is_visible = true;
         ui_chart_->widget->graph(location)->setVisible(true);     // 不需要重新渲染其实也可以改变
 
     } else if (state == Qt::Unchecked) {
         data_pool_[location].is_visible = false;
         ui_chart_->widget->graph(location)->setVisible(false);
-//        qDebug() << "changed unvisible \r\n";
     }
 }
 
@@ -561,7 +611,7 @@ bool ChartsNext::AntiRegisterAllDataPoint() {
     qDebug() << "反注册全部变量 ";
     for (QList<DataNode>::iterator i = data_pool_.begin(); i != data_pool_.end(); ++i) {
 
-        if (chart_time_type_ == DATA_TIME) {//释放DataTime里的对象（如果使用了DATA_TIME）
+        if (chart_time_type_ == DATE_TIME) {//释放DataTime里的对象（如果使用了DATA_TIME）
             for (QVector<singaldata>::iterator j = i->data_list.begin(); j != i->data_list.end(); ++j) {
                 delete j->time.date_time_;
             }
@@ -572,7 +622,7 @@ bool ChartsNext::AntiRegisterAllDataPoint() {
         i = data_pool_.erase(i);
         i--;//让迭代器去指向下一个元素，这样for循环才不会出错
     }
-    custom_plot_->clearGraphs();
+    custom_plot_->clearGraphs();            // 清除图像
     return true;
 }
 
@@ -611,6 +661,5 @@ void ChartsNext::GetConstructConfig() {
     }
 
     qDebug() << "getconfig success\n";
-
 }
 

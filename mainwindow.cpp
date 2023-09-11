@@ -69,7 +69,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
         });
     }
     connect(ui_->settingButton, SIGNAL(pressed()), m_drawer_, SLOT(openDrawer()));
+
     GetConstructConfig();
+    version_=config_main_ini_->value("/Device/Version").toString();
+    if(VERSION!=version_)
+    {
+        config_main_ini_->setValue("/Device/Version",VERSION);
+    }
+    this->setWindowTitle(this->windowTitle()+" "+version_);
+    this->setWindowIcon(QIcon("./config/Icon.ico"));
 
     DeviceWindowsInit();
 
@@ -108,6 +116,7 @@ MainWindow::~MainWindow() {
  * 窗口结构体初始化
  */
 void MainWindow::DeviceWindowsInit() {
+    parent_info_.main_window=this;
     parent_info_.devices_info = &devices_info_;
     parent_info_.devices_windows_info = &devices_windows_info_;
 
@@ -180,8 +189,11 @@ void MainWindow::DeviceWindowsInit() {
                     break;
                 }
                 case 52:devices_windows_info_[device_num][win_num].type = DATA_CIRCULATION;  // 结构体初始化
-                    devices_windows_info_[device_num][win_num].widget =
+
+                    tmp_widget =
                         new DataCirculation(device_num, win_num, config_device_ini_[device_num], &parent_info_);
+                    ConnectSingal(tmp_widget);
+                    devices_windows_info_[device_num][win_num].widget = tmp_widget;
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
                     devices_info_[device_num].tab_widget->addTab("数据流过滤器配置");  // 添加tab栏

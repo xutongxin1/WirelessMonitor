@@ -33,6 +33,7 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     AppData::ReadDeviceData();
 
     ui_->setupUi(this);
+    ui_->TranslateEdit->hide();
 
     receive_count_ = 0;
     send_count_ = 0;
@@ -155,6 +156,20 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
       this->SendData();
     });//双击
 
+    // 切换发送区控件
+    connect(ui_->ckHexSend, &QRadioButton::toggled, this, [&] {
+      if (ui_->ckHexSend->isChecked()) {
+          connect(ui_->SendDataEdit, &QTextEdit::textChanged, this, [&] {
+            InputProcess();
+          });
+          ui_->TranslateEdit->show();
+      } else {
+          disconnect(ui_->SendDataEdit,0,0,0);
+          ui_->TranslateEdit->hide();
+      }
+    });
+
+
     //列宽
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
@@ -185,6 +200,7 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
       }
 
     });
+    ui_->tabWidget->setCurrentIndex(0);
 }
 
 void ComTool::UpdateComSetting() {
@@ -248,8 +264,7 @@ void ComTool::ReflashComCombo() {
 }
 
 bool ComTool::OpenSerial() {
-    if(ui_->COMCombo->currentText()=="")
-    {
+    if (ui_->COMCombo->currentText() == "") {
         emit(OrderShowSnackbar("没有有效的串口"));
         return false;
     }
@@ -293,8 +308,9 @@ void ComTool::StartTool() {
 
     } else {
         if (ui_->COMButton->isChecked()) {
-            if(!OpenSerial())
+            if (!OpenSerial()) {
                 return;
+            }
         }
 
         ui_->COMButton->setEnabled(false);
@@ -325,6 +341,15 @@ void ComTool::Append(int type, const QString &data, bool clear) {
         current_count = 0;
     }
 
+    QString str_type;
+    if (type == 1) {
+        str_type = "接收 <<";
+        ui_->txtMain->setTextColor(QColor("dodgerblue"));
+    } else if (type == 2) {
+        str_type = "发送 >>";
+        ui_->txtMain->setTextColor(QColor("black"));
+    }
+
     //过滤回车换行符
     QString str_data = data;
     str_data = str_data.replace("\a", "\\a");
@@ -336,17 +361,10 @@ void ComTool::Append(int type, const QString &data, bool clear) {
     str_data = str_data.replace("\'", "\\'");
     str_data = str_data.replace("\"", R"RX(\\")RX");
     str_data = str_data.replace("\r", "\\r");
-    str_data = str_data.replace("\n", "\\n");
+    str_data = str_data.replace("\n", "\\n\n");
 
     //不同类型不同颜色显示
-    QString str_type;
-    if (type == 1) {
-        str_type = "接收 <<";
-        ui_->txtMain->setTextColor(QColor("dodgerblue"));
-    } else if (type == 2) {
-        str_type = "发送 >>";
-        ui_->txtMain->setTextColor(QColor("black"));
-    }
+
 
     if (str_data.at(str_data.length() - 1) != '\n') {
         str_data = QString("时间[%1] %2 %3\n").arg(TIMEMS, str_type, str_data);
@@ -366,7 +384,6 @@ void ComTool::GetData() {
     {
         QByteArray main_serial_recv_data = my_serialport_->readAll();
         ProcessData(main_serial_recv_data);
-        emit(RecNewData(main_serial_recv_data, QDateTime::currentDateTime()));
     }
 }
 
@@ -376,11 +393,13 @@ void ComTool::ProcessData(const QByteArray main_serial_recv_data) {
     if (ui_->ckHexReceive->isChecked()) {
         buffer = QUIHelperData::byteArrayToHexStr(main_serial_recv_data);
     } else {
-        buffer = QString::fromLocal8Bit(main_serial_recv_data);
+        buffer = QString::fromUtf8(main_serial_recv_data);              // 修复接收数据打印乱码问题
     }
-    Append(1, buffer);             // 往日志窗口添加数据
+    if (buffer.length() == 0) { return; }
+    Append(1, buffer);             // 往接收窗口添加数据
     receive_count_ = receive_count_ + main_serial_recv_data.size();
     ui_->ReceiveCount->setText(QString("接收 : %1 字节").arg(receive_count_));
+    emit(RecNewData(main_serial_recv_data, QDateTime::currentDateTime()));
 }
 
 ///发送发送栏里的数据
@@ -528,4 +547,14 @@ void ComTool::UpdateSendHistory() {
         j++;
     }
     ui_->historyTable->setSortingEnabled(true);
+}
+
+
+/// TODO: 1. 当错误输入的时候，下方出现提示框（超出F）
+///       2. 将有的小写转换为大写
+///       3. 如果输入有0x，自动去除
+void ComTool::InputProcess() {
+    qDebug() << "Process";
+
+
 }
