@@ -68,11 +68,12 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
 
 // Allow user to drag axis ranges with mouse, zoom with mouse wheel and select graphs by clicking:
     //chart配置               ui_chart_->widget->graph(i)->setName();
-//    ui_chart_->widget->setOpenGl(true);
+    ui_chart_->widget->setOpenGl(true);
+    qDebug()<<"opengle="<<ui_chart_->widget->openGl();
 //    ui_chart_->widget->setNoAntialiasingOnDrag(true);
-    ui_chart_->widget->setNotAntialiasedElements(
-        QCP::aeAxes | QCP::aeGrid | QCP::aeSubGrid | QCP::aeLegend | QCP::aeLegendItems | QCP::aeZeroLine
-            | QCP::aeOther);
+//    ui_chart_->widget->setNotAntialiasedElements(
+//        QCP::aeAxes | QCP::aeGrid | QCP::aeSubGrid | QCP::aeLegend | QCP::aeLegendItems | QCP::aeZeroLine
+//            | QCP::aeOther);
 //    ui_chart_->widget->setAntialiasedElements(QCP::aeItems);
 
     ui_chart_->widget->xAxis->setLabel("Time/秒");
