@@ -12,8 +12,8 @@ class QCustomPlotWithMouse : public QCustomPlot {
         timer = new QTimer(this);
         connect(timer, &QTimer::timeout, this, [&] {
           timer->stop();
-          this->graph()->setAntialiased(true);
-          this->replot(QCustomPlot::rpQueuedReplot);
+//          this->graph()->setAntialiased(true);
+//          this->replot(QCustomPlot::rpQueuedReplot);
         });
     };
  protected:
