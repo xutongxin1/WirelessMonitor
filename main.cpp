@@ -47,7 +47,9 @@ void LogMessageHandler(QtMsgType type, const QMessageLogContext &context, const 
     file.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream text_stream(&file);
 //    text_stream.setCodec(QTextCodec::codecForName("UTF8"));//设置编码格式
+
     text_stream << type_str << "\r\n";
+
     std::cout << type_str.toStdString().data() << std::endl;
 }
 
@@ -55,6 +57,7 @@ int main(int argc, char *argv[]) {
     qSetMessagePattern(
         "%{time_ yyyy-MM-dd hh:mm:ss} [%{type}]%{if-warning}[%{function}]%{endif}%{if-fatal}[%{function}--%{line}]%{endif}:%{message}");
     qInstallMessageHandler(LogMessageHandler);//安装日志驱动
+
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

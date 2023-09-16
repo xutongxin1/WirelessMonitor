@@ -342,6 +342,8 @@ void QUIHelperData::initAscii()
     }
 }
 
+// 这个又干了什么
+
 QString QUIHelperData::byteArrayToAsciiStr(const QByteArray &data)
 {
     //先初始化字符表
@@ -366,6 +368,7 @@ QString QUIHelperData::byteArrayToAsciiStr(const QByteArray &data)
     return temp.trimmed();
 }
 
+// 这个写了什么
 QByteArray QUIHelperData::asciiStrToByteArray(const QString &data)
 {
     //先初始化字符表

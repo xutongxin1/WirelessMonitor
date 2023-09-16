@@ -380,7 +380,8 @@ void ComTool::Append(int type, const QString &data, bool clear) {
 /// \param data 数据
 /// \param port 端口
 void ComTool::GetData() {
-    if (my_serialport_->bytesAvailable() > 0)//判断等到读取的数据大小
+
+    if (my_serialport_->bytesAvailable() > 0)       //判断等到读取的数据大小
     {
         QByteArray main_serial_recv_data = my_serialport_->readAll();
         ProcessData(main_serial_recv_data);

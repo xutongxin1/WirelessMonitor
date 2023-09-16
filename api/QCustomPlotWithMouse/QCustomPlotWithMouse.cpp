@@ -4,14 +4,18 @@
 
 #include "QCustomPlotWithMouse.h"
 void QCustomPlotWithMouse::wheelEvent(QWheelEvent *event) {
-//    this->graph()->setAntialiased(false);//关闭抗锯齿
+    if(this->graph()) {
+        this->graph()->setAntialiased(false);//关闭抗锯齿
+    }
 //    this->replot(QCustomPlot::rpQueuedReplot);
     QCustomPlot::wheelEvent(event);
 
     timer->start(500);
 }
 void QCustomPlotWithMouse::mousePressEvent(QMouseEvent *event) {
-//    this->graph()->setAntialiased(false);//关闭抗锯齿
+    if(this->graph()){
+        this->graph()->setAntialiased(false);//关闭抗锯齿
+    }
 //    this->replot(QCustomPlot::rpQueuedReplot);
     timer->stop();
     QCustomPlot::mousePressEvent(event);

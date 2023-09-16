@@ -113,8 +113,6 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
                                                                    | Qt::AlignLeft);       // 设置图例在左上，这句不能放上去，要等整张图像画出来，才能设置位置
     UpdateLine();
 
-
-
     // 图表右键菜单
     ui_chart_->widget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui_chart_->widget, &QWidget::customContextMenuRequested, this, [&](const QPoint pos) {
@@ -174,7 +172,7 @@ void ChartsNext::UpdateLine() {
             data_pool_[i].last_draw_index = 0;
 
         }
-
+        // 应该对大概出问题了，超过1000个点卡住了
         if (data_pool_.at(i).is_update) {
             has_update = true;
             this->data_pool_[i].is_update = false;
@@ -201,6 +199,7 @@ void ChartsNext::UpdateLine() {
                     }
                 }
             }
+            // 改变坐标轴
             if (rolling_flag) {
                 double x = data_pool_[i].data_list.last().time.program_time_;       // 获取最新的X值
                 double y = data_pool_[i].data_list.last().data;                     // 获取最新的y值
