@@ -22,10 +22,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_PROJECT_VERSION 1.0)
 #set(CMAKE_PREFIX_PATH "C:/Qt/6.2.4/msvc2019_64/")
 
-find_package(QT NAMES Qt6 REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL)
+find_package(QT NAMES Qt6 REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent)
 find_package(Qt6 REQUIRED COMPONENTS Core5Compat)       # QT6
 find_package(Qt6 REQUIRED COMPONENTS Gui)               # QT6
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent)
 
 
 
@@ -62,7 +62,7 @@ target_link_libraries(
 
         ${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::Core Qt6::PrintSupport Qt6::SerialPort
-        Qt6::Network components Qt6::Core5Compat Qt6::Gui Qt6::OpenGL "${CMAKE_CURRENT_SOURCE_DIR}/api/OpenGL32.Lib")
+        Qt6::Network components Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent "${CMAKE_CURRENT_SOURCE_DIR}/api/OpenGL32.Lib")
 
 
 set_target_properties(
