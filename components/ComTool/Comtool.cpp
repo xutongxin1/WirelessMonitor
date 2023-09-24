@@ -237,11 +237,13 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 //      qDebug() << (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum());
     });
 
+    //行数限制逻辑
     connect(timer_line_max_, &QTimer::timeout, this, [&] {
+//      qDebug() << ui_->txtMain->document()->lineCount();
       ui_->txtMain->document()->setMaximumBlockCount(10000);
       ui_->txtMain->document()->setMaximumBlockCount(0);
 
-      qDebug() << ui_->txtMain->document()->lineCount();
+
     });
 
 //    connect(this, &ComTool::UpdateCntTimer, this, &ComTool::TimerRefreshCntConncet);//绑定计数器界面刷新程序
@@ -394,15 +396,10 @@ void ComTool::ToolSwitch() {
 /// \param type 数据类型
 /// \param data 数据
 /// \param clear 是否清空
-void ComTool::Append(char type, const QString &data, bool clear) {
+void ComTool::Append(char type, const QString &data) {
 //    static int current_count = 0;
 //    static int max_count = 81920;
 
-    if (clear) {
-        ui_->txtMain->clear();
-//        current_count = 0;
-        return;
-    }
 
 //    if (current_count >= max_count) {
 //        ui_->txtMain->clear();
@@ -469,7 +466,7 @@ void ComTool::GetData() {
     {
         QByteArray main_serial_recv_data = my_serialport_->readAll();
 //        QtConcurrent::run(this, &ComTool::ProcessData, main_serial_recv_data);//未知原因无法运行
-        QtConcurrent::run([&, main_serial_recv_data] {
+        (void) QtConcurrent::run([&, main_serial_recv_data] {
           ProcessData(main_serial_recv_data);
         });
 
@@ -532,7 +529,7 @@ void ComTool::SendData() {
     Append(2, data);
     my_serialport_->write(buffer);
 
-    send_count_ = send_count_ + buffer.size();
+    send_count_ = send_count_ + (int) buffer.size();
 
 //    ui_->SendCount->setText(QString("发送 : %1 字节").arg(send_count_));
 }
@@ -557,7 +554,13 @@ void ComTool::SaveData() {
 }
 
 void ComTool::on_btnClear_clicked() {
-    Append(0, "", true);
+    ui_->txtMain->clear();
+    send_count_=receive_count_=0;
+    send_cnt_str_="0";
+    rec_cnt_str_="0";
+    TimerRefreshCntConncet();
+    ui_->rec_cnt->setText(rec_cnt_str_);
+    ui_->send_cnt->setText(send_cnt_str_);
 }
 
 void ComTool::GetConstructConfig() {

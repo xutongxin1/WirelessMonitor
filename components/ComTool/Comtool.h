@@ -115,7 +115,7 @@ signals:
     void SendData();            //发送串口数据
     void SaveData();            //保存串口数据
 
-    void Append(char type, const QString &data, bool clear = false);
+    void Append(char type, const QString &data);
 
     QString recieve_tmp_pool_ = "";
 
