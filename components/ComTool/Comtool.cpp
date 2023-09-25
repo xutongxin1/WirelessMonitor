@@ -373,12 +373,15 @@ bool ComTool::OpenSerial() {
 
 ///启动串口/tcp工具
 void ComTool::ToolSwitch() {
-    qDebug() << (ui_->txtMain->document()->lineCount());
+//    qDebug() << (ui_->txtMain->document()->lineCount());
+
+    //串口关闭行为
     if (ui_->StartTool->text() == "停止") {
         if (ui_->COMButton->isChecked()) {
             timer_refresh_cnt_->stop();
             timer_line_max_->stop();
             timer_for_highlight_->stop();
+            highlighter_rec_->is_work_ = true;
 
             my_serialport_->close();
 
@@ -391,7 +394,8 @@ void ComTool::ToolSwitch() {
         is_start_ = false;
         ui_->StartTool->setStyleSheet("background-color: rgba(170, 255, 0, 125);");
 
-    } else {
+    } else //串口打开行为
+    {
         if (ui_->COMButton->isChecked()) {
             if (!OpenSerial()) {
                 return;
