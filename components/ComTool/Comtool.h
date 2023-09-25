@@ -69,11 +69,12 @@ signals:
     int receive_count_=0;           //接收数据计数
     QString send_cnt_str_;
     QString rec_cnt_str_;
-    bool is_show_;                //是否显示数据
+
 
     QTimer *timer_refresh_cnt_;
     QTimer *timer_line_max_;
     QTimer *timer_for_port_;
+    QTimer *timer_for_highlight_;
 
     void GetConstructConfig() override;
 
@@ -95,8 +96,8 @@ signals:
     void ToolSwitch();
     void ChangeMode();
 
-    Highlighter *highlighter1;
-    Highlighter *highlighter2;
+    Highlighter *highlighter_send_;
+    Highlighter *highlighter_rec_;
 
     bool is_start_ = false;
 
@@ -118,8 +119,10 @@ signals:
     void Append(char type, const QString &data);
 
     QString recieve_tmp_pool_ = "";
-
+    void TimerForHightLight();
     void TimerRefreshCntConncet();
+    int last_line_cnt_ = 0;
+
  private slots:
 
 //    void InitConfig();          //初始化配置文件

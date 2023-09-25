@@ -22,11 +22,12 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 
     this->group_name_ = "Win" + QString::number(win_num);
 
-    (*(parent_info->devices_info))[device_num].com_tool = this;       // 试图理解
+    (*(parent_info->devices_info))[device_num].com_tool = this;
 
     timer_refresh_cnt_ = new QTimer(this);
     timer_for_port_ = new QTimer(this);
     timer_line_max_ = new QTimer(this);
+    timer_for_highlight_ = new QTimer(this);
 
     my_serialport_ = new QSerialPort(this);
 
@@ -140,8 +141,8 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     connect(ui_->TCPServerButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
 
     //高亮转义字符
-//    highlighter1 = new Highlighter(ui_->SendDataEdit->document());
-//    highlighter2 = new Highlighter(ui_->txtMain->document());
+    highlighter_send_ = new Highlighter(ui_->SendDataEdit->document());
+    highlighter_rec_ = new Highlighter(ui_->txtMain->document());
 
     //表格自动拉宽
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -213,6 +214,8 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 
     TimerRefreshCntConncet();//绑定计数器刷新函数
 
+
+    //刷新输出区行为
     connect(this, &ComTool::AddText, this, [&](const QString &text, const char type) {
 //      if (type == 1) {
 //          ui_->txtMain->setTextColor(QColor("dodgerblue"));
@@ -243,10 +246,20 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
       ui_->txtMain->document()->setMaximumBlockCount(10000);
       ui_->txtMain->document()->setMaximumBlockCount(0);
 
-
     });
-
+    connect(timer_line_max_, &QTimer::timeout, this, &ComTool::TimerForHightLight);
 //    connect(this, &ComTool::UpdateCntTimer, this, &ComTool::TimerRefreshCntConncet);//绑定计数器界面刷新程序
+}
+void ComTool::TimerForHightLight() {
+    int tmp = ui_->txtMain->document()->lineCount();
+    if (tmp - last_line_cnt_ > 1000 || tmp == 10000 ) {
+        timer_for_highlight_->start(5000);
+        highlighter_rec_->is_work_ = false;
+    } else {
+        timer_for_highlight_->start(1000);
+        highlighter_rec_->is_work_ = true;
+    }
+    last_line_cnt_ = tmp;
 }
 
 void ComTool::TimerRefreshCntConncet() {
@@ -345,6 +358,7 @@ bool ComTool::OpenSerial() {
     if (my_serialport_->open(QIODevice::ReadWrite)) {
         timer_refresh_cnt_->start(200);
         timer_line_max_->start(10000);
+        timer_for_highlight_->start(1000);
         ui_->txtMain->document()->setMaximumBlockCount(10000);
         ui_->txtMain->document()->setMaximumBlockCount(0);
 
@@ -364,6 +378,7 @@ void ComTool::ToolSwitch() {
         if (ui_->COMButton->isChecked()) {
             timer_refresh_cnt_->stop();
             timer_line_max_->stop();
+            timer_for_highlight_->stop();
 
             my_serialport_->close();
 
