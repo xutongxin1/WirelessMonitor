@@ -4,6 +4,7 @@
 
 // You may need to build the project (run Qt uic code generator) to get "ui_ComTool.h" resolved
 
+#include <QtConcurrent/qtconcurrentrun.h>
 #include "Comtool.h"
 #include "ui_comtool.h"
 #include "quihelper.h"
@@ -21,9 +22,13 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 
     this->group_name_ = "Win" + QString::number(win_num);
 
-    (*(parent_info->devices_info))[device_num].com_tool = this;       // 试图理解
+    (*(parent_info->devices_info))[device_num].com_tool = this;
 
+    timer_refresh_cnt_ = new QTimer(this);
     timer_for_port_ = new QTimer(this);
+    timer_line_max_ = new QTimer(this);
+    timer_for_highlight_ = new QTimer(this);
+
     my_serialport_ = new QSerialPort(this);
 
     QuiHelper::InitAll();
@@ -126,7 +131,8 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     timer_for_port_->start(500);
 
     connect(timer_for_port_, &QTimer::timeout, this, &ComTool::ReflashComCombo);
-    connect(ui_->StartTool, &QPushButton::clicked, this, &ComTool::StartTool);
+//    ui_->COMCombo->addItem("COM39");
+    connect(ui_->StartTool, &QPushButton::clicked, this, &ComTool::ToolSwitch);
 
     connect(my_serialport_, &QSerialPort::readyRead, this, &ComTool::GetData);
 
@@ -135,8 +141,8 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     connect(ui_->TCPServerButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
 
     //高亮转义字符
-    highlighter1 = new Highlighter(ui_->SendDataEdit->document());
-    highlighter2 = new Highlighter(ui_->txtMain->document());
+    highlighter_send_ = new Highlighter(ui_->SendDataEdit->document());
+    highlighter_rec_ = new Highlighter(ui_->txtMain->document());
 
     //表格自动拉宽
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -164,7 +170,7 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
           });
           ui_->TranslateEdit->show();
       } else {
-          disconnect(ui_->SendDataEdit,0,0,0);
+          disconnect(ui_->SendDataEdit, nullptr, nullptr, nullptr);
           ui_->TranslateEdit->hide();
       }
     });
@@ -201,8 +207,77 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 
     });
     ui_->tabWidget->setCurrentIndex(0);
+
+    //预设上下分割比例
+    ui_->splitter->setStretchFactor(0, 3);
+    ui_->splitter->setStretchFactor(1, 1);
+
+    TimerRefreshCntConncet();//绑定计数器刷新函数
+
+
+    //刷新输出区行为
+    connect(this, &ComTool::AddText, this, [&](const QString &text, const char type) {
+//      if (type == 1) {
+//          ui_->txtMain->setTextColor(QColor("dodgerblue"));
+//      } else if (type == 2) {
+//          ui_->txtMain->setTextColor(QColor("black"));
+//      }
+      if (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum()) {
+          if (!recieve_tmp_pool_.isEmpty()) {
+              ui_->txtMain->append(recieve_tmp_pool_);//加上一点优化逻辑更好
+              recieve_tmp_pool_.clear();
+          }
+          ui_->txtMain->append(text);
+
+      } else {
+          recieve_tmp_pool_.append(text);
+//            ui_->txtMain->append(text);
+//            ui_->txtMain->verticalScrollBar()->setSliderPosition(ui_->txtMain->verticalScrollBar()->maximum());
+      }
+
+
+
+//      qDebug() << (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum());
+    });
+
+    //行数限制逻辑
+    connect(timer_line_max_, &QTimer::timeout, this, [&] {
+//      qDebug() << ui_->txtMain->document()->lineCount();
+      ui_->txtMain->document()->setMaximumBlockCount(10000);
+      ui_->txtMain->document()->setMaximumBlockCount(0);
+
+    });
+    connect(timer_line_max_, &QTimer::timeout, this, &ComTool::TimerForHightLight);
+//    connect(this, &ComTool::UpdateCntTimer, this, &ComTool::TimerRefreshCntConncet);//绑定计数器界面刷新程序
+}
+void ComTool::TimerForHightLight() {
+    int tmp = ui_->txtMain->document()->lineCount();
+    if (tmp - last_line_cnt_ > 1000 || tmp == 10000 ) {
+        timer_for_highlight_->start(5000);
+        highlighter_rec_->is_work_ = false;
+    } else {
+        timer_for_highlight_->start(1000);
+        highlighter_rec_->is_work_ = true;
+    }
+    last_line_cnt_ = tmp;
 }
 
+void ComTool::TimerRefreshCntConncet() {
+    disconnect(timer_refresh_cnt_, &QTimer::timeout, nullptr, nullptr);
+
+    connect(timer_refresh_cnt_, &QTimer::timeout, this, [&] {
+      ui_->rec_cnt->setText(QString("%1").arg(receive_count_));
+      ui_->send_cnt->setText(QString("%1").arg(send_count_));
+      if (receive_count_ > 10000 || send_count_ > 10000) {
+          disconnect(timer_refresh_cnt_, &QTimer::timeout, nullptr, nullptr);
+          connect(timer_refresh_cnt_, &QTimer::timeout, this, [&] {
+            ui_->rec_cnt->setText(rec_cnt_str_);
+            ui_->send_cnt->setText(send_cnt_str_);
+          });
+      }
+    });
+
+}
 void ComTool::UpdateComSetting() {
     if (my_serialport_->isOpen()) {
 
@@ -281,6 +356,12 @@ bool ComTool::OpenSerial() {
     my_serialport_->setFlowControl(QSerialPort::NoFlowControl);//不使用流控制
     my_serialport_->setReadBufferSize(500);
     if (my_serialport_->open(QIODevice::ReadWrite)) {
+        timer_refresh_cnt_->start(200);
+        timer_line_max_->start(10000);
+        timer_for_highlight_->start(1000);
+        ui_->txtMain->document()->setMaximumBlockCount(10000);
+        ui_->txtMain->document()->setMaximumBlockCount(0);
+
         return true;
     } else {
         qDebug() << my_serialport_->error();
@@ -291,9 +372,13 @@ bool ComTool::OpenSerial() {
 }
 
 ///启动串口/tcp工具
-void ComTool::StartTool() {
+void ComTool::ToolSwitch() {
+    qDebug() << (ui_->txtMain->document()->lineCount());
     if (ui_->StartTool->text() == "停止") {
         if (ui_->COMButton->isChecked()) {
+            timer_refresh_cnt_->stop();
+            timer_line_max_->stop();
+            timer_for_highlight_->stop();
 
             my_serialport_->close();
 
@@ -326,28 +411,23 @@ void ComTool::StartTool() {
 /// \param type 数据类型
 /// \param data 数据
 /// \param clear 是否清空
-void ComTool::Append(int type, const QString &data, bool clear) {
-    static int current_count = 0;
-    static int max_count = 81920;
+void ComTool::Append(char type, const QString &data) {
+//    static int current_count = 0;
+//    static int max_count = 81920;
 
-    if (clear) {
-        ui_->txtMain->clear();
-        current_count = 0;
-        return;
-    }
 
-    if (current_count >= max_count) {
-        ui_->txtMain->clear();
-        current_count = 0;
-    }
+//    if (current_count >= max_count) {
+//        ui_->txtMain->clear();
+//        current_count = 0;
+//    }
 
     QString str_type;
     if (type == 1) {
         str_type = "接收 <<";
-        ui_->txtMain->setTextColor(QColor("dodgerblue"));
+//        ui_->txtMain->setTextColor(QColor("dodgerblue"));
     } else if (type == 2) {
         str_type = "发送 >>";
-        ui_->txtMain->setTextColor(QColor("black"));
+//        ui_->txtMain->setTextColor(QColor("black"));
     }
 
     //过滤回车换行符
@@ -372,8 +452,25 @@ void ComTool::Append(int type, const QString &data, bool clear) {
         str_data = QString("时间[%1] %2 %3").arg(TIMEMS, str_type, str_data);
     }
 
-    ui_->txtMain->append(str_data);
-    current_count++;
+//    ui_->txtMain->append(str_data);
+    emit(AddText(str_data, type));
+    receive_count_ = receive_count_ + (int) data.size();
+    rec_cnt_str_ = QString("%1").arg((float) receive_count_, 0, 'E', 2);
+    send_cnt_str_ = QString("%1").arg((float) send_count_, 0, 'E', 2);
+}
+
+/// 处理收到的数据
+void ComTool::ProcessData(QByteArray main_serial_recv_data) {
+    QString buffer;
+    if (ui_->ckHexReceive->isChecked()) {
+        buffer = QUIHelperData::byteArrayToHexStr(main_serial_recv_data);
+    } else {
+        buffer = QString::fromUtf8(main_serial_recv_data);              // 修复接收数据打印乱码问题
+    }
+    if (buffer.length() == 0) { return; }
+    Append(1, buffer);             // 往接收窗口添加数据
+
+    emit(RecNewData(main_serial_recv_data, QDateTime::currentDateTime()));
 }
 
 /// 数据收入处理
@@ -384,23 +481,12 @@ void ComTool::GetData() {
     if (my_serialport_->bytesAvailable() > 0)       //判断等到读取的数据大小
     {
         QByteArray main_serial_recv_data = my_serialport_->readAll();
-        ProcessData(main_serial_recv_data);
-    }
-}
+//        QtConcurrent::run(this, &ComTool::ProcessData, main_serial_recv_data);//未知原因无法运行
+        (void) QtConcurrent::run([&, main_serial_recv_data] {
+          ProcessData(main_serial_recv_data);
+        });
 
-/// 处理收到的数据
-void ComTool::ProcessData(const QByteArray main_serial_recv_data) {
-    QString buffer;
-    if (ui_->ckHexReceive->isChecked()) {
-        buffer = QUIHelperData::byteArrayToHexStr(main_serial_recv_data);
-    } else {
-        buffer = QString::fromUtf8(main_serial_recv_data);              // 修复接收数据打印乱码问题
     }
-    if (buffer.length() == 0) { return; }
-    Append(1, buffer);             // 往接收窗口添加数据
-    receive_count_ = receive_count_ + main_serial_recv_data.size();
-    ui_->ReceiveCount->setText(QString("接收 : %1 字节").arg(receive_count_));
-    emit(RecNewData(main_serial_recv_data, QDateTime::currentDateTime()));
 }
 
 ///发送发送栏里的数据
@@ -459,9 +545,9 @@ void ComTool::SendData() {
     Append(2, data);
     my_serialport_->write(buffer);
 
-    send_count_ = send_count_ + buffer.size();
+    send_count_ = send_count_ + (int) buffer.size();
 
-    ui_->SendCount->setText(QString("发送 : %1 字节").arg(send_count_));
+//    ui_->SendCount->setText(QString("发送 : %1 字节").arg(send_count_));
 }
 
 void ComTool::SaveData() {
@@ -484,7 +570,13 @@ void ComTool::SaveData() {
 }
 
 void ComTool::on_btnClear_clicked() {
-    Append(0, "", true);
+    ui_->txtMain->clear();
+    send_count_=receive_count_=0;
+    send_cnt_str_="0";
+    rec_cnt_str_="0";
+    TimerRefreshCntConncet();
+    ui_->rec_cnt->setText(rec_cnt_str_);
+    ui_->send_cnt->setText(send_cnt_str_);
 }
 
 void ComTool::GetConstructConfig() {
