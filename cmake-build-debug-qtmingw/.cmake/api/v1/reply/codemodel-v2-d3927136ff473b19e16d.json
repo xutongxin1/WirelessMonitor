@@ -1,0 +1,314 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						9,
+						10
+					],
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						6,
+						7,
+						8
+					]
+				},
+				{
+					"build" : "api",
+					"childIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8
+					],
+					"jsonFile" : "directory-api-Debug-5ab110d9fc402529b4bb.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "api"
+				},
+				{
+					"build" : "api/RepeaterWidget",
+					"jsonFile" : "directory-api.RepeaterWidget-Debug-a30543895268fbe3aa27.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "api/RepeaterWidget"
+				},
+				{
+					"build" : "api/TCPHandle",
+					"jsonFile" : "directory-api.TCPHandle-Debug-6bfd07d8a2c299828eb3.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "api/TCPHandle"
+				},
+				{
+					"build" : "api/ComToolDepend",
+					"jsonFile" : "directory-api.ComToolDepend-Debug-d3fa5acaf3d9fb14f286.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "api/ComToolDepend"
+				},
+				{
+					"build" : "api/Highlighter",
+					"jsonFile" : "directory-api.Highlighter-Debug-8b3a7ddecddd4962f7af.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "api/Highlighter"
+				},
+				{
+					"build" : "api/ConfigClass",
+					"jsonFile" : "directory-api.ConfigClass-Debug-d1a1fa5e4e215085e342.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "api/ConfigClass"
+				},
+				{
+					"build" : "api/QPushButtonWithMouse",
+					"jsonFile" : "directory-api.QPushButtonWithMouse-Debug-93933b2293fb5e82bf0b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "api/QPushButtonWithMouse"
+				},
+				{
+					"build" : "api/QCustomPlotWithMouse",
+					"jsonFile" : "directory-api.QCustomPlotWithMouse-Debug-d50b8f4839529d9a8274.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "api/QCustomPlotWithMouse"
+				},
+				{
+					"build" : "components",
+					"jsonFile" : "directory-components-Debug-167515c4e4d9cb6cacf4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "components"
+				},
+				{
+					"build" : "thirdLib",
+					"childIndexes" : 
+					[
+						11,
+						12
+					],
+					"jsonFile" : "directory-thirdLib-Debug-17639f4cc96f377293ec.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "thirdLib"
+				},
+				{
+					"build" : "thirdLib/qcustomplot",
+					"jsonFile" : "directory-thirdLib.qcustomplot-Debug-7708e8eda73b9acf2eff.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 0,
+					"source" : "thirdLib/qcustomplot"
+				},
+				{
+					"build" : "thirdLib/qmetarial",
+					"jsonFile" : "directory-thirdLib.qmetarial-Debug-e028ae22bbc3c558b2ad.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 1,
+					"source" : "thirdLib/qmetarial",
+					"targetIndexes" : 
+					[
+						3,
+						4,
+						5
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11
+					],
+					"name" : "WirelessMonitor",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						6,
+						7,
+						8
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						12
+					],
+					"name" : "components",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3,
+						4,
+						5
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "WirelessMonitor::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-WirelessMonitor-Debug-69f3c56354ff1c955c85.json",
+					"name" : "WirelessMonitor",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "WirelessMonitor_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-WirelessMonitor_autogen-Debug-316e364ecaed90736abc.json",
+					"name" : "WirelessMonitor_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "WirelessMonitor_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-WirelessMonitor_autogen_timestamp_deps-Debug-5651a70070a5289f6ef0.json",
+					"name" : "WirelessMonitor_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "components::@9c9323161d0a7554cfa5",
+					"jsonFile" : "target-components-Debug-9ca263a76475d2c5a0c6.json",
+					"name" : "components",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "components_autogen::@9c9323161d0a7554cfa5",
+					"jsonFile" : "target-components_autogen-Debug-4f9c78c9d81fcaa9ec93.json",
+					"name" : "components_autogen",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "components_autogen_timestamp_deps::@9c9323161d0a7554cfa5",
+					"jsonFile" : "target-components_autogen_timestamp_deps-Debug-b1ef0b8f648f288ef97c.json",
+					"name" : "components_autogen_timestamp_deps",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "whatever::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-whatever-Debug-bcb28e60d066e139069d.json",
+					"name" : "whatever",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "whatever_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-whatever_autogen-Debug-e27e3a1477016ba8dac1.json",
+					"name" : "whatever_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "whatever_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-whatever_autogen_timestamp_deps-Debug-56b14c1f35efe4bb798b.json",
+					"name" : "whatever_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "F:/WM_BlackDaShuai/WirelessMonitor/cmake-build-debug-qtmingw",
+		"source" : "F:/WM_BlackDaShuai/WirelessMonitor"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

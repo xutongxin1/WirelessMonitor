@@ -1,0 +1,19 @@
+{
+	"BUILD_DIR" : "F:/WM_BlackDaShuai/WirelessMonitor/cmake-build-debug-qtmingw/WirelessMonitor_autogen",
+	"CMAKE_BINARY_DIR" : "F:/WM_BlackDaShuai/WirelessMonitor/cmake-build-debug-qtmingw",
+	"CMAKE_CURRENT_BINARY_DIR" : "F:/WM_BlackDaShuai/WirelessMonitor/cmake-build-debug-qtmingw",
+	"CMAKE_CURRENT_SOURCE_DIR" : "F:/WM_BlackDaShuai/WirelessMonitor",
+	"CMAKE_SOURCE_DIR" : "F:/WM_BlackDaShuai/WirelessMonitor",
+	"INCLUDE_DIR" : "F:/WM_BlackDaShuai/WirelessMonitor/cmake-build-debug-qtmingw/WirelessMonitor_autogen/include",
+	"INPUTS" : [],
+	"LOCK_FILE" : "F:/WM_BlackDaShuai/WirelessMonitor/cmake-build-debug-qtmingw/CMakeFiles/WirelessMonitor_autogen.dir/AutoRcc_main_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "main" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_main.cpp",
+	"RCC_EXECUTABLE" : "C:/Qt/6.2.4/msvc2019_64/./bin/rcc.exe",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "F:/WM_BlackDaShuai/WirelessMonitor/cmake-build-debug-qtmingw/CMakeFiles/WirelessMonitor_autogen.dir/AutoRcc_main_EWIEGA46WW_Used.txt",
+	"SOURCE" : "F:/WM_BlackDaShuai/WirelessMonitor/main.qrc",
+	"VERBOSITY" : 0
+}

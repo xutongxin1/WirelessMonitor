@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22)
 #project(Qt)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
+set(CMAKE_PREFIX_PATH C:/Qt/6.2.4/msvc2019_64)
 project(
   WirelessMonitor
   VERSION 0.1
@@ -41,9 +41,9 @@ file(GLOB_RECURSE SOURCES ${SOURCES} "./config/*.ini")
 #endif()
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-    add_executable(${PROJECT_NAME} WIN32 info.o ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
+    add_executable(${PROJECT_NAME} WIN32  ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
 else ()
-    add_executable(${PROJECT_NAME} info.o ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
+    add_executable(${PROJECT_NAME}  ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
 endif ()
 add_subdirectory(api)
 add_subdirectory(components)

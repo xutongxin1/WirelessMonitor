@@ -1,0 +1,24 @@
+"C:\Program Files\JetBrains\CLion 2023.1.4\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion 2023.1.4/bin/ninja/win/x64/ninja.exe" -D CMAKE_PREFIX_PATH=C:\Qt\6.2.4\msvc2019_64\lib\cmake -G Ninja -S F:\WM_BlackDaShuai\WirelessMonitor -B F:\WM_BlackDaShuai\WirelessMonitor\cmake-build-debug-qtmingw
+-- The CXX compiler identification is GNU 11.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Qt/Tools/mingw1120_64/bin/c++.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found WrapAtomic: TRUE  
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Now is windows
+-- resource does not exist
+-- resource does not exist
+-- Configuring done
+-- Generating done
+-- Build files have been written to: F:/WM_BlackDaShuai/WirelessMonitor/cmake-build-debug-qtmingw
+
+收集编译器信息时遇到问题:
+	c++.exe: error: unrecognized command-line option '-Zc:__cplusplus'
+	c++.exe: error: unrecognized command-line option '-permissive-'; did you mean '-fpermissive'?
