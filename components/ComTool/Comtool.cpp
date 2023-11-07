@@ -8,7 +8,7 @@
 #include "ui_comtool.h"
 #include "quihelper.h"
 #include "quihelperdata.h"
-
+#include "QTextEditWithKey.h"
 /*
  * TODO:shell语法高亮，使用正则表达式https://c.runoob.com_/front-end/
  * TODO:以回车分隔
@@ -159,13 +159,22 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     // 切换发送区控件
     connect(ui_->ckHexSend, &QRadioButton::toggled, this, [&] {
       if (ui_->ckHexSend->isChecked()) {
-          connect(ui_->SendDataEdit, &QTextEdit::textChanged, this, [&] {
-            InputProcess();
+
+          connect(ui_->SendDataEdit, &QTextEditWithKey::released, this,[&] {
+                InputProcess();
           });
+          InputProcess();
+
+          connect(ui_->TranslateEdit, &QTextEditWithKey::released, this,[&] {
+              DisInputProcess();
+          });
+
           ui_->TranslateEdit->show();
       } else {
-          disconnect(ui_->SendDataEdit,0,0,0);
+          disconnect(ui_->SendDataEdit,nullptr,nullptr,nullptr);
+          ui_->SendDataEdit->setPlainText(ui_->TranslateEdit->toPlainText());
           ui_->TranslateEdit->hide();
+          ui_->TranslateEdit->clear();
       }
     });
 
@@ -553,8 +562,92 @@ void ComTool::UpdateSendHistory() {
 /// TODO: 1. 当错误输入的时候，下方出现提示框（超出F）
 ///       2. 将有的小写转换为大写
 ///       3. 如果输入有0x，自动去除
+
+//通过发送框的KeyReleased触发
 void ComTool::InputProcess() {
     qDebug() << "Process";
+    //转化为大写，并将内容复制到转化框
+    QString trans_line = ui_->SendDataEdit->toPlainText();
+    trans_line = trans_line.toUpper();
+    const QRegExp rule1("0X");
+    const QRegExp rule2(" ");
+    QString afterRule1 = rule1.replaceIn(trans_line, "");
+
+//    ui_->SendDataEdit->append()
+    QString afterRule2 = rule2.replaceIn(afterRule1, "");
+
+//    QRegExp rule3("\\s\\s");
+//    QString afterRule3 = rule3.replaceIn(afterRule2 , "$$ ");
+
+    QTextCursor tc = ui_->SendDataEdit->textCursor(); //获取当前光标
+    int cursorPo = tc.position();//保存光标位置
+
+    long long n = afterRule2.length();
+
+    if(n % 2 == 0)
+    {
+        while(n-2 > 0)
+        {
+            n = n - 2;
+            afterRule2.insert(n," ");
+            cursorPo++;
+        }
+    }else if(n % 2 != 0)
+    {
+        n++;
+        while((n-2 > 0))
+        {
+            n = n - 2;
+            afterRule2.insert(n," ");
+            cursorPo++;
+        }
+    }
 
 
+    ui_->SendDataEdit->setPlainText(afterRule2);//修改文本
+
+    tc.setPosition(cursorPo);//设置光标坐标为上一坐标
+    ui_->SendDataEdit->setTextCursor(tc);
+
+    QString afterFix = ui_->SendDataEdit->toPlainText();
+    if(!((afterFix.length()+1) % 3)){
+        QByteArray hexData = QByteArray::fromHex(afterFix.toUtf8());
+        QString strData = QString::fromUtf8(hexData);
+        ui_->TranslateEdit->setText(strData);
+    }
+
+
+}
+
+//通过转化框的KeyReleased触发
+void ComTool::DisInputProcess() {
+    qDebug() << "Process";
+
+    QByteArray stringData = ui_->TranslateEdit->toPlainText().toUtf8();
+
+    QString hex = QString::fromUtf8(stringData.toHex()).toUpper();
+
+
+    long long n = hex.length();
+
+    if(n % 2 == 0)
+    {
+        while(n-2 > 0)
+        {
+            n = n - 2;
+            hex.insert(n," ");
+        }
+    }else if(n % 2 != 0)
+    {
+        n++;
+        while((n-2 > 0))
+        {
+            n = n - 2;
+            hex.insert(n," ");
+        }
+    }
+    if(0){}
+
+    ui_->SendDataEdit->setPlainText(hex);
+    ui_->SendDataEdit->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
 }
