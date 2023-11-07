@@ -104,3 +104,5 @@ CMakeLists.txt.user
 
 
 cmake-build-release-visual-studio/
+
+cmake-build-mingw/

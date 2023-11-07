@@ -68,11 +68,12 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
 
 // Allow user to drag axis ranges with mouse, zoom with mouse wheel and select graphs by clicking:
     //chart配置               ui_chart_->widget->graph(i)->setName();
-//    ui_chart_->widget->setOpenGl(true);
+    ui_chart_->widget->setOpenGl(true);
+    qDebug()<<"opengle="<<ui_chart_->widget->openGl();
 //    ui_chart_->widget->setNoAntialiasingOnDrag(true);
-    ui_chart_->widget->setNotAntialiasedElements(
-        QCP::aeAxes | QCP::aeGrid | QCP::aeSubGrid | QCP::aeLegend | QCP::aeLegendItems | QCP::aeZeroLine
-            | QCP::aeOther);
+//    ui_chart_->widget->setNotAntialiasedElements(
+//        QCP::aeAxes | QCP::aeGrid | QCP::aeSubGrid | QCP::aeLegend | QCP::aeLegendItems | QCP::aeZeroLine
+//            | QCP::aeOther);
 //    ui_chart_->widget->setAntialiasedElements(QCP::aeItems);
 
     ui_chart_->widget->xAxis->setLabel("Time/秒");
@@ -111,8 +112,6 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
                                                                Qt::AlignTop
                                                                    | Qt::AlignLeft);       // 设置图例在左上，这句不能放上去，要等整张图像画出来，才能设置位置
     UpdateLine();
-
-
 
     // 图表右键菜单
     ui_chart_->widget->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -173,7 +172,7 @@ void ChartsNext::UpdateLine() {
             data_pool_[i].last_draw_index = 0;
 
         }
-
+        // 应该对大概出问题了，超过1000个点卡住了
         if (data_pool_.at(i).is_update) {
             has_update = true;
             this->data_pool_[i].is_update = false;
@@ -200,6 +199,7 @@ void ChartsNext::UpdateLine() {
                     }
                 }
             }
+            // 改变坐标轴
             if (rolling_flag) {
                 double x = data_pool_[i].data_list.last().time.program_time_;       // 获取最新的X值
                 double y = data_pool_[i].data_list.last().data;                     // 获取最新的y值

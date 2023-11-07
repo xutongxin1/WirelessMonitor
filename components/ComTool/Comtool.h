@@ -23,7 +23,8 @@ class ComTool : public RepeaterWidget {
 
 signals:
     void RecNewData(QByteArray data, const QDateTime &time);
-
+    void AddText(const QString &text,const char type);
+//    void UpdateCntTimer();
  public:
     explicit ComTool(int row, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent = nullptr);
 
@@ -56,6 +57,7 @@ signals:
     QString config_file_path_;
     QSettings *cfg_;
 
+
  private:
     Ui::ComTool *ui_;
     QTimer *timer_read_;          //定时读取串口数据
@@ -63,13 +65,16 @@ signals:
     QTimer *timer_save_;          //定时保存串口数据
 
     int sleep_time_rec_;              //接收延时时间
-    int send_count_;              //发送数据计数
-    int receive_count_;           //接收数据计数
-    bool is_show_;                //是否显示数据
+    int send_count_=0;              //发送数据计数
+    int receive_count_=0;           //接收数据计数
+    QString send_cnt_str_;
+    QString rec_cnt_str_;
 
-    QTimer *timer_connect_;       //定时器重连
 
+    QTimer *timer_refresh_cnt_;
+    QTimer *timer_line_max_;
     QTimer *timer_for_port_;
+    QTimer *timer_for_highlight_;
 
     void GetConstructConfig() override;
 
@@ -90,11 +95,11 @@ signals:
 
     QSerialPort *my_serialport_;
 
-    void StartTool();
+    void ToolSwitch();
     void ChangeMode();
 
-    Highlighter *highlighter1;
-    Highlighter *highlighter2;
+    Highlighter *highlighter_send_;
+    Highlighter *highlighter_rec_;
 
     bool is_start_ = false;
 
@@ -105,19 +110,26 @@ signals:
         QDateTime time;
     } HistorySend;
     QHash<QString, HistorySend> history_send_list_;
-
+    void ProcessData(QByteArray main_serial_recv_data);
     void UpdateSendHistory();
+
+    void GetData();            //读取串口数据
+
+    void SendData();            //发送串口数据
+    void SaveData();            //保存串口数据
+
+    void Append(char type, const QString &data);
+
+    QString recieve_tmp_pool_ = "";
+    void TimerForHightLight();
+    void TimerRefreshCntConncet();
+    int last_line_cnt_ = 0;
 
  private slots:
 
 //    void InitConfig();          //初始化配置文件
 //    void SaveConfig();          //保存配置文件
-    void GetData();            //读取串口数据
-    void ProcessData(QByteArray main_serial_recv_data);
-    void SendData();            //发送串口数据
-    void SaveData();            //保存串口数据
 
-    void Append(int type, const QString &data, bool clear = false);
 
     void ReadErrorNet();
 

@@ -367,79 +367,105 @@ QPushButton:disabled, ToolButton:disabled {
           <attribute name="title">
            <string>接收设置</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_3">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>接收编码：</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
              <item>
-              <widget class="QLabel" name="label_2">
+              <widget class="QtMaterialRadioButton" name="radioButton_3">
                <property name="text">
-                <string>接收编码：</string>
+                <string>Str</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_4">
-               <item>
-                <widget class="QtMaterialRadioButton" name="radioButton_3">
-                 <property name="text">
-                  <string>Str</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QtMaterialRadioButton" name="ckHexReceive">
-                 <property name="text">
-                  <string>Hex</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QLabel" name="SendCount">
+              <widget class="QtMaterialRadioButton" name="ckHexReceive">
                <property name="text">
-                <string>接收 : 0  字节</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="ReceiveCount">
-               <property name="text">
-                <string>发送 : 0 字节</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="btnSave">
-               <property name="text">
-                <string>保存数据</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="btnLoadData">
-               <property name="text">
-                <string> 加载数据</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="btnClear">
-               <property name="text">
-                <string>清空数据</string>
+                <string>Hex</string>
                </property>
               </widget>
              </item>
             </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <item>
+              <widget class="QLabel" name="label_13">
+               <property name="text">
+                <string>接收：</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="rec_cnt">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="rec_word">
+               <property name="text">
+                <string>字节</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <item>
+              <widget class="QLabel" name="send_word">
+               <property name="text">
+                <string>发送：</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="send_cnt">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>字节</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnSave">
+             <property name="text">
+              <string>保存数据</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnLoadData">
+             <property name="text">
+              <string> 加载数据</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnClear">
+             <property name="text">
+              <string>清空数据</string>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QWidget" name="verticalWidget" native="true">
