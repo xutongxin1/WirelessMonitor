@@ -82,6 +82,8 @@ signals:
 
     void InputProcess();
 
+    void DisInputProcess();
+
     QString ip_;
 
     void UpdateComSetting();

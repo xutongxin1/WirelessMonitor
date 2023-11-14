@@ -63,7 +63,7 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_12">
              <item>
-              <widget class="QTextEdit" name="SendDataEdit">
+              <widget class="QTextEditWithKey" name="SendDataEdit">
                <property name="styleSheet">
                 <string notr="true">background-color: rgba(255, 255, 255, 125);</string>
                </property>
@@ -73,7 +73,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QTextEdit" name="TranslateEdit">
+              <widget class="QTextEditWithKey" name="TranslateEdit">
                <property name="styleSheet">
                 <string notr="true">background-color: rgba(255, 255, 255, 125);</string>
                </property>
@@ -716,6 +716,11 @@ QPushButton:disabled, ToolButton:disabled {
    <class>QtMaterialRadioButton</class>
    <extends>QRadioButton</extends>
    <header>qtmaterialradiobutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QTextEditWithKey</class>
+   <extends>QTextEdit</extends>
+   <header>QTextEditWithKey.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
