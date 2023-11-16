@@ -57,6 +57,7 @@ signals:
     QString config_file_path_;
     QSettings *cfg_;
 
+    void LineLimit(const QString &text, const char type);
 
  private:
     Ui::ComTool *ui_;

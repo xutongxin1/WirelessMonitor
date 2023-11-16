@@ -16,7 +16,7 @@
  * TODO:ui修改
  */
 ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent) :
-    RepeaterWidget(parent), ui_(new Ui::ComTool) {
+        RepeaterWidget(parent), ui_(new Ui::ComTool) {
     this->cfg_ = cfg;
     this->config_file_path_ = "./config/Device" + QString::number(device_num) + ".ini";
 
@@ -46,18 +46,55 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     QuiHelper::SetFormInCenter(this);
 
     connect(ui_->btnSend, &QPushButton::clicked, this, [&] {
-      this->SendData();
+        this->SendData();
     });
 
     connect(ui_->btnPaste, &QPushButton::clicked, this, [&] {
-      QClipboard *clipboard = QApplication::clipboard();
-      QString text = clipboard->text();
-      ui_->SendDataEdit->setPlainText(text);
-      this->SendData();
+        QClipboard *clipboard = QApplication::clipboard();
+        QString text = clipboard->text();
+        ui_->SendDataEdit->setPlainText(text);
+        this->SendData();
+        ui_->SendDataEdit->setTextColor("black");
     });
 
+    // 清空发送区
+    connect(ui_->ClearSendDataEdit, &QPushButton::clicked, this, [&] {
+        ui_->SendDataEdit->clear();
+
+    });
+
+    // 重新渲染高亮
+    disconnect(ui_->refreshLog, 0, 0, 0);
+    connect(ui_->refreshLog, &QPushButton::clicked, this, [&] {
+
+        QString textstr = ui_->txtMain->toPlainText();
+        ui_->txtMain->clear();
+        QStringList textlist = textstr.split('\n');
+        std::string recive = "<<";
+        std::string send = ">>";
+        int type = 0;   // 0 默认 1 接收（蓝） 2 发送（黑）
+        for (QStringList::iterator i = textlist.begin(); i != textlist.end(); i++) {
+            QString test = *i;
+            std::string text = test.toStdString();
+            if (text.find(recive) != std::string::npos) {
+                type = 1;
+            } else if (text.find(send) != std::string::npos) {
+                type = 2;
+            }
+            if (type == 1) {
+                ui_->txtMain->setTextColor(QColor("dodgerblue"));
+            } else if (type == 2) {
+                ui_->txtMain->setTextColor(QColor("black"));
+            }
+            ui_->txtMain->append(QString::fromStdString(text));
+        }
+
+    });
+
+
     QStringList baud_list;
-    baud_list << QString::number(baud_rate_)
+    baud_list <<
+              QString::number(baud_rate_)
               << "600"
               << "1200"
               << "1800"
@@ -74,12 +111,21 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
               << "128000"
               << "256000";
 
-    ui_->BandCombo->addItems(baud_list);
+    ui_->BandCombo->
+            addItems(baud_list);
+
     void (QComboBox::*fp)(int) = &QComboBox::currentIndexChanged;
-    connect(ui_->BandCombo, fp, this, [&](int num) {
-      baud_rate_ = ui_->BandCombo->currentText().toInt();
-      my_serialport_->setBaudRate(baud_rate_);
-      UpdateComSetting();
+
+    connect(ui_
+                    ->BandCombo, fp, this, [&](
+            int num
+    ) {
+        baud_rate_ = ui_->BandCombo->currentText().toInt();
+        my_serialport_->
+                setBaudRate(baud_rate_);
+
+        UpdateComSetting();
+
     });
 
     QStringList data_bits_list;
@@ -88,25 +134,41 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
                    << "6"
                    << "5";
 
-    ui_->DataBitCombo->addItems(data_bits_list);
-    connect(ui_->DataBitCombo, fp, this, [&](int num) {
-      data_bit_ = ui_->DataBitCombo->currentText().toInt();
-      my_serialport_->setDataBits(QSerialPort::DataBits(data_bit_));
-      UpdateComSetting();
+    ui_->DataBitCombo->
+            addItems(data_bits_list);
+    connect(ui_
+                    ->DataBitCombo, fp, this, [&](
+            int num
+    ) {
+        data_bit_ = ui_->DataBitCombo->currentText().toInt();
+        my_serialport_->
+                setDataBits(QSerialPort::DataBits(data_bit_)
+        );
+
+        UpdateComSetting();
+
     });
 
     QStringList parity_list;
     parity_list << "无"
                 << "奇"
                 << "偶";
-    ui_->ParityBitCombo->addItems(parity_list);
-    connect(ui_->ParityBitCombo, fp, this, [&](int num) {
-      parity_ = ui_->ParityBitCombo->currentIndex();
-      my_serialport_->setParity(QSerialPort::Parity(parity_));
-      UpdateComSetting();
+    ui_->ParityBitCombo->
+            addItems(parity_list);
+    connect(ui_
+                    ->ParityBitCombo, fp, this, [&](
+            int num
+    ) {
+        parity_ = ui_->ParityBitCombo->currentIndex();
+        my_serialport_->
+                setParity(QSerialPort::Parity(parity_)
+        );
+
+        UpdateComSetting();
+
     });
 
-    // 初始化停止位表
+// 初始化停止位表
     QStringList stop_bits_list;
     stop_bits_list << "1";
 #ifdef Q_OS_WIN
@@ -114,33 +176,49 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 #endif
     stop_bits_list << "2";
 
-    ui_->StopBitCombo->addItems(stop_bits_list);
-    connect(ui_->StopBitCombo, fp, this, [&](int num) {
-      stop_bit_ = ui_->StopBitCombo->currentText().toDouble();
-      if (stop_bit_ == 1.5) {
-          my_serialport_->setStopBits(QSerialPort::OneAndHalfStop);
-      } else {
-          my_serialport_->setStopBits(QSerialPort::StopBits(stop_bit_));
-      }
-      UpdateComSetting();
+    ui_->StopBitCombo->
+            addItems(stop_bits_list);
+    connect(ui_
+                    ->StopBitCombo, fp, this, [&](
+            int num
+    ) {
+        stop_bit_ = ui_->StopBitCombo->currentText().toDouble();
+        if (stop_bit_ == 1.5) {
+            my_serialport_->
+                    setStopBits(QSerialPort::OneAndHalfStop);
+        } else {
+            my_serialport_->
+                    setStopBits(QSerialPort::StopBits(stop_bit_)
+            );
+        }
+
+        UpdateComSetting();
+
     });
 
-    ui_->SendDataEdit->setLineWrapMode(QTextEdit::NoWrap);
+    ui_->SendDataEdit->
+            setLineWrapMode(QTextEdit::NoWrap);
 
-    //扫描有效的端口
+//扫描有效的端口
     timer_for_port_->start(500);
 
-    connect(timer_for_port_, &QTimer::timeout, this, &ComTool::ReflashComCombo);
+    connect(timer_for_port_, &QTimer::timeout,
+            this, &ComTool::ReflashComCombo);
 //    ui_->COMCombo->addItem("COM39");
-    connect(ui_->StartTool, &QPushButton::clicked, this, &ComTool::ToolSwitch);
+    connect(ui_
+                    ->StartTool, &QPushButton::clicked, this, &ComTool::ToolSwitch);
 
-    connect(my_serialport_, &QSerialPort::readyRead, this, &ComTool::GetData);
+    connect(my_serialport_, &QSerialPort::readyRead,
+            this, &ComTool::GetData);
 
-    connect(ui_->COMButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
-    connect(ui_->TCPClientButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
-    connect(ui_->TCPServerButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
+    connect(ui_
+                    ->COMButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
+    connect(ui_
+                    ->TCPClientButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
+    connect(ui_
+                    ->TCPServerButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
 
-    //高亮转义字符
+//高亮转义字符
     highlighter_send_ = new Highlighter(ui_->SendDataEdit->document());
     highlighter_rec_ = new Highlighter(ui_->txtMain->document());
 
@@ -148,18 +226,18 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     connect(ui_->clearHistorySend, &QPushButton::clicked, this, [&] {
-      ui_->historyTable->setRowCount(0);
-      ui_->historyTable->clearContents();
-      history_send_list_.clear();
+        ui_->historyTable->setRowCount(0);
+        ui_->historyTable->clearContents();
+        history_send_list_.clear();
     });//清空历史记录
 
     connect(ui_->historyTable, &QTableWidget::cellClicked, this, [&](int row, int col) {
-      ui_->SendDataEdit->setText(ui_->historyTable->item(row, 0)->text());
+        ui_->SendDataEdit->setText(ui_->historyTable->item(row, 0)->text());
     });//单击
 
     connect(ui_->historyTable, &QTableWidget::cellDoubleClicked, this, [&](int row, int col) {
-      ui_->SendDataEdit->setText(ui_->historyTable->item(row, 0)->text());
-      this->SendData();
+        ui_->SendDataEdit->setText(ui_->historyTable->item(row, 0)->text());
+        this->SendData();
     });//双击
 
     // 切换发送区控件
@@ -185,7 +263,7 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     });
 
 
-    //列宽
+//列宽
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Interactive);
@@ -193,75 +271,81 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     //历史发送框的右键菜单
     ui_->historyTable->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui_->historyTable, &QTableWidget::customContextMenuRequested, this, [&](const QPoint pos) {
-      //获得鼠标点击的x，y坐标点
-      int x = pos.x();
-      int y = pos.y();
-      QModelIndex index = ui_->historyTable->indexAt(QPoint(x, y));
-      if (index.isValid()) {
-          int row = index.row();//获得QTableWidget列表点击的行数
-          QMenu *menu = new QMenu(ui_->historyTable);
+        //获得鼠标点击的x，y坐标点
+        int x = pos.x();
+        int y = pos.y();
+        QModelIndex index = ui_->historyTable->indexAt(QPoint(x, y));
+        if (index.isValid()) {
+            int row = index.row();//获得QTableWidget列表点击的行数
+            QMenu *menu = new QMenu(ui_->historyTable);
 //          QAction *pnew_1 = new QAction("复制并修改该项", ui_->historyTable);
-          QAction *pnew_2 = new QAction("删除该项", ui_->historyTable);
-          connect(pnew_2, &QAction::triggered, this, [&, row] {
-            history_send_list_.remove(ui_->historyTable->item(row, 0)->text());
-            ui_->historyTable->removeRow(row);
-          });
+            QAction *pnew_2 = new QAction("删除该项", ui_->historyTable);
+            connect(pnew_2, &QAction::triggered, this, [&, row] {
+                history_send_list_.remove(ui_->historyTable->item(row, 0)->text());
+                ui_->historyTable->removeRow(row);
+            });
 
 //          menu->addAction(pnew_1);
-          menu->addAction(pnew_2);
-          menu->move(cursor().pos());
-          menu->show();
+            menu->addAction(pnew_2);
+            menu->move(cursor().pos());
+            menu->show();
 
-      }
+        }
 
     });
     ui_->tabWidget->setCurrentIndex(0);
 
-    //预设上下分割比例
+//预设上下分割比例
     ui_->splitter->setStretchFactor(0, 3);
     ui_->splitter->setStretchFactor(1, 1);
 
     TimerRefreshCntConncet();//绑定计数器刷新函数
 
+    connect(ui_->testn, &QPushButton::clicked, this, [&] {
+        qDebug() << recieve_tmp_pool_.size();
+    });
 
-    //刷新输出区行为
+
     connect(this, &ComTool::AddText, this, [&](const QString &text, const char type) {
-//      if (type == 1) {
-//          ui_->txtMain->setTextColor(QColor("dodgerblue"));
-//      } else if (type == 2) {
-//          ui_->txtMain->setTextColor(QColor("black"));
-//      }
-      if (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum()) {
-          if (!recieve_tmp_pool_.isEmpty()) {
-              ui_->txtMain->append(recieve_tmp_pool_);//加上一点优化逻辑更好
-              recieve_tmp_pool_.clear();
-          }
-          ui_->txtMain->append(text);
-
-      } else {
-          recieve_tmp_pool_.append(text);
-//            ui_->txtMain->append(text);
-//            ui_->txtMain->verticalScrollBar()->setSliderPosition(ui_->txtMain->verticalScrollBar()->maximum());
-      }
-
-
-
-//      qDebug() << (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum());
+        LineLimit(text,type);
     });
 
     //行数限制逻辑
     connect(timer_line_max_, &QTimer::timeout, this, [&] {
 //      qDebug() << ui_->txtMain->document()->lineCount();
-      ui_->txtMain->document()->setMaximumBlockCount(10000);
-      ui_->txtMain->document()->setMaximumBlockCount(0);
+        ui_->txtMain->document()->setMaximumBlockCount(10000);
+        ui_->txtMain->document()->setMaximumBlockCount(0);
 
     });
     connect(timer_line_max_, &QTimer::timeout, this, &ComTool::TimerForHightLight);
 //    connect(this, &ComTool::UpdateCntTimer, this, &ComTool::TimerRefreshCntConncet);//绑定计数器界面刷新程序
 }
+/// TODO: 对显示行数进行限制
+void ComTool::LineLimit(const QString &text, const char type) {
+    ui_->txtMain->setTextColor(QColor("black"));
+    qDebug() << ui_->txtMain->verticalScrollBar()->sliderPosition();
+    // 目前的策略是当滚动条处于最底下，才进行渲染
+    if (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum()) {
+        if (!recieve_tmp_pool_.isEmpty()) {
+            ui_->txtMain->append(recieve_tmp_pool_);    //加上一点优化逻辑更好
+            recieve_tmp_pool_.clear();
+        }
+        ui_->txtMain->append(text);
+
+    } else {
+        recieve_tmp_pool_.append(text);
+//            ui_->txtMain->append(text);
+//            ui_->txtMain->verticalScrollBar()->setSliderPosition(ui_->txtMain->verticalScrollBar()->maximum());
+
+    }
+    qDebug() << text;
+//   qDebug() << (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum());
+
+}
+
 void ComTool::TimerForHightLight() {
     int tmp = ui_->txtMain->document()->lineCount();
-    if (tmp - last_line_cnt_ > 1000 || tmp == 10000 ) {
+    if (tmp - last_line_cnt_ > 1000 || tmp == 10000) {
         timer_for_highlight_->start(5000);
         highlighter_rec_->is_work_ = false;
     } else {
@@ -275,18 +359,19 @@ void ComTool::TimerRefreshCntConncet() {
     disconnect(timer_refresh_cnt_, &QTimer::timeout, nullptr, nullptr);
 
     connect(timer_refresh_cnt_, &QTimer::timeout, this, [&] {
-      ui_->rec_cnt->setText(QString("%1").arg(receive_count_));
-      ui_->send_cnt->setText(QString("%1").arg(send_count_));
-      if (receive_count_ > 10000 || send_count_ > 10000) {
-          disconnect(timer_refresh_cnt_, &QTimer::timeout, nullptr, nullptr);
-          connect(timer_refresh_cnt_, &QTimer::timeout, this, [&] {
-            ui_->rec_cnt->setText(rec_cnt_str_);
-            ui_->send_cnt->setText(send_cnt_str_);
-          });
-      }
+        ui_->rec_cnt->setText(QString("%1").arg(receive_count_));
+        ui_->send_cnt->setText(QString("%1").arg(send_count_));
+        if (receive_count_ > 10000 || send_count_ > 10000) {
+            disconnect(timer_refresh_cnt_, &QTimer::timeout, nullptr, nullptr);
+            connect(timer_refresh_cnt_, &QTimer::timeout, this, [&] {
+                ui_->rec_cnt->setText(rec_cnt_str_);
+                ui_->send_cnt->setText(send_cnt_str_);
+            });
+        }
     });
 
 }
+
 void ComTool::UpdateComSetting() {
     if (my_serialport_->isOpen()) {
 
@@ -301,7 +386,7 @@ ComTool::~ComTool() {
 
 QStringList ComTool::GetPortInfo() {
     QStringList serialportinfo;
-        foreach(QSerialPortInfo info, QSerialPortInfo::availablePorts()) {
+            foreach(QSerialPortInfo info, QSerialPortInfo::availablePorts()) {
             serialportinfo << info.portName();
         }
     // ui->comboBox->addItems(serialportinfo);
@@ -319,14 +404,14 @@ void ComTool::ReflashComCombo() {
         if (my_serialport_->isOpen())        //有串口打开的时候
         {   //保证
             ui_->COMCombo->addItem(my_serialport_->portName());
-                foreach(QString comname, my_serialportinfo_) {
+                    foreach(QString comname, my_serialportinfo_) {
                     if (comname != my_serialport_->portName()) {
                         ui_->COMCombo->addItem(comname);
                     }
                 }
         } else                              //无串口打开的时候
         {
-                foreach(QString comname, my_serialportinfo_) {
+                    foreach(QString comname, my_serialportinfo_) {
                     ui_->COMCombo->addItem(comname);
                 }
 
@@ -492,7 +577,7 @@ void ComTool::GetData() {
         QByteArray main_serial_recv_data = my_serialport_->readAll();
 //        QtConcurrent::run(this, &ComTool::ProcessData, main_serial_recv_data);//未知原因无法运行
         (void) QtConcurrent::run([&, main_serial_recv_data] {
-          ProcessData(main_serial_recv_data);
+            ProcessData(main_serial_recv_data);
         });
 
     }
@@ -580,9 +665,9 @@ void ComTool::SaveData() {
 
 void ComTool::on_btnClear_clicked() {
     ui_->txtMain->clear();
-    send_count_=receive_count_=0;
-    send_cnt_str_="0";
-    rec_cnt_str_="0";
+    send_count_ = receive_count_ = 0;
+    send_cnt_str_ = "0";
+    rec_cnt_str_ = "0";
     TimerRefreshCntConncet();
     ui_->rec_cnt->setText(rec_cnt_str_);
     ui_->send_cnt->setText(send_cnt_str_);
@@ -630,6 +715,7 @@ void ComTool::ChangeMode() {
     ui_->ParityBitLayout->setEnabled(tmp);
     ui_->StopBitLayout->setEnabled(tmp);
 }
+
 void ComTool::UpdateSendHistory() {
     ui_->historyTable->setRowCount(0);
     ui_->historyTable->clearContents();

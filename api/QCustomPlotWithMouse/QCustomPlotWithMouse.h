@@ -8,6 +8,12 @@
 #include "qcustomplot.h"
 
 class QCustomPlotWithMouse : public QCustomPlot {
+Q_OBJECT
+signals:
+    void RwheelEvent();
+    void RmousePressEvent();
+    void RmouseReleaseEvent();
+
 public:
     QCustomPlotWithMouse(QWidget *parent = nullptr) : QCustomPlot(parent) {
         timer = new QTimer(this);

@@ -250,6 +250,20 @@ QPushButton:disabled, ToolButton:disabled {
               </widget>
              </item>
              <item>
+              <widget class="QPushButton" name="refreshLog">
+               <property name="text">
+                <string>刷新收发日志</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="testn">
+               <property name="text">
+                <string>日志框测试</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <spacer name="verticalSpacer_2">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
