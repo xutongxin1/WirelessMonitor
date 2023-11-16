@@ -228,9 +228,21 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
               recieve_tmp_pool_.clear();
           }
           ui_->txtMain->append(text);
-
-      } else {
+          is_under_ = true;
+      } else //现在不在底层
+      {
+          if(is_under_)
+          {
+              highlighter_rec_->is_work_ = true;
+//              highlighter_rec_->rehighlight();//不能用该方法开启高亮，一定要文本的改变才能触发
+              ui_->txtMain->append(text);
+              is_under_ = false;
+              return;
+          }
           recieve_tmp_pool_.append(text);
+          is_under_ = false;
+
+
 //            ui_->txtMain->append(text);
 //            ui_->txtMain->verticalScrollBar()->setSliderPosition(ui_->txtMain->verticalScrollBar()->maximum());
       }
@@ -243,16 +255,20 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     //行数限制逻辑
     connect(timer_line_max_, &QTimer::timeout, this, [&] {
 //      qDebug() << ui_->txtMain->document()->lineCount();
-      ui_->txtMain->document()->setMaximumBlockCount(10000);
-      ui_->txtMain->document()->setMaximumBlockCount(0);
+      if (is_under_) {
+          ui_->txtMain->document()->setMaximumBlockCount(10000);
+          ui_->txtMain->document()->setMaximumBlockCount(0);
+      }
 
     });
+
+    //高亮适配器绑定
     connect(timer_line_max_, &QTimer::timeout, this, &ComTool::TimerForHightLight);
 //    connect(this, &ComTool::UpdateCntTimer, this, &ComTool::TimerRefreshCntConncet);//绑定计数器界面刷新程序
 }
 void ComTool::TimerForHightLight() {
     int tmp = ui_->txtMain->document()->lineCount();
-    if (tmp - last_line_cnt_ > 1000 || tmp == 10000 ) {
+    if ((tmp - last_line_cnt_ > 1000 || tmp == 10000) && is_under_) {
         timer_for_highlight_->start(5000);
         highlighter_rec_->is_work_ = false;
     } else {

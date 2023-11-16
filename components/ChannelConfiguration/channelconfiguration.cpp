@@ -182,8 +182,7 @@ void ChannelConfiguration::OnConnect() {
       has_give_up_ = true;
       tcp_command_handle_->disconnectFromHost();//断开后的逻辑由HasDisconnected信号绑定事件触发
       QMessageBox::critical(this, tr("错误"), tr("心跳包返回失败"));
-
-//        ChannelConfiguration::OnDisconnect();
+      ChannelConfiguration::OnDisconnect();
     });
     // 模式设置时错误
     connect(tcp_command_handle_, &TCPCommandHandle::SetModeError, this, [&] {
@@ -191,7 +190,7 @@ void ChannelConfiguration::OnConnect() {
       has_give_up_ = true;
       tcp_command_handle_->disconnectFromHost();//断开后的逻辑由HasDisconnected信号绑定事件触发
       QMessageBox::critical(this, tr("错误"), tr("设置模式失败"));
-//        ChannelConfiguration::OnDisconnect();
+      ChannelConfiguration::OnDisconnect();
     });
 
     // 如果连接上服务器
