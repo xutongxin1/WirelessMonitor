@@ -64,8 +64,10 @@ class Highlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
 
-public:
+
+ public:
     Highlighter(QTextDocument *parent = 0);
+    bool is_work_=true;
 
 protected:
     void highlightBlock(const QString &text) override;
@@ -83,10 +85,13 @@ private:
 
     QTextCharFormat keywordFormat;
     QTextCharFormat classFormat;
+
     QTextCharFormat singleLineCommentFormat;
     QTextCharFormat multiLineCommentFormat;
     QTextCharFormat quotationFormat;
     QTextCharFormat functionFormat;
+
+
 };
 //! [0]
 

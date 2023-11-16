@@ -83,10 +83,14 @@ Highlighter::Highlighter(QTextDocument *parent)
 
 //! [2]
 //    classFormat.setFontWeight(QFont::Bold);
-    classFormat.setForeground(Qt::red);
-    rule.pattern = QRegularExpression("\\n");
-    rule.format = classFormat;
-    highlightingRules.append(rule);
+
+//?
+//    classFormat.setForeground(Qt::red);
+//    rule.pattern = QRegularExpression("\\n");
+//    rule.format = classFormat;
+//    highlightingRules.append(rule);
+
+
 ////! [2]
 //
 ////! [3]
@@ -117,10 +121,9 @@ Highlighter::Highlighter(QTextDocument *parent)
     commentStartExpression = QRegularExpression("/\\*");
     commentEndExpression = QRegularExpression("\\*/");
 }
-//! [6]
 
-//! [7]
 void Highlighter::highlightBlock(const QString &text) {
+    if (!is_work_) { return; }
         foreach (const HighlightingRule &rule, highlightingRules) {
             QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
             while (matchIterator.hasNext()) {
@@ -128,19 +131,15 @@ void Highlighter::highlightBlock(const QString &text) {
                 setFormat(match.capturedStart(), match.capturedLength(), rule.format);
             }
         }
-//! [7] //! [8]
-    setCurrentBlockState(0);
-//! [8]
 
-//! [9]
+    setCurrentBlockState(0);
+
     int startIndex = 0;
     if (previousBlockState() != 1) {
         startIndex = text.indexOf(commentStartExpression);
     }
 
-//! [9] //! [10]
     while (startIndex >= 0) {
-//! [10] //! [11]
         QRegularExpressionMatch match = commentEndExpression.match(text, startIndex);
         int endIndex = match.capturedStart();
         int commentLength = 0;
@@ -155,4 +154,3 @@ void Highlighter::highlightBlock(const QString &text) {
         startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
     }
 }
-//! [11]
