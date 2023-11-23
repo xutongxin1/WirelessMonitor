@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.24)
 #project(Qt)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -19,14 +19,27 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_definitions(-DQCUSTOMPLOT_USE_OPENGL)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_PROJECT_VERSION 1.0)
+set(CMAKE_PROJECT_VERSION 1.1)
+
+set(Boost_NO_WARN_NEW_VERSIONS 1)
 #set(CMAKE_PREFIX_PATH "C:/Qt/6.2.4/msvc2019_64/")
+
+#set(Python_ROOT_DIR C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/include/python3.11)
+set(Boost_INCLUDE_DIR C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/include/)
+set(Python3_DIR "C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/include/boost/python")
+
+include(C:/Users/xtx/.vcpkg-clion/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
 find_package(QT NAMES Qt6 REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent)
 find_package(Qt6 REQUIRED COMPONENTS Core5Compat)       # QT6
 find_package(Qt6 REQUIRED COMPONENTS Gui)               # QT6
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent)
 
+
+find_package(Python
+        REQUIRED COMPONENTS Development)
+find_package(Boost
+        REQUIRED COMPONENTS python311)
 
 
 file(GLOB HEADER "*.h")
@@ -57,12 +70,14 @@ endif ()
 target_include_directories(${PROJECT_NAME} PUBLIC ./components)
 target_include_directories(${PROJECT_NAME} PUBLIC ./config)
 
+add_compile_options(-DBOOST_ALL_NO_LIB)
 
+target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIRS} "C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/include/python3.11")
+link_directories("${Python_LIBRARY_PATH}")
 target_link_libraries(
-
-        ${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
+        ${PROJECT_NAME} PUBLIC "C:/Users/xtx/.vcpkg-clion/vcpkg/packages/python3_x64-windows/lib/python311.lib" PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::Core Qt6::PrintSupport Qt6::SerialPort
-        Qt6::Network components Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent "${CMAKE_CURRENT_SOURCE_DIR}/api/OpenGL32.Lib")
+        Qt6::Network components Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent "${CMAKE_CURRENT_SOURCE_DIR}/api/OpenGL32.Lib" )
 
 
 set_target_properties(

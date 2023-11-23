@@ -11,6 +11,7 @@
 #include "TCPBridgeConfiguration/tcpbridgeconfiguration.h"
 #include "TCPCom/TCPCom.h"
 #include "Charts/charts_next.h"
+#include "IICDeviceBasic/IICDeviceBasic.h"
 
 int record_DeviceNum = 0, record_WinNum = 0;
 
@@ -88,11 +89,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     //DeviceExchange(1);
     //    DeviceWindowsExchange(1, 1);
 
-    //    DataCirculation *tmp = new DataCirculation(1,
-    //                                               5,
-    //                                               cfg_->config_device_ini_[1],
-    //                                               &parent_info_);
-    //    ui_->FunctionWindow->setCurrentIndex(ui_->FunctionWindow->addWidget(tmp));
+    IICDeviceBasic *tmp = new IICDeviceBasic(1,
+                                               5,
+                                               config_device_ini_[1],
+                                               &parent_info_);
+    ui_->FunctionWindow->setCurrentIndex(ui_->FunctionWindow->addWidget(tmp));
 
     //    ui_->FunctionWindow->setCurrentIndex(2);
     //    devices_info_[1].tab_widget->setCurrentTab(2);
