@@ -70,14 +70,12 @@ endif ()
 target_include_directories(${PROJECT_NAME} PUBLIC ./components)
 target_include_directories(${PROJECT_NAME} PUBLIC ./config)
 
-add_compile_options(-DBOOST_ALL_NO_LIB)
-
 target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIRS} "C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/include/python3.11")
-link_directories("${Python_LIBRARY_PATH}")
+
 target_link_libraries(
         ${PROJECT_NAME} PUBLIC "C:/Users/xtx/.vcpkg-clion/vcpkg/packages/python3_x64-windows/lib/python311.lib" PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::Core Qt6::PrintSupport Qt6::SerialPort
-        Qt6::Network components Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent "${CMAKE_CURRENT_SOURCE_DIR}/api/OpenGL32.Lib" )
+        Qt6::Network components Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent "${CMAKE_CURRENT_SOURCE_DIR}/api/OpenGL32.Lib" ${Boost_LIBRARIES})
 
 
 set_target_properties(

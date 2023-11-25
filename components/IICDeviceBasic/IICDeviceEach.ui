@@ -161,7 +161,7 @@
        </item>
        <item row="0" column="1">
         <property name="text">
-         <string/>
+         <string>3</string>
         </property>
        </item>
       </widget>

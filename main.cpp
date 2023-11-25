@@ -1,14 +1,9 @@
-#include <boost/python.hpp>
-#include <Python.h>
+
+#define BOOST_NUMPY_STATIC_LIB
+#include "PythonWork.h"
 
 #include "mainwindow.h"
 #include "iostream"
-#include <QApplication>
-
-
-
-
-using namespace boost::python;
 
 ///日志消息的处理函数
 void LogMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message) {
@@ -62,7 +57,8 @@ void LogMessageHandler(QtMsgType type, const QMessageLogContext &context, const 
 int main(int argc, char *argv[]) {
     qSetMessagePattern(
         "%{time_ yyyy-MM-dd hh:mm:ss} [%{type}]%{if-warning}[%{function}]%{endif}%{if-fatal}[%{function}--%{line}]%{endif}:%{message}");
-    Py_Initialize();
+
+    auto *p = new PythonWork();
     qInstallMessageHandler(LogMessageHandler);//安装日志驱动
     QApplication a(argc, argv);
     MainWindow w;
