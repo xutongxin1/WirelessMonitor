@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1080</width>
-    <height>620</height>
+    <height>739</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -186,31 +186,6 @@
         </widget>
        </item>
       </layout>
-     </widget>
-     <widget class="QWidget" name="Device1">
-      <attribute name="title">
-       <string>Device1</string>
-      </attribute>
-     </widget>
-     <widget class="QWidget" name="Device2">
-      <attribute name="title">
-       <string>Device2</string>
-      </attribute>
-     </widget>
-     <widget class="QWidget" name="Device3">
-      <attribute name="title">
-       <string>Device3</string>
-      </attribute>
-     </widget>
-     <widget class="QWidget" name="Device4">
-      <attribute name="title">
-       <string>Device4</string>
-      </attribute>
-     </widget>
-     <widget class="QWidget" name="Device5">
-      <attribute name="title">
-       <string>Device5</string>
-      </attribute>
      </widget>
     </widget>
    </item>

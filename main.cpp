@@ -58,7 +58,6 @@ int main(int argc, char *argv[]) {
     qSetMessagePattern(
         "%{time_ yyyy-MM-dd hh:mm:ss} [%{type}]%{if-warning}[%{function}]%{endif}%{if-fatal}[%{function}--%{line}]%{endif}:%{message}");
 
-    auto *p = new PythonWork();
     qInstallMessageHandler(LogMessageHandler);//安装日志驱动
     QApplication a(argc, argv);
     MainWindow w;

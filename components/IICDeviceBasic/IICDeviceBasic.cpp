@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include "IICDeviceBasic.h"
 #include "ui_IICDeviceBasic.h"
+#include "IICDeviceEach.h"
 
 IICDeviceBasic::IICDeviceBasic(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info,
                                QWidget *parent) :
@@ -23,6 +24,8 @@ IICDeviceBasic::IICDeviceBasic(int device_num, int win_num, QSettings *cfg, ToNe
     ui_->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     connect(ui_->ChooseBoardIni, &QPushButton::clicked, this, &IICDeviceBasic::ChooseBoardConfig);
+
+    ui_->tabWidget->addTab(new IICDeviceEach(this), "设备1");
 }
 
 IICDeviceBasic::~IICDeviceBasic() {
