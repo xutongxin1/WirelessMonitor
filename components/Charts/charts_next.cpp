@@ -16,6 +16,7 @@
 //TODO:可选的点绘制，颜色，线的显示与颜色
 bool hide_flag = 1;//1是关闭隐藏，0是开启隐藏
 bool rolling_flag = true;
+bool test;
 /*颜色笔可选颜色，默认为红
  */
 //enum Pen_color {
