@@ -124,7 +124,7 @@ signals:
     void TimerForHightLight();
     void TimerRefreshCntConncet();
     int last_line_cnt_ = 0;
-
+    bool is_under_=true;
  private slots:
 
 //    void InitConfig();          //初始化配置文件
