@@ -11,6 +11,7 @@ IICDeviceEach::IICDeviceEach(QWidget *parent) :
     RepeaterWidget(parent), ui_(new Ui::IICDeviceEach) {
     ui_->setupUi(this);
 
+
     ui_->splitter->setStretchFactor(0, 1);
     ui_->splitter->setStretchFactor(1, 3);
 
@@ -20,7 +21,8 @@ IICDeviceEach::IICDeviceEach(QWidget *parent) :
     python_work_ = new PythonWorkWithI2C();
     //test
     connect(ui_->ConfigAutoScan, &QPushButton::clicked, this, [&] {
-      python_work_->ReciveDataFromI2C("28", "0E2503");
+      qDebug() << python_work_->ReciveDataFromI2C("3B", "FB92FFD01E3E");
+      qDebug() << python_work_->ReciveDataFromI2C("43", "07DF0AC0F512");
     });
 
 }

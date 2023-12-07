@@ -25,7 +25,10 @@ class IICDeviceBasic : public RepeaterWidget {
 
     void ChooseBoardConfig();
 
+    void SetIIC();
+    bool get_command_reply_ = false;
     QString last_board_ini_folder_;
+    QString ip_;
 };
 
 #endif //MAIN_COMPONENTS_IICDEVICEBASIC_IICDEVICEBASIC_H_

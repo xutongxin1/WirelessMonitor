@@ -41,7 +41,7 @@ PythonWork::PythonWork() {
 }
 bool PythonWork::PythonValueSave(const QString &val_name, const QString &val) {
     try {
-        exec((val_name + "=" + val).toStdString().c_str(), main_namespace_);
+        exec((val_name + "=\"" + val + "\"").toStdString().c_str(), main_namespace_);
         return true;
     }
     catch (const error_already_set &) {
