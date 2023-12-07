@@ -86,10 +86,10 @@ private:
     QTextCharFormat keywordFormat;
     QTextCharFormat classFormat;
 
-    //    QTextCharFormat singleLineCommentFormat;
-//    QTextCharFormat multiLineCommentFormat;
-//    QTextCharFormat quotationFormat;
-//    QTextCharFormat functionFormat;
+    QTextCharFormat singleLineCommentFormat;
+    QTextCharFormat multiLineCommentFormat;
+    QTextCharFormat quotationFormat;
+    QTextCharFormat functionFormat;
 
 
 };

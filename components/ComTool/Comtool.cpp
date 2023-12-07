@@ -307,16 +307,52 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 
 
     connect(this, &ComTool::AddText, this, [&](const QString &text, const char type) {
-        LineLimit(text,type);
+//      if (type == 1) {
+//          ui_->txtMain->setTextColor(QColor("dodgerblue"));
+//      } else if (type == 2) {
+//          ui_->txtMain->setTextColor(QColor("black"));
+//      }
+      if (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum()) {
+          if (!recieve_tmp_pool_.isEmpty()) {
+              ui_->txtMain->append(recieve_tmp_pool_);//加上一点优化逻辑更好
+              recieve_tmp_pool_.clear();
+          }
+          ui_->txtMain->append(text);
+          is_under_ = true;
+      } else //现在不在底层
+      {
+          if(is_under_)
+          {
+              highlighter_rec_->is_work_ = true;
+//              highlighter_rec_->rehighlight();//不能用该方法开启高亮，一定要文本的改变才能触发
+              ui_->txtMain->append(text);
+              is_under_ = false;
+              return;
+          }
+          recieve_tmp_pool_.append(text);
+          is_under_ = false;
+
+
+//            ui_->txtMain->append(text);
+//            ui_->txtMain->verticalScrollBar()->setSliderPosition(ui_->txtMain->verticalScrollBar()->maximum());
+      }
+
+
+
+//      qDebug() << (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum());
     });
 
     //行数限制逻辑
     connect(timer_line_max_, &QTimer::timeout, this, [&] {
 //      qDebug() << ui_->txtMain->document()->lineCount();
-        ui_->txtMain->document()->setMaximumBlockCount(10000);
-        ui_->txtMain->document()->setMaximumBlockCount(0);
+      if (is_under_) {
+          ui_->txtMain->document()->setMaximumBlockCount(10000);
+          ui_->txtMain->document()->setMaximumBlockCount(0);
+      }
 
     });
+
+    //高亮适配器绑定
     connect(timer_line_max_, &QTimer::timeout, this, &ComTool::TimerForHightLight);
 //    connect(this, &ComTool::UpdateCntTimer, this, &ComTool::TimerRefreshCntConncet);//绑定计数器界面刷新程序
 }
@@ -345,7 +381,7 @@ void ComTool::LineLimit(const QString &text, const char type) {
 
 void ComTool::TimerForHightLight() {
     int tmp = ui_->txtMain->document()->lineCount();
-    if (tmp - last_line_cnt_ > 1000 || tmp == 10000) {
+    if ((tmp - last_line_cnt_ > 1000 || tmp == 10000) && is_under_) {
         timer_for_highlight_->start(5000);
         highlighter_rec_->is_work_ = false;
     } else {
@@ -467,12 +503,15 @@ bool ComTool::OpenSerial() {
 
 ///启动串口/tcp工具
 void ComTool::ToolSwitch() {
-    qDebug() << (ui_->txtMain->document()->lineCount());
+//    qDebug() << (ui_->txtMain->document()->lineCount());
+
+    //串口关闭行为
     if (ui_->StartTool->text() == "停止") {
         if (ui_->COMButton->isChecked()) {
             timer_refresh_cnt_->stop();
             timer_line_max_->stop();
             timer_for_highlight_->stop();
+            highlighter_rec_->is_work_ = true;
 
             my_serialport_->close();
 
@@ -485,7 +524,8 @@ void ComTool::ToolSwitch() {
         is_start_ = false;
         ui_->StartTool->setStyleSheet("background-color: rgba(170, 255, 0, 125);");
 
-    } else {
+    } else //串口打开行为
+    {
         if (ui_->COMButton->isChecked()) {
             if (!OpenSerial()) {
                 return;
