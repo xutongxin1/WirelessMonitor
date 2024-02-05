@@ -12,7 +12,6 @@ SideBarButton::SideBarButton(int num, ConfigClass *device_cfg, RepeaterWidget *p
     RepeaterWidget(parent), ui_(new Ui::SideBarButton) {
 
     ui_->setupUi(this);
-
     QString note = device_cfg->value("/All/note").toString();
     QString connect_mode = device_cfg->value("/All/connect_mode").toString();
     QString attach = "";

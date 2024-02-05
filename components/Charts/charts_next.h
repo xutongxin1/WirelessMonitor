@@ -30,7 +30,7 @@ QHash<QString,Datanode> Data_pools;是中间数据池，用容器去维护。
 
 
 namespace Ui {
-class charts_next;
+    class charts_next;
 }
 
 /*
@@ -52,21 +52,21 @@ signals:
 */
 
 class ChartsNext : public RepeaterWidget {
- Q_OBJECT
- protected:
+Q_OBJECT
+protected:
 
     //friend bool AddDate(QString addname, const QVector<double> &addDate, ChartsNext *Chart);
     friend class MainWindow;
 
     friend class ChartThread;
 
- signals:
+signals:
 
     void updataok();
 
     void monitor(const QVector<double> &addDate);
 
- public:
+public:
     explicit ChartsNext(int device_num,
                         int win_num,
                         QSettings *cfg,
@@ -82,6 +82,7 @@ class ChartsNext : public RepeaterWidget {
     bool RegisterDataPoint(const QString &point_name);
 
     bool AntiRegisterDataPoint(const QString &point_name);
+
     bool AntiRegisterAllDataPoint();
 
     bool IsDataPointRegistter(const QString &addname);         // 检查数据点是否存在
@@ -91,6 +92,7 @@ class ChartsNext : public RepeaterWidget {
     bool AddDataAuto(const QString &point_name, double data);
 
     bool AddDataWithProgramTime(const QString &point_name, double data, double program_time);
+
     bool AddDataWithProgramTime(const QString &point_name,
                                 double data,
                                 const QDateTime &time);
@@ -125,7 +127,7 @@ class ChartsNext : public RepeaterWidget {
 
     TimeType chart_time_type_ = PROGRAM_TIME;
 
- public slots:
+public slots:
 
     void UpdateLine();
 
@@ -140,9 +142,7 @@ class ChartsNext : public RepeaterWidget {
 //    void keep_monitor();
 
 
-
-
- private:
+private:
     Ui::charts_next *ui_chart_;
 
     QCustomPlot *custom_plot_;
@@ -153,8 +153,6 @@ class ChartsNext : public RepeaterWidget {
 
     QHash<QString, DataNodeIndex> data_pool_index_;         //指针索引，加快添加数据时的速度
 
-
-
     int flag;
     double timer_count = 0.0;
     bool checked = 1;
@@ -162,11 +160,14 @@ class ChartsNext : public RepeaterWidget {
     bool timeHasInit = false;
 
     long double program_begin_time_;
+
+    double distance_y;
+    double distance_x;
     //DataReceiverNext *thread;
 //    Thread *thread;
 
-
-
+//protected:
+//    void wheelEvent(QWheelEvent *event);
 };
 
 #endif // ChartsNext_H

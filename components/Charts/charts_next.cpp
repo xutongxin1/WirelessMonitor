@@ -16,6 +16,7 @@
 //TODO:可选的点绘制，颜色，线的显示与颜色
 bool hide_flag = 1;//1是关闭隐藏，0是开启隐藏
 bool rolling_flag = true;
+bool test;
 /*颜色笔可选颜色，默认为红
  */
 //enum Pen_color {
@@ -43,8 +44,8 @@ bool rolling_flag = true;
 //graph.setPen,setName。每个曲线都会独占一个graph
 
 ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent) :
-    RepeaterWidget(parent),
-    ui_chart_(new Ui::charts_next) {
+        RepeaterWidget(parent),
+        ui_chart_(new Ui::charts_next) {
     ui_chart_->setupUi(this);
 
     //需要接入统一的设置文件的系统
@@ -60,7 +61,7 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
     paint_timer_->setInterval(100);
 
     connect(paint_timer_, &QTimer::timeout, this, [&] {
-      UpdateLine();
+        UpdateLine();
     });//绘图定时器
 
     // 设置表格列平分
@@ -69,7 +70,7 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
 // Allow user to drag axis ranges with mouse, zoom with mouse wheel and select graphs by clicking:
     //chart配置               ui_chart_->widget->graph(i)->setName();
     ui_chart_->widget->setOpenGl(true);
-    qDebug()<<"opengle="<<ui_chart_->widget->openGl();
+    qDebug() << "opengle=" << ui_chart_->widget->openGl();
 //    ui_chart_->widget->setNoAntialiasingOnDrag(true);
 //    ui_chart_->widget->setNotAntialiasedElements(
 //        QCP::aeAxes | QCP::aeGrid | QCP::aeSubGrid | QCP::aeLegend | QCP::aeLegendItems | QCP::aeZeroLine
@@ -97,52 +98,80 @@ ChartsNext::ChartsNext(int device_num, int win_num, QSettings *cfg, ToNewWidget 
 
     //设置基本坐标轴（左侧Y轴和下方X轴）可拖动、可缩放、曲线可选、legend可选、设置伸缩比例，使所有图例可见
     ui_chart_->widget->setInteractions(
-        QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes | QCP::iSelectLegend | QCP::iSelectPlottables);
+            QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes | QCP::iSelectLegend | QCP::iSelectPlottables);
 
     connect(ui_chart_->widget, SIGNAL(mouseMove(QMouseEvent * )), this, SLOT(myMoveEvent(QMouseEvent * )));
 
     //设置legend只能选择图例
     ui_chart_->widget->legend->setSelectableParts(QCPLegend::spItems);
     connect(ui_chart_->widget, &QCustomPlot::selectionChangedByUser, this, [&] {
-      // 这个信号貌似有值
-      SelectionChanged();
+        // 这个信号貌似有值
+        SelectionChanged();
     });
     custom_plot_ = ui_chart_->widget;
     custom_plot_->axisRect()->insetLayout()->setInsetAlignment(0,
                                                                Qt::AlignTop
-                                                                   | Qt::AlignLeft);       // 设置图例在左上，这句不能放上去，要等整张图像画出来，才能设置位置
+                                                               |
+                                                               Qt::AlignLeft);       // 设置图例在左上，这句不能放上去，要等整张图像画出来，才能设置位置
     UpdateLine();
 
+    // 重写滚轮事件
+    connect(ui_chart_->widget, &QCustomPlotWithMouse::RwheelEvent, this, [&] {
+//        double x = data_pool_[i].data_list.last().time.program_time_;       // 获取最新的X值
+//        double y = data_pool_[i].data_list.last().data;                     // 获取最新的y值
+//        double y_lower = ui_chart_->widget->yAxis->range().lower;           // 获取坐标轴当前最小的y值
+//        double y_low = ui_chart_->widget->yAxis->range().lower;
+//        double y_high = ui_chart_->widget->yAxis->range().upper;
+//        double dis_y = y_high-y_low;
+//        double x_low = ui_chart_->widget->xAxis->range().lower;
+//        double x_high = ui_chart_->widget->xAxis->range().upper;
+//        double dis_x = x_high-x_low;
+//        ui_chart_->widget->xAxis->setRange(x_low + dis_x, x_high+dis_x);          // 刷新x的范围
+//        ui_chart_->widget->yAxis->setRange(y_low + dis_y, y_high+dis_y);    // 刷新y的范围  这些加减都是随便设的
+//        double y_low = ui_chart_->widget->yAxis->range().lower;
+        double y_high = ui_chart_->widget->yAxis->range().upper;    // 获取y轴的最大值
+        double y = data_pool_[0].data_list.last().data;
+        // newdata+distance
+        distance_y = y_high - y;
+        qDebug() << "distance" << distance_y;
+    });
 
+    // 重写鼠标释放事件
+    connect(ui_chart_->widget, &QCustomPlotWithMouse::RmouseReleaseEvent, this, [&] {
+        double y_low = ui_chart_->widget->yAxis->range().lower;
+        double y_high = ui_chart_->widget->yAxis->range().upper;
+//        qDebug() << y_low << " " << y_high;
+    });
 
     // 图表右键菜单
     ui_chart_->widget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui_chart_->widget, &QWidget::customContextMenuRequested, this, [&](const QPoint pos) {
 
-      QMenu *menu = new QMenu(ui_chart_->widget);
+        QMenu *menu = new QMenu(ui_chart_->widget);
 
-      QCheckBox *control = new QCheckBox("是否滚动", ui_chart_->widget);
-      rolling_flag ? control->setCheckState(Qt::Checked) : control->setCheckState(Qt::Unchecked);         // 设置选择框的默认状态
-      QWidgetAction *choice = new QWidgetAction(ui_chart_->widget);
-      choice->setDefaultWidget(control);                                       // 在Action对象中添加控件
+        QCheckBox *control = new QCheckBox("是否滚动", ui_chart_->widget);
+        rolling_flag ? control->setCheckState(Qt::Checked) : control->setCheckState(
+                Qt::Unchecked);         // 设置选择框的默认状态
+        QWidgetAction *choice = new QWidgetAction(ui_chart_->widget);
+        choice->setDefaultWidget(control);                                       // 在Action对象中添加控件
 
-      QAction *restore = new QAction("自动", ui_chart_->widget);
-      connect(control, &QCheckBox::stateChanged, this, [&, this](int state) {
-        state == Qt::Checked ? rolling_flag = true : rolling_flag = false;        // 设置是否滚动
-      });
+        QAction *restore = new QAction("自动", ui_chart_->widget);
+        connect(control, &QCheckBox::stateChanged, this, [&, this](int state) {
+            state == Qt::Checked ? rolling_flag = true : rolling_flag = false;        // 设置是否滚动
+        });
 
-      connect(restore, &QAction::triggered, this, [&] {
-        //默认是不滚动的
-        qDebug() << "auto()";
-        for (int i = 0; i < data_pool_.size(); ++i) {
-            custom_plot_->graph(i)->rescaleAxes();              // 自动调整图像，首尾点都显示出来
-        }
-
-      });
-      menu->addAction(choice);
-      menu->addAction(restore);
-      menu->move(cursor().pos());           // 将菜单窗口移动到鼠标的坐标
-      menu->show();
+        connect(restore, &QAction::triggered, this, [&] {
+            //默认是不滚动的
+//            qDebug() << "auto()";
+            for (int i = 0; i < data_pool_.size(); ++i) {
+                custom_plot_->graph(i)->rescaleAxes();              // 自动调整图像，首尾点都显示出来
+            }
+            custom_plot_->replot();
+        });
+        menu->addAction(choice);
+        menu->addAction(restore);
+        menu->move(cursor().pos());           // 将菜单窗口移动到鼠标的坐标
+        menu->show();
 
     });
 
@@ -166,6 +195,12 @@ void ChartsNext::UpdateLine() {
             custom_plot_->graph()->setAntialiased(true);//抗锯齿
             custom_plot_->graph(i)->setPen(pen);
             custom_plot_->graph(i)->setName(data_pool_.at(i).data_name);
+
+            // 散点测试
+            custom_plot_->graph(i)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 6));
+//            custom_plot_->graph(i)->setData(latVector, lonVector);
+//            custom_plot_->graph(i)->setLineStyle(QCPGraph::lsNone);     // 散点图
+
             if (data_pool_.at(i).is_visible) {
                 custom_plot_->graph(i)->setVisible(true);
             } else {
@@ -174,7 +209,7 @@ void ChartsNext::UpdateLine() {
             data_pool_[i].last_draw_index = 0;
 
         }
-
+        // 应该对大概出问题了，超过1000个点卡住了
         if (data_pool_.at(i).is_update) {
             has_update = true;
             this->data_pool_[i].is_update = false;
@@ -184,29 +219,44 @@ void ChartsNext::UpdateLine() {
 
                     case PROGRAM_TIME: {
                         custom_plot_->graph(i)->addData(
-                            data_pool_[i].data_list.at(j).time.program_time_,
-                            data_pool_[i].data_list.at(j).data);
+                                data_pool_[i].data_list.at(j).time.program_time_,
+                                data_pool_[i].data_list.at(j).data);
                         break;
                     }
                     case DATE_TIME: {
-                        custom_plot_->graph(i)->addData(data_pool_[i].data_list.at(j).time.date_time_->toMSecsSinceEpoch(),
-                                                        data_pool_[i].data_list.at(j).data);
+                        custom_plot_->graph(i)->addData(
+                                data_pool_[i].data_list.at(j).time.date_time_->toMSecsSinceEpoch(),
+                                data_pool_[i].data_list.at(j).data);
                         break;
                     }
                     case DATA_TIME: {
                         custom_plot_->graph(i)->addData(
-                            double(data_pool_[i].data_list.at(j).time.data_time_),
-                            data_pool_[i].data_list.at(j).data);
+                                double(data_pool_[i].data_list.at(j).time.data_time_),
+                                data_pool_[i].data_list.at(j).data);
                         break;
                     }
                 }
             }
+            /// TODO:   改变坐标轴, 刷轴，为什么改变任何图像属性，并不会触发重绘了？？？
             if (rolling_flag) {
                 double x = data_pool_[i].data_list.last().time.program_time_;       // 获取最新的X值
                 double y = data_pool_[i].data_list.last().data;                     // 获取最新的y值
-                double y_lower = ui_chart_->widget->yAxis->range().lower;           // 获取坐标轴当前最小的y值
-                ui_chart_->widget->xAxis->setRange(x * 0.75, x);          // 刷新x的范围
-                ui_chart_->widget->yAxis->setRange(y_lower, abs(y) * 2);    // 刷新y的范围  这些加减都是随便设的
+
+                double y_low = ui_chart_->widget->yAxis->range().lower;
+                double y_high = ui_chart_->widget->yAxis->range().upper;
+                distance_y = y_high - y_low;
+                double x_low = ui_chart_->widget->xAxis->range().lower;
+                double x_high = ui_chart_->widget->xAxis->range().upper;
+                distance_x = x_high - x_low;
+//                ui_chart_->widget->xAxis->setRange(x_low + distance_x, x_high + distance_x);          // 刷新x的范围
+
+                ui_chart_->widget->yAxis->setRange(y_low + distance_y, y_high + distance_y);    // 刷新y的范围  这些加减都是随便设的
+                qDebug() << ui_chart_->widget->yAxis->range().upper;
+                //                qDebug() << distance_y << " " << distance_x;
+
+//                double y_lower = ui_chart_->widget->yAxis->range().lower;           // 获取坐标轴当前最小的y值
+//                ui_chart_->widget->xAxis->setRange(x * 0.75, x);          // 刷新x的范围
+//                ui_chart_->widget->yAxis->setRange(y_lower, abs(y) * 2);    // 刷新y的范围  这些加减都是随便设的
             }
             data_pool_[i].last_draw_index = data_pool_[i].data_list.size();
 
@@ -219,30 +269,28 @@ void ChartsNext::UpdateLine() {
 
 void ChartsNext::myMoveEvent(QMouseEvent *event) {
     //获取鼠标坐标，相对父窗体坐标
-    int c_flag = 0;         // 应该是一个是否选中线条的标志
-    int x_pos = event->pos().x();
-    int y_pos = event->pos().y();
+    int c_flag = 0;                     // 应该是一个是否选中线条的标志
+    int x_pos = event->pos().x();       // 获取x坐标
+    int y_pos = event->pos().y();       // 获取y坐标
 //    qDebug() << "event->pos()" << event->pos();
 
     //鼠标坐标转化为CustomPlot内部坐标
-    float x_val = ui_chart_->widget->xAxis->pixelToCoord(x_pos);
-    float y_val = ui_chart_->widget->yAxis->pixelToCoord(y_pos);
-    float line_y_val = 0;
+    float x_val = ui_chart_->widget->xAxis->pixelToCoord(x_pos);    // 转换为坐标轴对应的值
+    float y_val = ui_chart_->widget->yAxis->pixelToCoord(y_pos);    // 转换为坐标轴对应的值
+    static float line_y_val = 0;
     //获得x轴坐标位置对应的曲线上y的值
     for (int i = 0; i < ui_chart_->widget->graphCount(); ++i) {
         QCPGraph *graph = ui_chart_->widget->graph(i);
         if (graph->selected()) {
-            line_y_val = ui_chart_->widget->graph(i)->data()->at(x_val)->value;
-            c_flag = 1;
+            line_y_val = ui_chart_->widget->graph(i)->data()->at(x_val)->value;     // 获取选中点的y值
+            c_flag = 1;         // 图线选中
         }
     }
 
     //曲线的上点坐标位置，用来显示QToolTip提示框
-
     float out_x = ui_chart_->widget->xAxis->coordToPixel(x_val);
     float out_y = ui_chart_->widget->yAxis->coordToPixel(y_val);
-    float out_value = ui_chart_->widget->yAxis->coordToPixel(line_y_val);
-
+    float out_value = ui_chart_->widget->yAxis->coordToPixel(line_y_val);       // 这个值有问题
     QString str, strToolTip;
     str = QString::number(x_val, 10, 3);
     strToolTip += "Time: ";
@@ -250,17 +298,18 @@ void ChartsNext::myMoveEvent(QMouseEvent *event) {
     strToolTip += "\n";
 
     /// 显示提示框
-//    // c_flag
-//    if (0) {
-//        /// 这部分是选中逻辑
-//        str = QString::number(line_y_val, 10, 3);
-//        strToolTip += "ADC: ";
-//        strToolTip += str;
-//        strToolTip += "\n";
-//        /// 这里这么写是有什么用吗，选中之后提示有什么作用？
-//        QToolTip::showText(mapToGlobal(QPoint(out_x, out_value)), strToolTip, ui_chart_->widget);
-//
-//    } else {
+    if (c_flag) {
+        /// 这部分是选中逻辑
+        str = QString::number(y_val, 10, 3);
+        strToolTip += "ADC: ";
+        strToolTip += str;
+        strToolTip += "\n";
+        /// 这里这么写是有什么用吗，选中之后提示有什么作用？
+        QToolTip::showText(mapToGlobal(QPoint(out_x, out_y)), strToolTip, ui_chart_->widget);
+
+    }
+
+//    else {
 //        /// 这部分是默认逻辑
 //        str = QString::number(y_val, 10, 3);
 //        strToolTip += "ADC: ";
@@ -391,7 +440,7 @@ bool ChartsNext::AddDataWithProgramTime(const QString &point_name,
     return AddDataWithProgramTime(point_name,
                                   data,
                                   double(time.toMSecsSinceEpoch() / (long double) 1000
-                                             - program_begin_time_));//上限精度
+                                         - program_begin_time_));//上限精度
 }
 
 bool ChartsNext::AddDataWithProgramTime(const QString &point_name, double data, double program_time) {
@@ -451,13 +500,14 @@ void ChartsNext::UpdateDataPoolIndex() {
     QList<DataNode>::iterator i;
     for (i = data_pool_.begin(); i != data_pool_.end(); ++i) {
         struct DataNodeIndex tmp = {
-            .data_list =  &(i->data_list),
-            .is_update = &(i->is_update),
-            .last_draw_index = &(i->last_draw_index)
+                .data_list =  &(i->data_list),
+                .is_update = &(i->is_update),
+                .last_draw_index = &(i->last_draw_index)
         };
         data_pool_index_.insert(i->data_name, tmp);//添加到索引
     }
 }
+
 /*****
  * IsDataPointRegistter
  * 检测是否注册过的接口
@@ -524,10 +574,10 @@ void ChartsNext::LoadInfo() {
         disconnect(line_info_[i].check_visible, 0, 0, 0);
 
         connect(line_info_[i].check_visible, &QCheckBox::stateChanged, this, [=, this](int state) {
-          VisibleChanged(state, i);
+            VisibleChanged(state, i);
         });
         connect(line_info_[i].choose_color, &QPushButton::clicked, this, [&, i] {
-          SelectColor(i);
+            SelectColor(i);
         });
     }
 
@@ -535,7 +585,7 @@ void ChartsNext::LoadInfo() {
     for (int i = 0; i < data_pool_.size(); ++i) {
         // QTable添加文字，控件
         ui_chart_->line_table->setItem(i, 0, new QTableWidgetItem(data_pool_.at(i).data_name));     // 添加变量名
-        ui_chart_->line_table->item(i,0)->setTextAlignment(Qt::AlignCenter);                        // 文字居中
+        ui_chart_->line_table->item(i, 0)->setTextAlignment(Qt::AlignCenter);                        // 文字居中
         ui_chart_->line_table->setCellWidget(i, 1, line_info_[i].choose_color);                         // 颜色选择控件
         ui_chart_->line_table->setCellWidget(i, 2, line_info_[i].check_visible);                        // 显示选择框
 
@@ -572,8 +622,8 @@ void ChartsNext::SelectColor(int i) {
         pen.setWidth(data_pool_.at(i).line_width);//设置线宽,默认是2
         pen.setColor(data_pool_.at(i).line_color);//设置线条红色
         ui_chart_->widget->graph(i)->setPen(pen);
-
     }
+    ui_chart_->widget->replot();
 
 }
 
@@ -588,6 +638,7 @@ void ChartsNext::VisibleChanged(int state, int location) {
         data_pool_[location].is_visible = false;
         ui_chart_->widget->graph(location)->setVisible(false);
     }
+    ui_chart_->widget->replot();
 }
 
 void ChartsNext::SelectionChanged() {
@@ -605,9 +656,11 @@ void ChartsNext::SelectionChanged() {
         }
     }
 }
+
 void ChartsNext::SetProgramTime() {
     program_begin_time_ = (QDateTime::currentMSecsSinceEpoch() / (long double) 1000);
 }
+
 bool ChartsNext::AntiRegisterAllDataPoint() {
     qDebug() << "反注册全部变量 ";
     for (QList<DataNode>::iterator i = data_pool_.begin(); i != data_pool_.end(); ++i) {
@@ -624,6 +677,7 @@ bool ChartsNext::AntiRegisterAllDataPoint() {
         i--;//让迭代器去指向下一个元素，这样for循环才不会出错
     }
     custom_plot_->clearGraphs();            // 清除图像
+    custom_plot_->replot();
     return true;
 }
 
@@ -647,7 +701,6 @@ void ChartsNext::SaveConstructConfig() {
 }
 
 /// 读取图像配置
-
 void ChartsNext::GetConstructConfig() {
     qDebug("Get charts config");
 
