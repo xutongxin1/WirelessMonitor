@@ -26,12 +26,12 @@ void TCPInfoHandle::connectToHost(const QString &host_name, quint16 port, QIODev
                                   QAbstractSocket::NetworkLayerProtocol mode = AnyIPProtocol) {
     connect(this, &QTcpSocket::connected, this, [=] {
       qInfo("已连接到服务器%s:%d", qPrintable(host_name), port);
-      disconnect(this, &QTcpSocket::connected, this, 0);
+      disconnect(this, &QTcpSocket::connected, this, nullptr);
       is_connected_ = true;
       emit(HasConnected());
     });
     this->ip_ = host_name;
-    this->io_port_ = port - 1920;
+    this->io_port_ = port - 1920;//注意，这只是赋值，连接用的还是port变量
     this->QAbstractSocket::connectToHost(host_name, port, protocol, mode);
 
 }

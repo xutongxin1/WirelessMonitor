@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>IICDeviceEach</class>
+ <widget class="RepeaterWidget" name="IICDeviceEach">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1056</width>
+    <height>574</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>IICDeviceBasic</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>6</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>设备配置文件</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="DeviceFile">
+           <property name="text">
+            <string>C:/GitProject/QT/config/I2C/MPU6050.py</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="ChooseFile">
+           <property name="text">
+            <string>选择文件</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>地址 0x</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit">
+           <property name="text">
+            <string>D0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>通信速率 kbit</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit_2">
+           <property name="text">
+            <string>100</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>数据长度</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox">
+           <item>
+            <property name="text">
+             <string>7</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>10</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QLabel" name="state">
+           <property name="text">
+            <string>状态：已连接</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="apply">
+           <property name="text">
+            <string>应用</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QTableWidget" name="tableWidget">
+         <row>
+          <property name="text">
+           <string>1</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>2</string>
+          </property>
+         </row>
+         <column>
+          <property name="text">
+           <string>地址</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>值长度</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>注释</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>探测结果</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>解算结果</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>操作</string>
+          </property>
+         </column>
+         <item row="0" column="0">
+          <property name="text">
+           <string>0x3B</string>
+          </property>
+         </item>
+         <item row="0" column="1">
+          <property name="text">
+           <string>6</string>
+          </property>
+         </item>
+         <item row="0" column="2">
+          <property name="text">
+           <string>三轴线性加速度</string>
+          </property>
+         </item>
+         <item row="0" column="3">
+          <property name="text">
+           <string>FB92FFD01E3E</string>
+          </property>
+         </item>
+         <item row="1" column="0">
+          <property name="text">
+           <string>0x43</string>
+          </property>
+         </item>
+         <item row="1" column="1">
+          <property name="text">
+           <string>6</string>
+          </property>
+         </item>
+         <item row="1" column="2">
+          <property name="text">
+           <string>三轴角速度</string>
+          </property>
+         </item>
+         <item row="1" column="3">
+          <property name="text">
+           <string>07DF0AC0F512</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QLabel" name="AutoScanStaus">
+           <property name="text">
+            <string>自动刷新：启动</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="ConfigAutoScan">
+           <property name="text">
+            <string>配置自动刷新</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>RepeaterWidget</class>
+   <extends>QWidget</extends>
+   <header>repeaterwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

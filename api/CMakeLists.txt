@@ -6,6 +6,8 @@ add_subdirectory(ConfigClass)
 add_subdirectory(QPushButtonWithMouse)
 add_subdirectory(QCustomPlotWithMouse)
 add_subdirectory(QTextEditWithKey)
+add_subdirectory(PythonWork)
+
 IF (WIN32)
     MESSAGE(STATUS "Now is windows")
 
