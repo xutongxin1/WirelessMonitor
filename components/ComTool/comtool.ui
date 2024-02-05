@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>642</height>
+    <height>644</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -63,7 +63,7 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_12">
              <item>
-              <widget class="QTextEdit" name="SendDataEdit">
+              <widget class="QTextEditWithKey" name="SendDataEdit">
                <property name="styleSheet">
                 <string notr="true">background-color: rgba(255, 255, 255, 125);</string>
                </property>
@@ -73,7 +73,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QTextEdit" name="TranslateEdit">
+              <widget class="QTextEditWithKey" name="TranslateEdit">
                <property name="styleSheet">
                 <string notr="true">background-color: rgba(255, 255, 255, 125);</string>
                </property>
@@ -246,6 +246,13 @@ QPushButton:disabled, ToolButton:disabled {
                </property>
                <property name="text">
                 <string>  清空发送区</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="refreshLog">
+               <property name="text">
+                <string>刷新收发日志</string>
                </property>
               </widget>
              </item>
@@ -716,6 +723,11 @@ QPushButton:disabled, ToolButton:disabled {
    <class>QtMaterialRadioButton</class>
    <extends>QRadioButton</extends>
    <header>qtmaterialradiobutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QTextEditWithKey</class>
+   <extends>QTextEdit</extends>
+   <header>QTextEditWithKey.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

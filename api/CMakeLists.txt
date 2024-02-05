@@ -5,6 +5,7 @@ add_subdirectory(Highlighter)
 add_subdirectory(ConfigClass)
 add_subdirectory(QPushButtonWithMouse)
 add_subdirectory(QCustomPlotWithMouse)
+add_subdirectory(QTextEditWithKey)
 IF (WIN32)
     MESSAGE(STATUS "Now is windows")
 

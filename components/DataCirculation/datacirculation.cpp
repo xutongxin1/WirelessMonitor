@@ -309,7 +309,7 @@ void DataCirculation::StopCirculation() {
     chart_window_->DeleteWidget();          // 删除控件
     disconnect(tcp_info_handler_[1], 0, 0, 0);
     disconnect(tcp_info_handler_[2], 0, 0, 0);
-    disconnect((*(this->parent_info_->devices_info))[this->device_num_].com_tool, 0, 0, 0);
+//    disconnect((*(this->parent_info_->devices_info))[this->device_num_].com_tool, 0, 0, 0);
 
     chart_window_->SaveConstructConfig();   // 保存图像信息
 
@@ -318,7 +318,6 @@ void DataCirculation::StopCirculation() {
 //    qDebug() << "关闭数据流过滤" << endl;
     ui_->btnStart->setText("启动数据流处理");
     ui_->btnStart->setEnabled(true);
-
 }
 
 /// 对目标数据进行过滤
