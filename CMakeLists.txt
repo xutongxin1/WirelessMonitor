@@ -17,6 +17,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 20)
 
+
 add_definitions(-DQCUSTOMPLOT_USE_OPENGL)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_PROJECT_VERSION 1.1)
@@ -25,10 +26,10 @@ set(Boost_NO_WARN_NEW_VERSIONS 1)
 #set(CMAKE_PREFIX_PATH "C:/Qt/6.2.4/msvc2019_64/")
 
 #set(Python_ROOT_DIR C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/include/python3.11)
-set(Boost_INCLUDE_DIR C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/include/)
-set(Python3_DIR "C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/include/boost/python")
+#set(Boost_INCLUDE_DIR C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/include/)
+#set(Python3_DIR "C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/include/boost/python")
 
-include(C:/Users/xtx/.vcpkg-clion/vcpkg/scripts/buildsystems/vcpkg.cmake)
+#include(C:/Users/xtx/.vcpkg-clion/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
 find_package(QT NAMES Qt6 REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent)
 find_package(Qt6 REQUIRED COMPONENTS Core5Compat)       # QT6
@@ -69,13 +70,22 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 endif ()
 target_include_directories(${PROJECT_NAME} PUBLIC ./components)
 target_include_directories(${PROJECT_NAME} PUBLIC ./config)
+MESSAGE(STATUS ${Boost_LIBRARY_DIR_DEBUG})
+target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}/python3.11)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIRS} "C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/include/python3.11")
+if (EXISTS "${Boost_LIBRARY_DIR_DEBUG}/python311.lib")
+    message(STATUS "python311.lib exists, is OK!?")
+
+else ()
+    execute_process(COMMAND cp.exe -f ${Boost_LIBRARY_DIR_DEBUG}/python311_d.lib ${Boost_LIBRARY_DIR_DEBUG}/python311.lib
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/thirdPartyTool/cp)
+    message(STATUS "python311_d.lib OK")
+endif ()
 
 target_link_libraries(
-        ${PROJECT_NAME} PUBLIC "C:/Users/xtx/.vcpkg-clion/vcpkg/packages/python3_x64-windows/lib/python311.lib" PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
+        ${PROJECT_NAME} PUBLIC ${Boost_LIBRARY_DIR_DEBUG}/python311.lib PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::Core Qt6::PrintSupport Qt6::SerialPort
-        Qt6::Network components Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent "${CMAKE_CURRENT_SOURCE_DIR}/api/OpenGL32.Lib" ${Boost_LIBRARIES})
+        Qt6::Network components Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent "${CMAKE_CURRENT_SOURCE_DIR}/api/OpenGL32.Lib"  ${Boost_LIBRARIES})
 
 
 set_target_properties(
@@ -94,6 +104,9 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND cp.exe -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/thirdPartyTool/cp
         )#QTCreator或者linux环境使用
+
+
+
 
 if (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/Debug/resource")
     message(STATUS "resource exists")
