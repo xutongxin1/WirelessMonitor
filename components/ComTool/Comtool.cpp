@@ -301,11 +301,6 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 
     TimerRefreshCntConncet();//绑定计数器刷新函数
 
-    connect(ui_->testn, &QPushButton::clicked, this, [&] {
-        qDebug() << recieve_tmp_pool_.size();
-    });
-
-
     connect(this, &ComTool::AddText, this, [&](const QString &text, const char type) {
 //      if (type == 1) {
 //          ui_->txtMain->setTextColor(QColor("dodgerblue"));
