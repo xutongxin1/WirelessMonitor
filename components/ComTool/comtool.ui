@@ -55,7 +55,7 @@
            <bool>true</bool>
           </property>
           <property name="placeholderText">
-           <string>收发日志</string>
+           <string>收发流</string>
           </property>
          </widget>
          <widget class="QWidget" name="horizontalLayoutWidget_2">
@@ -73,12 +73,12 @@
               </widget>
              </item>
              <item>
-              <widget class="QTextEditWithKey" name="TranslateEdit">
+              <widget class="QTextEditWithKey" name="HEXEdit">
                <property name="styleSheet">
                 <string notr="true">background-color: rgba(255, 255, 255, 125);</string>
                </property>
                <property name="placeholderText">
-                <string>转换</string>
+                <string>HEX区</string>
                </property>
               </widget>
              </item>
@@ -370,7 +370,7 @@ QPushButton:disabled, ToolButton:disabled {
          <property name="currentIndex">
           <number>0</number>
          </property>
-         <widget class="QWidget" name="tab">
+         <widget class="QWidget" name="RecieveSetting">
           <attribute name="title">
            <string>接收设置</string>
           </attribute>
@@ -481,7 +481,7 @@ QPushButton:disabled, ToolButton:disabled {
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_5" stretch="2,1,2,2,2,2,2,2,0">
               <item>
-               <widget class="QPushButton" name="StartTool">
+               <widget class="QtMaterialRaisedButton" name="StartTool">
                 <property name="styleSheet">
                  <string notr="true">background-color: rgba(170, 255, 0, 125);
 </string>
@@ -548,7 +548,11 @@ QPushButton:disabled, ToolButton:disabled {
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="COMCombo"/>
+                 <widget class="QComboBox" name="COMCombo">
+                  <property name="styleSheet">
+                   <string notr="true"/>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </item>
@@ -566,6 +570,14 @@ QPushButton:disabled, ToolButton:disabled {
                 </item>
                 <item>
                  <widget class="QComboBox" name="BandCombo">
+                  <property name="styleSheet">
+                   <string notr="true">QComboBox {
+    background-color: #fddfa3; /* 下拉框背景颜色设置为白色 */
+}
+QComboBox QScrollBar::handle:vertical {
+    background-color: #ffe4e1; /* 滚动条手柄背景颜色为#b2bdaf */
+}</string>
+                  </property>
                   <property name="editable">
                    <bool>true</bool>
                   </property>
@@ -646,7 +658,7 @@ QPushButton:disabled, ToolButton:disabled {
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="tab_2">
+         <widget class="QWidget" name="HistorySend">
           <attribute name="title">
            <string>历史发送</string>
           </attribute>
@@ -699,6 +711,11 @@ QPushButton:disabled, ToolButton:disabled {
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="AutoReply">
+          <attribute name="title">
+           <string>自动应答</string>
+          </attribute>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -728,6 +745,11 @@ QPushButton:disabled, ToolButton:disabled {
    <class>QTextEditWithKey</class>
    <extends>QTextEdit</extends>
    <header>QTextEditWithKey.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QtMaterialRaisedButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">qtmaterialraisedbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

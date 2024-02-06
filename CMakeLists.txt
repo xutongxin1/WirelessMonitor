@@ -64,7 +64,7 @@ endif ()
 add_subdirectory(api)
 add_subdirectory(components)
 add_subdirectory(thirdLib)
-add_library(whatever STATIC ${SOURCES})
+#add_library(whatever STATIC ${SOURCES})
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
     add_link_options(${PROJECT_NAME} PRIVATE -mwindows)
 endif ()
@@ -85,7 +85,7 @@ endif ()
 target_link_libraries(
         ${PROJECT_NAME} PUBLIC ${Boost_LIBRARY_DIR_DEBUG}/python311.lib PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::Core Qt6::PrintSupport Qt6::SerialPort
-        Qt6::Network components Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent "${CMAKE_CURRENT_SOURCE_DIR}/api/OpenGL32.Lib"  ${Boost_LIBRARIES})
+        Qt6::Network qmetarialComponents Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent "${CMAKE_CURRENT_SOURCE_DIR}/api/OpenGL32.Lib"  ${Boost_LIBRARIES})
 
 
 set_target_properties(
@@ -123,3 +123,6 @@ else ()
     message(STATUS "resource does not exist")
     file(COPY ./thirdLib/qmetarial/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/resource FOLLOW_SYMLINK_CHAIN)
 endif ()
+
+
+add_subdirectory(thirdTarget_ComTool)

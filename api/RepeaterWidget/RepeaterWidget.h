@@ -10,7 +10,7 @@
 #include <QSettings>
 #include <QDebug>
 #include "structH.h"
-
+#include <QCheckBox>
 namespace Ui {
     class Charts;
 }
