@@ -13,14 +13,13 @@
  */
 
 QtMaterialSnackbarPrivate::QtMaterialSnackbarPrivate(QtMaterialSnackbar *q)
-    : q_ptr(q)
-{
+    : q_ptr(q) {
 }
 
-QtMaterialSnackbarPrivate::~QtMaterialSnackbarPrivate() {}
+QtMaterialSnackbarPrivate::~QtMaterialSnackbarPrivate() {
+}
 
-void QtMaterialSnackbarPrivate::init()
-{
+void QtMaterialSnackbarPrivate::init() {
     Q_Q(QtMaterialSnackbar);
 
     stateMachine = new QtMaterialSnackbarStateMachine(q);
@@ -46,29 +45,26 @@ void QtMaterialSnackbarPrivate::init()
 
 QtMaterialSnackbar::QtMaterialSnackbar(QWidget *parent)
     : QtMaterialOverlayWidget(parent)
-    , d_ptr(new QtMaterialSnackbarPrivate(this))
-{
+      , d_ptr(new QtMaterialSnackbarPrivate(this)) {
     d_func()->init();
 }
 
-QtMaterialSnackbar::~QtMaterialSnackbar() {}
+QtMaterialSnackbar::~QtMaterialSnackbar() {
+}
 
-void QtMaterialSnackbar::setAutoHideDuration(int duration)
-{
+void QtMaterialSnackbar::setAutoHideDuration(int duration) {
     Q_D(QtMaterialSnackbar);
 
     d->duration = duration;
 }
 
-int QtMaterialSnackbar::autoHideDuration() const
-{
+int QtMaterialSnackbar::autoHideDuration() const {
     Q_D(const QtMaterialSnackbar);
 
     return d->duration;
 }
 
-void QtMaterialSnackbar::setUseThemeColors(bool value)
-{
+void QtMaterialSnackbar::setUseThemeColors(bool value) {
     Q_D(QtMaterialSnackbar);
 
     if (d->useThemeColors == value) {
@@ -79,15 +75,13 @@ void QtMaterialSnackbar::setUseThemeColors(bool value)
     update();
 }
 
-bool QtMaterialSnackbar::useThemeColors() const
-{
+bool QtMaterialSnackbar::useThemeColors() const {
     Q_D(const QtMaterialSnackbar);
 
     return d->useThemeColors;
 }
 
-void QtMaterialSnackbar::setBackgroundColor(const QColor &color)
-{
+void QtMaterialSnackbar::setBackgroundColor(const QColor &color) {
     Q_D(QtMaterialSnackbar);
 
     d->backgroundColor = color;
@@ -96,8 +90,7 @@ void QtMaterialSnackbar::setBackgroundColor(const QColor &color)
     update();
 }
 
-QColor QtMaterialSnackbar::backgroundColor() const
-{
+QColor QtMaterialSnackbar::backgroundColor() const {
     Q_D(const QtMaterialSnackbar);
 
     if (d->useThemeColors || !d->backgroundColor.isValid()) {
@@ -107,23 +100,20 @@ QColor QtMaterialSnackbar::backgroundColor() const
     }
 }
 
-void QtMaterialSnackbar::setBackgroundOpacity(qreal opacity)
-{
+void QtMaterialSnackbar::setBackgroundOpacity(qreal opacity) {
     Q_D(QtMaterialSnackbar);
 
     d->bgOpacity = opacity;
     update();
 }
 
-qreal QtMaterialSnackbar::backgroundOpacity() const
-{
+qreal QtMaterialSnackbar::backgroundOpacity() const {
     Q_D(const QtMaterialSnackbar);
 
     return d->bgOpacity;
 }
 
-void QtMaterialSnackbar::setTextColor(const QColor &color)
-{
+void QtMaterialSnackbar::setTextColor(const QColor &color) {
     Q_D(QtMaterialSnackbar);
 
     d->textColor = color;
@@ -132,8 +122,7 @@ void QtMaterialSnackbar::setTextColor(const QColor &color)
     update();
 }
 
-QColor QtMaterialSnackbar::textColor() const
-{
+QColor QtMaterialSnackbar::textColor() const {
     Q_D(const QtMaterialSnackbar);
 
     if (d->useThemeColors || !d->textColor.isValid()) {
@@ -143,8 +132,7 @@ QColor QtMaterialSnackbar::textColor() const
     }
 }
 
-void QtMaterialSnackbar::setFontSize(qreal size)
-{
+void QtMaterialSnackbar::setFontSize(qreal size) {
     QFont f(font());
     f.setPointSizeF(size);
     setFont(f);
@@ -152,51 +140,46 @@ void QtMaterialSnackbar::setFontSize(qreal size)
     update();
 }
 
-qreal QtMaterialSnackbar::fontSize() const
-{
+qreal QtMaterialSnackbar::fontSize() const {
     return font().pointSizeF();
 }
 
-void QtMaterialSnackbar::setBoxWidth(int width)
-{
+void QtMaterialSnackbar::setBoxWidth(int width) {
     Q_D(QtMaterialSnackbar);
 
     d->boxWidth = width;
     update();
 }
 
-int QtMaterialSnackbar::boxWidth() const
-{
+int QtMaterialSnackbar::boxWidth() const {
     Q_D(const QtMaterialSnackbar);
 
     return d->boxWidth;
 }
 
-void QtMaterialSnackbar::setClickToDismissMode(bool value)
-{
+void QtMaterialSnackbar::setClickToDismissMode(bool value) {
     Q_D(QtMaterialSnackbar);
 
     d->clickDismiss = value;
 }
 
-bool QtMaterialSnackbar::clickToDismissMode() const
-{
+bool QtMaterialSnackbar::clickToDismissMode() const {
     Q_D(const QtMaterialSnackbar);
 
     return d->clickDismiss;
 }
 
-void QtMaterialSnackbar::addMessage(const QString &message)
-{
+void QtMaterialSnackbar::addMessage(const QString &message, bool isNoCache) {
     Q_D(QtMaterialSnackbar);
-
+    if (isNoCache) {
+        d->messages.clear();
+    }
     d->messages.push_back(message);
     d->stateMachine->postEvent(new QtMaterialStateTransitionEvent(SnackbarShowTransition));
     raise();
 }
 
-void QtMaterialSnackbar::addInstantMessage(const QString &message)
-{
+void QtMaterialSnackbar::addInstantMessage(const QString &message) {
     Q_D(QtMaterialSnackbar);
 
     if (d->messages.isEmpty()) {
@@ -208,8 +191,7 @@ void QtMaterialSnackbar::addInstantMessage(const QString &message)
     d->stateMachine->progress();
 }
 
-void QtMaterialSnackbar::dequeue()
-{
+void QtMaterialSnackbar::dequeue() {
     Q_D(QtMaterialSnackbar);
 
     if (d->messages.isEmpty()) {
@@ -225,8 +207,7 @@ void QtMaterialSnackbar::dequeue()
     }
 }
 
-void QtMaterialSnackbar::paintEvent(QPaintEvent *event)
-{
+void QtMaterialSnackbar::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event)
 
     Q_D(QtMaterialSnackbar);

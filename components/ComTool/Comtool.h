@@ -12,7 +12,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include "structH.h"
 #include "highlighter.h"
-//#include "ui_ComTool.h"
+// #include "ui_ComTool.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ComTool; }
@@ -57,6 +57,7 @@ signals:
     QString config_file_path_;
     QSettings *cfg_;
 
+    void LineLimit(const QString &text, const char type);
 
  private:
     Ui::ComTool *ui_;
@@ -81,6 +82,8 @@ signals:
     void SaveConstructConfig() override;
 
     void InputProcess();
+
+    void DisInputProcess();
 
     QString ip_;
 

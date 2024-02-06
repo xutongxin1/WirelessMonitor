@@ -11,6 +11,7 @@
 #include "TCPBridgeConfiguration/tcpbridgeconfiguration.h"
 #include "TCPCom/TCPCom.h"
 #include "Charts/charts_next.h"
+#include "IICDeviceBasic/IICDeviceBasic.h"
 
 int record_DeviceNum = 0, record_WinNum = 0;
 
@@ -85,14 +86,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
         DeviceWindowsExchange(now_windows_, now_device_, true);
     }
 
+
     //DeviceExchange(1);
     //    DeviceWindowsExchange(1, 1);
 
-    //    DataCirculation *tmp = new DataCirculation(1,
-    //                                               5,
-    //                                               cfg_->config_device_ini_[1],
-    //                                               &parent_info_);
-    //    ui_->FunctionWindow->setCurrentIndex(ui_->FunctionWindow->addWidget(tmp));
+//    IICDeviceBasic *tmp = new IICDeviceBasic(1,
+//                                               5,
+//                                               config_device_ini_[1],
+//                                               &parent_info_);
+//    ui_->FunctionWindow->setCurrentIndex(ui_->FunctionWindow->addWidget(tmp));
 
     //    ui_->FunctionWindow->setCurrentIndex(2);
     //    devices_info_[1].tab_widget->setCurrentTab(2);
@@ -218,6 +220,15 @@ void MainWindow::DeviceWindowsInit() {
                     devices_windows_info_[device_num][win_num].index =
                         ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
                     devices_info_[device_num].tab_widget->addTab("串口桥数据监视器");  // 添加tab栏
+                    break;
+                case 701:devices_windows_info_[device_num][win_num].type = IIC_Basic;  // 结构体初始化
+
+                    tmp_widget = new IICDeviceBasic(device_num, win_num, config_device_ini_[device_num], &parent_info_);
+                    devices_windows_info_[device_num][win_num].widget = tmp_widget;
+                    ConnectSingal(tmp_widget);
+                    devices_windows_info_[device_num][win_num].index =
+                        ui_->FunctionWindow->addWidget(devices_windows_info_[device_num][win_num].widget);
+                    devices_info_[device_num].tab_widget->addTab("I2C基础数据监视器");  // 添加tab栏
                     break;
 
                 default:qCritical() << "配置了未知的窗口类型";

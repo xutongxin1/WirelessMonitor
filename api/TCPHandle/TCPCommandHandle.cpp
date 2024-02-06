@@ -184,6 +184,17 @@ void TCPCommandHandle::WaitForMode(int mode) {
 /// 发送指令并绑定回复
 /// \param command 指令
 /// \param reply 回复
+void TCPCommandHandle::SendCommand(int command_id, const QJsonObject &attach, const QString &reply) {
+    QJsonObject command;
+    command.insert("command", command_id);
+    command.insert("attach", attach);
+
+    TCPCommandHandle::SendCommand(command, reply);
+}
+
+/// 发送指令并绑定回复
+/// \param command 指令
+/// \param reply 回复
 void TCPCommandHandle::SendCommand(const QJsonObject &command, const QString &reply) {
     QJsonDocument json_doc;
     json_doc.setObject(command);

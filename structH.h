@@ -29,6 +29,7 @@ enum WindowsType {
     DATA_CIRCULATION = 52,
     TCP_BRIDGE_CONFIGURATION = 201,
     TCP_COM = 202,
+    IIC_Basic = 701
 };
 
 //窗口配置信息结构体
