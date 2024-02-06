@@ -12,7 +12,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include "structH.h"
 #include "highlighter.h"
-//#include "ui_ComTool.h"
+// #include "ui_ComTool.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ComTool; }

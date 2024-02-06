@@ -7,8 +7,13 @@
 
 #include <QDialog>
 #include "RepeaterWidget.h"
-class RepeaterDialog : public RepeaterWidget, public QDialog {
 
+class RepeaterDialog : public RepeaterWidget, public QDialog {
+public:
+    RepeaterDialog() = default;
+
+private:
+    ~RepeaterDialog() override = default;
 };
 
 #endif //MAIN_API_REPEATERWIDGET_REPEATERDIALOG_H_

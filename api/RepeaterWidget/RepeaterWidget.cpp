@@ -17,9 +17,7 @@ void RepeaterWidget::GetConstructConfig() {
 
 }
 
-RepeaterWidget::~RepeaterWidget() {
-
-}
+RepeaterWidget::~RepeaterWidget() = default;
 
 void RepeaterWidget::SaveConstructConfig() {
 
