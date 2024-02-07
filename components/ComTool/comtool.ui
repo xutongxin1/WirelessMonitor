@@ -251,8 +251,49 @@ QPushButton:disabled, ToolButton:disabled {
              </item>
              <item>
               <widget class="QPushButton" name="refreshLog">
+               <property name="styleSheet">
+                <string notr="true">QPushButton, ToolButton {
+    color: black;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.073);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.183);
+    border-radius: 5px;
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+    padding: 5px 12px 6px 12px;
+    outline: none;
+}
+
+ToolButton {
+    padding: 5px 9px 6px 8px;
+}
+
+QPushButton[hasIcon=false] {
+    padding: 5px 12px 6px 12px;
+}
+
+QPushButton[hasIcon=true] {
+    padding: 5px 12px 6px 36px;
+}
+
+QPushButton:hover, ToolButton:hover {
+    background: rgba(249, 249, 249, 0.5);
+}
+
+QPushButton:pressed, ToolButton:pressed {
+    color: rgba(0, 0, 0, 0.63);
+    background: rgba(249, 249, 249, 0.3);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.073);
+}
+
+QPushButton:disabled, ToolButton:disabled {
+    color: rgba(0, 0, 0, 0.36);
+    background: rgba(249, 249, 249, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}</string>
+               </property>
                <property name="text">
-                <string>刷新收发日志</string>
+                <string>刷新收发流</string>
                </property>
               </widget>
              </item>
@@ -455,6 +496,47 @@ QPushButton:disabled, ToolButton:disabled {
            </item>
            <item>
             <widget class="QPushButton" name="btnSave">
+             <property name="styleSheet">
+              <string notr="true">QPushButton, ToolButton {
+    color: black;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.073);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.183);
+    border-radius: 5px;
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+    padding: 5px 12px 6px 12px;
+    outline: none;
+}
+
+ToolButton {
+    padding: 5px 9px 6px 8px;
+}
+
+QPushButton[hasIcon=false] {
+    padding: 5px 12px 6px 12px;
+}
+
+QPushButton[hasIcon=true] {
+    padding: 5px 12px 6px 36px;
+}
+
+QPushButton:hover, ToolButton:hover {
+    background: rgba(249, 249, 249, 0.5);
+}
+
+QPushButton:pressed, ToolButton:pressed {
+    color: rgba(0, 0, 0, 0.63);
+    background: rgba(249, 249, 249, 0.3);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.073);
+}
+
+QPushButton:disabled, ToolButton:disabled {
+    color: rgba(0, 0, 0, 0.36);
+    background: rgba(249, 249, 249, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}</string>
+             </property>
              <property name="text">
               <string>保存数据</string>
              </property>
@@ -462,6 +544,47 @@ QPushButton:disabled, ToolButton:disabled {
            </item>
            <item>
             <widget class="QPushButton" name="btnLoadData">
+             <property name="styleSheet">
+              <string notr="true">QPushButton, ToolButton {
+    color: black;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.073);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.183);
+    border-radius: 5px;
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+    padding: 5px 12px 6px 12px;
+    outline: none;
+}
+
+ToolButton {
+    padding: 5px 9px 6px 8px;
+}
+
+QPushButton[hasIcon=false] {
+    padding: 5px 12px 6px 12px;
+}
+
+QPushButton[hasIcon=true] {
+    padding: 5px 12px 6px 36px;
+}
+
+QPushButton:hover, ToolButton:hover {
+    background: rgba(249, 249, 249, 0.5);
+}
+
+QPushButton:pressed, ToolButton:pressed {
+    color: rgba(0, 0, 0, 0.63);
+    background: rgba(249, 249, 249, 0.3);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.073);
+}
+
+QPushButton:disabled, ToolButton:disabled {
+    color: rgba(0, 0, 0, 0.36);
+    background: rgba(249, 249, 249, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}</string>
+             </property>
              <property name="text">
               <string> 加载数据</string>
              </property>
@@ -469,6 +592,47 @@ QPushButton:disabled, ToolButton:disabled {
            </item>
            <item>
             <widget class="QPushButton" name="btnClear">
+             <property name="styleSheet">
+              <string notr="true">QPushButton, ToolButton {
+    color: black;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.073);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.183);
+    border-radius: 5px;
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+    padding: 5px 12px 6px 12px;
+    outline: none;
+}
+
+ToolButton {
+    padding: 5px 9px 6px 8px;
+}
+
+QPushButton[hasIcon=false] {
+    padding: 5px 12px 6px 12px;
+}
+
+QPushButton[hasIcon=true] {
+    padding: 5px 12px 6px 36px;
+}
+
+QPushButton:hover, ToolButton:hover {
+    background: rgba(249, 249, 249, 0.5);
+}
+
+QPushButton:pressed, ToolButton:pressed {
+    color: rgba(0, 0, 0, 0.63);
+    background: rgba(249, 249, 249, 0.3);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.073);
+}
+
+QPushButton:disabled, ToolButton:disabled {
+    color: rgba(0, 0, 0, 0.36);
+    background: rgba(249, 249, 249, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}</string>
+             </property>
              <property name="text">
               <string>清空数据</string>
              </property>

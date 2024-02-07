@@ -221,6 +221,9 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     highlighter_send_ = new Highlighter(ui_->SendDataEdit->document());
     highlighter_rec_ = new Highlighter(ui_->txtMain->document());
 
+    //ui美化项
+    ui_->StartTool->setUseThemeColors(true);
+
     //表格自动拉宽
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -243,12 +246,12 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     connect(ui_->ckHexSend, &QRadioButton::toggled, this, [&] {
         if (ui_->ckHexSend->isChecked()) {
             connect(ui_->HEXEdit, &QTextEditWithKey::released, this, [&] {
-                InputProcess();
+                HEXCollation();
             });
-            InputProcess();
+            HEXCollation();
 
             connect(ui_->SendDataEdit, &QTextEditWithKey::released, this, [&] {
-                DisInputProcess();
+                StringEditToHEX();
             });
             ui_->SendDataEdit->setPlaceholderText("String区");
             ui_->HEXEdit->show();
@@ -346,6 +349,8 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     connect(timer_line_max_, &QTimer::timeout, this, &ComTool::TimerForHightLight);
 
     //    connect(this, &ComTool::UpdateCntTimer, this, &ComTool::TimerRefreshCntConncet);//绑定计数器界面刷新程序
+
+    ui_->btnLoadData->hide();
 }
 
 /// TODO: 对显示行数进行限制
@@ -764,8 +769,8 @@ void ComTool::UpdateSendHistory() {
 ///       3. 如果输入有0x，自动去除
 
 //通过HEX区的KeyReleased触发
-void ComTool::InputProcess() {
-    qDebug() << "Process";
+void ComTool::HEXCollation() {
+    // qDebug() << "Process";
     //转化为大写，并将内容复制到HEX区
     QString trans_line = ui_->HEXEdit->toPlainText();
     trans_line = trans_line.toUpper();
@@ -808,7 +813,8 @@ void ComTool::InputProcess() {
 
     QString afterFix = ui_->HEXEdit->toPlainText();
     if (!((afterFix.length() + 1) % 3)) {
-        QByteArray hexData = QByteArray::fromHex(afterFix.toUtf8());
+        QByteArray hexData = QByteArray::fromHex(afterFix.toUtf8());//转换一堆十六进制字符串为十六进制HEX
+
         QString str_data = QString::fromUtf8(hexData);
 
         str_data = str_data.replace("\a", "\\a");
@@ -827,8 +833,8 @@ void ComTool::InputProcess() {
 }
 
 //通过发送框的KeyReleased触发
-void ComTool::DisInputProcess() {
-    qDebug() << "Process";
+void ComTool::StringEditToHEX() {
+    // qDebug() << "Process";
 
     QString str_data = ui_->SendDataEdit->toPlainText();
     str_data = str_data.replace("\\n", "\n");

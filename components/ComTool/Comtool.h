@@ -81,9 +81,9 @@ signals:
 
     void SaveConstructConfig() override;
 
-    void InputProcess();
+    void HEXCollation();
 
-    void DisInputProcess();
+    void StringEditToHEX();
 
     QString ip_;
 
