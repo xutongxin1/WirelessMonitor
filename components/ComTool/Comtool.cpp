@@ -7,11 +7,13 @@
 #include <QWidget>
 #include <QtConcurrent/qtconcurrentrun.h>
 #include "Comtool.h"
+
 #include "ui_comtool.h"
 #include "quihelper.h"
 #include "quihelperdata.h"
 #include "QTextEditWithKey.h"
-
+// #include "USBInfo.h"
+#include "enumser.h"
 
 /*
  * TODO:shell语法高亮，使用正则表达式https://c.runoob.com_/front-end/
@@ -222,7 +224,8 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     highlighter_rec_ = new Highlighter(ui_->txtMain->document());
 
     //ui美化项
-    ui_->StartTool->setUseThemeColors(true);
+    ui_->StartTool->setBackgroundColor(QColor(155, 199, 250, 100));
+    ui_->StartTool->setFontSize(15);
 
     //表格自动拉宽
     ui_->historyTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -351,6 +354,8 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
     //    connect(this, &ComTool::UpdateCntTimer, this, &ComTool::TimerRefreshCntConncet);//绑定计数器界面刷新程序
 
     ui_->btnLoadData->hide();
+
+    connect(ui_->btnSave, &QPushButton::clicked, this, &ComTool::SaveData);
 }
 
 /// TODO: 对显示行数进行限制
@@ -414,8 +419,23 @@ ComTool::~ComTool() {
 
 QStringList ComTool::GetPortInfo() {
     QStringList serialportinfo;
-    foreach(QSerialPortInfo info, QSerialPortInfo::availablePorts()) {
-        serialportinfo << info.portName();
+    foreach(QSerialPortInfo portInfo, QSerialPortInfo::availablePorts()) {
+        qDebug() << portInfo.serialNumber();
+        // qDebug() << "\n"
+        //         << "Port:" << portInfo.portName() << "\n"
+        //         << "Location:" << portInfo.systemLocation() << "\n"
+        //         << "Description:" << portInfo.description() << "\n"
+        //         << "Manufacturer:" << portInfo.manufacturer() << "\n"
+        //         << "Serial number:" << portInfo.serialNumber() << "\n"
+        //         << "Vendor Identifier:"
+        //         << (portInfo.hasVendorIdentifier()
+        //                 ? QByteArray::number(portInfo.vendorIdentifier(), 16)
+        //                 : QByteArray()) << "\n"
+        //         << "Product Identifier:"
+        //         << (portInfo.hasProductIdentifier()
+        //                 ? QByteArray::number(portInfo.productIdentifier(), 16)
+        //                 : QByteArray());
+        serialportinfo << portInfo.portName();
     }
     // ui->comboBox->addItems(serialportinfo);
     return serialportinfo;
@@ -424,9 +444,12 @@ QStringList ComTool::GetPortInfo() {
 void ComTool::ReflashComCombo() {
     timer_for_port_->stop();
     QStringList old_portinfo = my_serialportinfo_;
+
     my_serialportinfo_ = GetPortInfo();
+    qDebug() << my_serialportinfo_;
     QString com = ui_->COMCombo->currentText();
-    if (old_portinfo.length() != my_serialportinfo_.length()) {
+    if (old_portinfo.length() != my_serialportinfo_.length()) //串口列表出现变化
+    {
         ui_->COMCombo->clear(); //清空列表
         //说明串口列表出现变化,更新列表
         if (my_serialport_->isOpen()) //有串口打开的时候
@@ -673,22 +696,32 @@ void ComTool::SendData() {
 }
 
 void ComTool::SaveData() {
+    // USBWork();
+    CEnumerateSerial::CPortsArray ports;
+    CEnumerateSerial::CPortAndNamesArray portAndNames;
+    CEnumerateSerial::CNamesArray names;
+    if (CEnumerateSerial::UsingSetupAPI2(portAndNames))
+    {
+        for (const auto& port : portAndNames)
+#pragma warning(suppress: 26489)
+            _tprintf(_T("COM%u <%s>\n"), port.first, port.second.c_str());
+    }
     QString temp_data = ui_->txtMain->toPlainText();
     if (temp_data.isEmpty()) {
         return;
     }
-
-    QDateTime now = QDateTime::currentDateTime();
-    QString name = now.toString("yyyy-MM-dd-HH-mm-ss");
-    QString file_name = QString("%1/%2.txt").arg(QuiHelper::AppPath(), name);
-
-    QFile file(file_name);
-    file.open(QFile::WriteOnly | QIODevice::Text);
-    QTextStream out(&file);
-    out << temp_data;
-    file.close();
-
-    on_btnClear_clicked();
+    //
+    // QDateTime now = QDateTime::currentDateTime();
+    // QString name = now.toString("yyyy-MM-dd-HH-mm-ss");
+    // QString file_name = QString("%1/%2.txt").arg(QuiHelper::AppPath(), name);
+    //
+    // QFile file(file_name);
+    // file.open(QFile::WriteOnly | QIODevice::Text);
+    // QTextStream out(&file);
+    // out << temp_data;
+    // file.close();
+    //
+    // on_btnClear_clicked();
 }
 
 void ComTool::on_btnClear_clicked() {
@@ -805,7 +838,6 @@ void ComTool::HEXCollation() {
     }
 
 
-
     ui_->HEXEdit->setPlainText(afterRule2); //修改文本
 
     tc.setPosition(cursorPo); //设置光标坐标为上一坐标
@@ -813,7 +845,7 @@ void ComTool::HEXCollation() {
 
     QString afterFix = ui_->HEXEdit->toPlainText();
     if (!((afterFix.length() + 1) % 3)) {
-        QByteArray hexData = QByteArray::fromHex(afterFix.toUtf8());//转换一堆十六进制字符串为十六进制HEX
+        QByteArray hexData = QByteArray::fromHex(afterFix.toUtf8()); //转换一堆十六进制字符串为十六进制HEX
 
         QString str_data = QString::fromUtf8(hexData);
 

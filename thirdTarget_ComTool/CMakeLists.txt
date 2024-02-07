@@ -50,11 +50,12 @@ add_subdirectory(../api/TCPHandle TCPHandle)
 add_subdirectory(../api/ConfigClass ConfigClass)
 add_subdirectory(../api/QTextEditWithKey QTextEditWithKey)
 add_subdirectory(../api/ComToolDepend ComToolDepend)
+add_subdirectory(../api/USBHandle USBHandle)
 
 target_link_libraries(
         ${PROJECT_NAME} PRIVATE
         Qt6::Core Qt6::PrintSupport Qt6::SerialPort Qt6::Widgets
-        Qt6::Network qmetarialComponents Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent)
+        Qt6::Network qmetarialComponents Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent ${CMAKE_CURRENT_SOURCE_DIR}/../api/USBHandle/ATL/lib/atls.lib)
 
 #set_target_properties(
 #        ${PROJECT_NAME}

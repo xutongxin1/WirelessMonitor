@@ -647,7 +647,7 @@ QPushButton:disabled, ToolButton:disabled {
               <item>
                <widget class="QtMaterialRaisedButton" name="StartTool">
                 <property name="styleSheet">
-                 <string notr="true">background-color: rgba(170, 255, 0, 125);
+                 <string notr="true">color: rgb(27, 54, 92);
 </string>
                 </property>
                 <property name="text">
@@ -657,6 +657,18 @@ QPushButton:disabled, ToolButton:disabled {
               </item>
               <item>
                <widget class="QLabel" name="label_9">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>20</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string>连接方式</string>
                 </property>
