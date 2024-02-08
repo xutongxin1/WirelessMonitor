@@ -5,6 +5,7 @@
 // You may need to build the project (run Qt uic code generator) to get "ui_ComTool.h" resolved
 #include <QCheckBox>
 #include <QWidget>
+#include <Qt>
 #include <QSet>
 #include <QtConcurrent/qtconcurrentrun.h>
 #include "Comtool.h"
@@ -435,7 +436,7 @@ QSet<QString> ComTool::GetPortInfo() {
         //         << (portInfo.hasProductIdentifier()
         //                 ? QByteArray::number(portInfo.productIdentifier(), 16)
         //                 : QByteArray());
-        serialportinfo << portInfo.portName();
+        serialportinfo << (portInfo.portName() + " : " + portInfo.description());
     }
     // ui->comboBox->addItems(serialportinfo);
     return serialportinfo;
@@ -451,22 +452,31 @@ void ComTool::ReflashComCombo() {
     if (old_portinfo != my_serialportinfo_) //串口列表出现变化
     {
         ui_->COMCombo->clear(); //清空列表
-        //说明串口列表出现变化,更新列表
+        UpdateComNameAndSymbolic(); //更新usb信息列表
+
         if (my_serialport_->isOpen()) //有串口打开的时候
         {
-            //保证
-            ui_->COMCombo->addItem(my_serialport_->portName());
+            //保证正在打开的不会变，任然在第一位
             foreach(QString comname, my_serialportinfo_) {
-                if (comname != my_serialport_->portName()) {
-                    ui_->COMCombo->addItem(comname);
+                if (GetTrueComName(comname) == my_serialport_->portName()) {
+                    COMComboAddItem(comname);
+                }
+            }
+
+            //然后再添加剩下的
+            foreach(QString comname, my_serialportinfo_) {
+                if (GetTrueComName(comname) != my_serialport_->portName()) {
+                    COMComboAddItem(comname);
                 }
             }
         } else //无串口打开的时候
         {
             foreach(QString comname, my_serialportinfo_) {
-                ui_->COMCombo->addItem(comname);
+                COMComboAddItem(comname);
             }
         }
+
+        //串口是开启状态，但是事实上串口已经丢失
         if (!my_serialportinfo_.contains(com) && my_serialport_->isOpen()) {
             QMessageBox::critical(this, tr("Error"), "串口连接中断，请检查是否正确连接！");
             my_serialport_->close();
@@ -696,17 +706,6 @@ void ComTool::SendData() {
 }
 
 void ComTool::SaveData() {
-    // USBWork();
-    CEnumerateSerial::CPortsArray ports;
-    CEnumerateSerial::CPortAndNamesArray portAndSymbolic;
-    CEnumerateSerial::CNamesArray names;
-    if (CEnumerateSerial::UsingSetupAPI2(portAndSymbolic)) {
-        for (const auto &port: portAndSymbolic)
-#pragma warning(suppress: 26489)
-            qDebug() << "COM" << QString::number(port.first) << " " << QString::fromStdWString(port.second);
-    }
-
-
     // QString temp_data = ui_->txtMain->toPlainText();
     // if (temp_data.isEmpty()) {
     //     return;
@@ -738,6 +737,40 @@ void ComTool::on_btnClear_clicked() {
 QString ComTool::GetNowTrueComName() {
     QStringList strList = ui_->COMCombo->currentText().split(" : ");
     return strList[0];
+}
+
+QString ComTool::GetTrueComName(QString tmp) {
+    return tmp.split(" : ")[0];
+}
+
+void ComTool::UpdateComNameAndSymbolic() {
+    ComNameAndSymbolic.clear();
+
+    // USBWork();
+    CEnumerateSerial::CPortsArray ports;
+    CEnumerateSerial::CPortAndNamesArray portAndSymbolic;
+    CEnumerateSerial::CNamesArray names;
+    if (CEnumerateSerial::UsingSetupAPI2(portAndSymbolic)) {
+        for (const auto &port: portAndSymbolic)
+#pragma warning(suppress: 26489)
+            // qDebug() << "COM" << QString::number(port.first) << " " << QString::fromStdWString(port.second);
+            ComNameAndSymbolic.append(qMakePair("COM" + QString::number(port.first),
+                                                QString::fromStdWString(port.second)));
+    } else {
+        qCritical() << "UsingSetupAPI2 to UpdateComNameAndSymbolic failed";
+    }
+}
+
+void ComTool::COMComboAddItem(QString Name) {
+    ui_->COMCombo->addItem(Name);
+
+    Name=GetTrueComName(Name);
+    foreach(auto tmp, ComNameAndSymbolic)
+    {
+        if (tmp.first == Name) {
+            ui_->COMCombo->setItemData(ui_->COMCombo->count() - 1, tmp.second, Qt::ToolTipRole);
+        }
+    }
 }
 
 void ComTool::GetConstructConfig() {

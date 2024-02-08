@@ -15,43 +15,49 @@
 // #include "ui_ComTool.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class ComTool; }
+
+namespace Ui {
+    class ComTool;
+}
+
 QT_END_NAMESPACE
 
 class ComTool : public RepeaterWidget {
- Q_OBJECT
+    Q_OBJECT
 
 signals:
     void RecNewData(QByteArray data, const QDateTime &time);
-    void AddText(const QString &text,const char type);
-//    void UpdateCntTimer();
- public:
+
+    void AddText(const QString &text, const char type);
+
+    //    void UpdateCntTimer();
+public:
     explicit ComTool(int row, int win_num, QSettings *cfg, ToNewWidget *parent_info, QWidget *parent = nullptr);
 
     ~ComTool() override;
 
-    QString port_name_;            //串口号
-    int baud_rate_ = 115200;                //波特率
-    int data_bit_ = 8;                 //数据位
-    int parity_ = 0;              //校验位
-    double stop_bit_ = 1;              //停止位
+    QString port_name_; //串口号
+    int baud_rate_ = 115200; //波特率
+    int data_bit_ = 8; //数据位
+    int parity_ = 0; //校验位
+    double stop_bit_ = 1; //停止位
 
-    static bool hex_send_;                //16进制发送
-    static bool hex_receive_;             //16进制接收
-    static bool debug_;                  //模拟设备
-    static bool auto_clear_;              //自动清空
+    static bool hex_send_; //16进制发送
+    static bool hex_receive_; //16进制接收
+    static bool debug_; //模拟设备
+    static bool auto_clear_; //自动清空
 
-    static bool auto_send_;               //自动发送
-    static int send_interval_;            //自动发送间隔
-    static bool auto_save_;               //自动保存
-    static int save_interval_;            //自动保存间隔
+    static bool auto_send_; //自动发送
+    static int send_interval_; //自动发送间隔
+    static bool auto_save_; //自动保存
+    static int save_interval_; //自动保存间隔
 
-    static QString mode_;                //转换模式
-    static QString server_ip_;            //服务器IP
-    static int server_port_;              //服务器端口
-    static int listen_port_;              //监听端口
-    static int sleep_time_;               //延时时间
-    static bool auto_connect_;            //自动重连
+    static QString mode_; //转换模式
+    static QString server_ip_; //服务器IP
+    static int server_port_; //服务器端口
+    static int listen_port_; //监听端口
+    static int sleep_time_; //延时时间
+    static bool auto_connect_; //自动重连
 
     QString group_name_;
     QString config_file_path_;
@@ -59,15 +65,15 @@ signals:
 
     void LineLimit(const QString &text, const char type);
 
- private:
+private:
     Ui::ComTool *ui_;
-    QTimer *timer_read_;          //定时读取串口数据
-    QTimer *timer_send_;          //定时发送串口数据
-    QTimer *timer_save_;          //定时保存串口数据
+    QTimer *timer_read_; //定时读取串口数据
+    QTimer *timer_send_; //定时发送串口数据
+    QTimer *timer_save_; //定时保存串口数据
 
-    int sleep_time_rec_;              //接收延时时间
-    int send_count_=0;              //发送数据计数
-    int receive_count_=0;           //接收数据计数
+    int sleep_time_rec_; //接收延时时间
+    int send_count_ = 0; //发送数据计数
+    int receive_count_ = 0; //接收数据计数
     QString send_cnt_str_;
     QString rec_cnt_str_;
 
@@ -90,13 +96,17 @@ signals:
     void UpdateComSetting();
 
     QSet<QString> GetPortInfo();
+
     void ReflashComCombo();
+
     bool OpenSerial();
-    QSet<QString>  my_serialportinfo_ = {};
+
+    QSet<QString> my_serialportinfo_ = {};
 
     QSerialPort *my_serialport_;
 
     void ToolSwitch();
+
     void ChangeMode();
 
     Highlighter *highlighter_send_;
@@ -110,33 +120,46 @@ signals:
         int send_num = 1;
         QDateTime time;
     } HistorySend;
+
     QHash<QString, HistorySend> history_send_list_;
+
     void ProcessData(QByteArray main_serial_recv_data);
+
     void UpdateSendHistory();
 
-    void GetData();            //读取串口数据
+    void GetData(); //读取串口数据
 
-    void SendData();            //发送串口数据
-    void SaveData();            //保存串口数据
+    void SendData(); //发送串口数据
+    void SaveData(); //保存串口数据
 
     void Append(char type, const QString &data);
 
     QString recieve_tmp_pool_ = "";
-    void TimerForHightLight();
-    void TimerRefreshCntConncet();
-    int last_line_cnt_ = 0;
-    bool is_under_=true;
- private slots:
 
-//    void InitConfig();          //初始化配置文件
-//    void SaveConfig();          //保存配置文件
+    void TimerForHightLight();
+
+    void TimerRefreshCntConncet();
+
+    int last_line_cnt_ = 0;
+    bool is_under_ = true;
+
+    QString GetNowTrueComName();
+
+    static QString GetTrueComName(QString tmp);
+
+    QList<QPair<QString, QString> > ComNameAndSymbolic;
+
+    void UpdateComNameAndSymbolic();
+    void COMComboAddItem(QString Name);
+
+private slots:
+    //    void InitConfig();          //初始化配置文件
+    //    void SaveConfig();          //保存配置文件
 
 
     void ReadErrorNet();
 
     void on_btnClear_clicked();
-
-    QString GetNowTrueComName();
 };
 
 //class ComToolSend : public QSerialPort{
