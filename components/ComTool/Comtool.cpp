@@ -205,17 +205,24 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 	        });
 
 	//要等选项加载完才可以加载配置文件
-	ComTool::GetConstructConfig();
+	//先刷新现在的串口
+	ReflashComCombo();
+	//然后比对配置文件里上次打开的串口现在还有没有，没有的话刚刚默认也加载了现有的所以没问题
+	ComHistoryGet();
+	//读取数据出来，如果没有就直接返回所以也没问题
+	ComboChange(0);
+	// ComTool::GetConstructConfig();
 
 	ui_->SendDataEdit->
 			setLineWrapMode(QTextEdit::NoWrap);
 
+	connect(timer_for_port_, &QTimer::timeout,
+		this, &ComTool::ReflashComCombo);
+	//    ui_->COMCombo->addItem("COM39");
 	//扫描有效的端口
 	timer_for_port_->start(500);
 
-	connect(timer_for_port_, &QTimer::timeout,
-	        this, &ComTool::ReflashComCombo);
-	//    ui_->COMCombo->addItem("COM39");
+
 	connect(ui_
 	        ->StartTool, &QPushButton::clicked, this, &ComTool::ToolSwitch);
 

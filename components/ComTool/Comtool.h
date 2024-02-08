@@ -156,6 +156,7 @@ private:
 
     void ComboChange(int num);
 
+    void ComHistoryGet();
     QString ComUUID = "666";
 
     bool isGetingConfig=false;

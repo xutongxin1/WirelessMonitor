@@ -33,7 +33,7 @@ to maintain a single distribution point for the source code.
 #define CENUMERATESERIAL_EXT_CLASS
 #endif //#ifndef CENUMERATESERIAL_EXT_CLASS
 
-
+#include"stdafx.h"
 ///////////////////////// Includes ////////////////////////////////////////////
 
 #ifndef __ATLBASE_H__
@@ -74,70 +74,79 @@ to maintain a single distribution point for the source code.
 
 ///////////////////////// Classes /////////////////////////////////////////////
 
-class CENUMERATESERIAL_EXT_CLASS CEnumerateSerial
-{
+class CENUMERATESERIAL_EXT_CLASS CEnumerateSerial {
 public:
-//Typedefs
-  using CPortsArray = std::vector<UINT>;
+	//Typedefs
+	using CPortsArray = std::vector<UINT>;
 #ifdef _UNICODE
-  using String = std::wstring;
+	using String = std::wstring;
 #else
   using String = std::string;
 #endif
-  using CNamesArray = std::vector<String>;
-  using CPortAndNamesArray = std::vector<std::pair<UINT, String>>;
+	using CNamesArray = std::vector<String>;
+	using CPortAndNamesArray = std::vector<std::pair<UINT, String> >;
 
-//Methods
+	//Methods
 #ifndef NO_CENUMERATESERIAL_USING_CREATEFILE
-  static _Return_type_success_(return != false) bool UsingCreateFile(_Inout_ CPortsArray& ports);
+	static _Return_type_success_(return != false) bool UsingCreateFile(_Inout_ CPortsArray &ports);
 #endif //#ifndef NO_CENUMERATESERIAL_USING_CREATEFILE
 
 #ifndef NO_CENUMERATESERIAL_USING_QUERYDOSDEVICE
-  static _Return_type_success_(return != false) bool UsingQueryDosDevice(_Inout_ CPortsArray& ports);
+	static _Return_type_success_(return != false) bool UsingQueryDosDevice(_Inout_ CPortsArray &ports);
 #endif //#ifndef NO_CENUMERATESERIAL_USING_QUERYDOSDEVICE
 
 #ifndef NO_CENUMERATESERIAL_USING_GETDEFAULTCOMMCONFIG
-  static _Return_type_success_(return != false) bool UsingGetDefaultCommConfig(_Inout_ CPortsArray& ports);
+	static _Return_type_success_(return != false) bool UsingGetDefaultCommConfig(_Inout_ CPortsArray &ports);
 #endif //#ifndef NO_CENUMERATESERIAL_USING_GETDEFAULTCOMMCONFIG
 
 #ifndef NO_CENUMERATESERIAL_USING_SETUPAPI1
-  static _Return_type_success_(return != false) bool UsingSetupAPI1(_Inout_ CPortAndNamesArray& ports);
+	static _Return_type_success_(return != false) bool UsingSetupAPI1(_Inout_ CPortAndNamesArray &ports);
 #endif //#ifndef NO_CENUMERATESERIAL_USING_SETUPAPI1
 
 #ifndef NO_CENUMERATESERIAL_USING_SETUPAPI2
-  static _Return_type_success_(return != false) bool UsingSetupAPI2(_Inout_ CPortAndNamesArray& ports);
+	static _Return_type_success_(return != false) bool UsingSetupAPI2(_Inout_ CPortAndNamesArray &ports);
 #endif //#ifndef NO_CENUMERATESERIAL_USING_SETUPAPI2
 
 #ifndef NO_CENUMERATESERIAL_USING_ENUMPORTS
-  static _Return_type_success_(return != false) bool UsingEnumPorts(_Inout_ CPortAndNamesArray& ports);
+	static _Return_type_success_(return != false) bool UsingEnumPorts(_Inout_ CPortAndNamesArray &ports);
 #endif //#ifndef NO_CENUMERATESERIAL_USING_ENUMPORTS
 
 #ifndef NO_CENUMERATESERIAL_USING_WMI
-  static HRESULT UsingWMI(_Inout_ CPortAndNamesArray& ports);
+	static HRESULT UsingWMI(_Inout_ CPortAndNamesArray &ports);
 #endif //#ifndef NO_CENUMERATESERIAL_USING_WMI
 
 #ifndef NO_CENUMERATESERIAL_USING_COMDB
-  static _Return_type_success_(return != false) bool UsingComDB(_Inout_ CPortsArray& ports);
+	static _Return_type_success_(return != false) bool UsingComDB(_Inout_ CPortsArray &ports);
 #endif //#ifndef NO_CENUMERATESERIAL_USING_COMDB
 
 #ifndef NO_CENUMERATESERIAL_USING_REGISTRY
-  static _Return_type_success_(return != false) bool UsingRegistry(_Inout_ CNamesArray& ports);
+	static _Return_type_success_(return != false) bool UsingRegistry(_Inout_ CNamesArray &ports);
 #endif //#ifndef NO_CENUMERATESERIAL_USING_REGISTRY
 
 #ifndef NO_CENUMERATESERIAL_USING_GETCOMMPORTS
-  static _Return_type_success_(return != false) bool UsingGetCommPorts(_Inout_ CPortsArray& ports);
+	static _Return_type_success_(return != false) bool UsingGetCommPorts(_Inout_ CPortsArray &ports);
 #endif //#ifndef NO_CENUMERATESERIAL_USING_REGISTRY
 
 protected:
-//Methods
+	//Methods
 #if !defined(NO_CENUMERATESERIAL_USING_SETUPAPI1) || !defined(NO_CENUMERATESERIAL_USING_SETUPAPI2)
-  static _Return_type_success_(return != false) bool RegQueryValueString(_In_ ATL::CRegKey& key, _In_ LPCTSTR lpValueName, _Inout_ String& sValue);
-  static _Return_type_success_(return != false) bool QueryRegistryPortName(_In_ ATL::CRegKey& deviceKey, _Out_ int& nPort);
-  static _Return_type_success_(return != false) bool QueryUsingSetupAPI(_In_ const GUID& guid, _In_ DWORD dwFlags, _Inout_ CPortAndNamesArray& ports);
-  static _Return_type_success_(return != false) bool QueryDeviceDescription(_In_ HDEVINFO hDevInfoSet, _In_ SP_DEVINFO_DATA& devInfo, _Inout_ String& sFriendlyName);
+	static _Return_type_success_(return != false) bool RegQueryValueString(
+		_In_ ATL::CRegKey &key, _In_ LPCTSTR lpValueName, _Inout_ String &sValue);
+
+	static _Return_type_success_(return != false) bool QueryRegistryPortName(
+		_In_ ATL::CRegKey &deviceKey, _Out_ int &nPort);
+
+	static _Return_type_success_(return != false) bool QueryUsingSetupAPI(
+		_In_ const GUID &guid, _In_ DWORD dwFlags, _Inout_ CPortAndNamesArray &ports);
+
+	static _Return_type_success_(return != false) bool QueryDeviceDescription(
+		_In_ HDEVINFO hDevInfoSet, _In_ SP_DEVINFO_DATA &devInfo, _Inout_ String &sFriendlyName);
 #endif //#if !defined(NO_CENUMERATESERIAL_USING_SETUPAPI1) || !defined(NO_CENUMERATESERIAL_USING_SETUPAPI2)
-  static _Return_type_success_(return != false) bool IsNumeric(_In_z_ LPCSTR pszString, _In_ bool bIgnoreColon) noexcept;
-  static _Return_type_success_(return != false) bool IsNumeric(_In_z_ LPCWSTR pszString, _In_ bool bIgnoreColon) noexcept;
+	static _Return_type_success_(return != false) bool IsNumeric(
+		_In_z_ LPCSTR pszString, _In_ bool bIgnoreColon) noexcept;
+
+	static _Return_type_success_(return != false) bool IsNumeric(_In_z_ LPCWSTR pszString,
+	                                                             _In_ bool bIgnoreColon) noexcept;
 };
 
 #endif //#ifndef __ENUMSER_H__
