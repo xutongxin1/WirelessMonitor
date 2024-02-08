@@ -12,7 +12,8 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include "structH.h"
 #include "highlighter.h"
-// #include "ui_ComTool.h"
+#include "ui_ComTool.h"
+#include <QCheckBox>
 
 QT_BEGIN_NAMESPACE
 
@@ -147,11 +148,17 @@ private:
 
     static QString GetTrueComName(QString tmp);
 
-    QList<QPair<QString, QString> > ComNameAndSymbolic;
+    QHash<QString, QString> ComNameAndSymbolic;
 
     void UpdateComNameAndSymbolic();
+
     void COMComboAddItem(QString Name);
 
+    void ComboChange(int num);
+
+    QString ComUUID = "666";
+
+    bool isGetingConfig=false;
 private slots:
     //    void InitConfig();          //初始化配置文件
     //    void SaveConfig();          //保存配置文件
