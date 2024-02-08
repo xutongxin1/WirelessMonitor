@@ -338,7 +338,7 @@ _Return_type_success_(return != false) bool CEnumerateSerial::RegQueryValueStrin
     ULONG nChars{0};
 
 
-    //该注释段可以查看注册表的键和值
+    //xtx:该注释段可以查看注册表的键和值
     // LSTATUS status;
     // DWORD valueCount, maxValueNameLen, maxValueDataLen;
     // // 查询键信息
@@ -482,10 +482,18 @@ _Return_type_success_(return != false) bool CEnumerateSerial::QueryUsingSetupAPI
 
             //If the port was a serial port, then also try to get its friendly name
             if (bAdded) {
-#pragma warning(suppress: 26489)
-                if (QueryDeviceDescription(hDevInfoSet, devInfo, pair.second))
-#pragma warning(suppress: 26489)
+                //xtx修改了以下代码
+                // #pragma warning(suppress: 26489)
+                //                 if (QueryDeviceDescription(hDevInfoSet, devInfo, pair.second))
+                // #pragma warning(suppress: 26489)
+                //                     ports.push_back(pair);
+
+                //请求SymbolicName参数
+                String sPortName;
+                if (RegQueryValueString(deviceKey, _T("SymbolicName"), sPortName)) {
+                    pair.second = sPortName;
                     ports.push_back(pair);
+                }
             }
         }
 
@@ -522,6 +530,7 @@ _Return_type_success_(return != false) bool CEnumerateSerial::QueryDeviceDescrip
     return true;
 }
 #endif //#if !defined(NO_CENUMERATESERIAL_USING_SETUPAPI1) || !defined(NO_CENUMERATESERIAL_USING_SETUPAPI2)
+
 
 #pragma warning(suppress: 26429)
 _Return_type_success_(return != false) bool CEnumerateSerial::IsNumeric(

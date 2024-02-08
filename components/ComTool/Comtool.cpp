@@ -5,6 +5,7 @@
 // You may need to build the project (run Qt uic code generator) to get "ui_ComTool.h" resolved
 #include <QCheckBox>
 #include <QWidget>
+#include <QSet>
 #include <QtConcurrent/qtconcurrentrun.h>
 #include "Comtool.h"
 
@@ -417,10 +418,9 @@ ComTool::~ComTool() {
     delete ui_;
 }
 
-QStringList ComTool::GetPortInfo() {
-    QStringList serialportinfo;
+QSet<QString> ComTool::GetPortInfo() {
+    QSet<QString> serialportinfo;
     foreach(QSerialPortInfo portInfo, QSerialPortInfo::availablePorts()) {
-        qDebug() << portInfo.serialNumber();
         // qDebug() << "\n"
         //         << "Port:" << portInfo.portName() << "\n"
         //         << "Location:" << portInfo.systemLocation() << "\n"
@@ -443,12 +443,12 @@ QStringList ComTool::GetPortInfo() {
 
 void ComTool::ReflashComCombo() {
     timer_for_port_->stop();
-    QStringList old_portinfo = my_serialportinfo_;
+    QSet<QString> old_portinfo = my_serialportinfo_;
 
     my_serialportinfo_ = GetPortInfo();
-    qDebug() << my_serialportinfo_;
-    QString com = ui_->COMCombo->currentText();
-    if (old_portinfo.length() != my_serialportinfo_.length()) //串口列表出现变化
+    // qDebug() << my_serialportinfo_;
+    QString com = GetNowTrueComName();
+    if (old_portinfo != my_serialportinfo_) //串口列表出现变化
     {
         ui_->COMCombo->clear(); //清空列表
         //说明串口列表出现变化,更新列表
@@ -484,12 +484,12 @@ void ComTool::ReflashComCombo() {
 }
 
 bool ComTool::OpenSerial() {
-    if (ui_->COMCombo->currentText() == "") {
+    if (GetNowTrueComName() == "") {
         emit(OrderShowSnackbar("没有有效的串口"));
         return false;
     }
-    qDebug() << ui_->COMCombo->currentText();
-    my_serialport_->setPortName(ui_->COMCombo->currentText());
+    qDebug() << GetNowTrueComName();
+    my_serialport_->setPortName(GetNowTrueComName());
     my_serialport_->setBaudRate(baud_rate_);
     my_serialport_->setParity(QSerialPort::Parity(parity_));
     my_serialport_->setDataBits(QSerialPort::DataBits(data_bit_));
@@ -698,18 +698,19 @@ void ComTool::SendData() {
 void ComTool::SaveData() {
     // USBWork();
     CEnumerateSerial::CPortsArray ports;
-    CEnumerateSerial::CPortAndNamesArray portAndNames;
+    CEnumerateSerial::CPortAndNamesArray portAndSymbolic;
     CEnumerateSerial::CNamesArray names;
-    if (CEnumerateSerial::UsingSetupAPI2(portAndNames))
-    {
-        for (const auto& port : portAndNames)
+    if (CEnumerateSerial::UsingSetupAPI2(portAndSymbolic)) {
+        for (const auto &port: portAndSymbolic)
 #pragma warning(suppress: 26489)
-            _tprintf(_T("COM%u <%s>\n"), port.first, port.second.c_str());
+            qDebug() << "COM" << QString::number(port.first) << " " << QString::fromStdWString(port.second);
     }
-    QString temp_data = ui_->txtMain->toPlainText();
-    if (temp_data.isEmpty()) {
-        return;
-    }
+
+
+    // QString temp_data = ui_->txtMain->toPlainText();
+    // if (temp_data.isEmpty()) {
+    //     return;
+    // }
     //
     // QDateTime now = QDateTime::currentDateTime();
     // QString name = now.toString("yyyy-MM-dd-HH-mm-ss");
@@ -732,6 +733,11 @@ void ComTool::on_btnClear_clicked() {
     TimerRefreshCntConncet();
     ui_->rec_cnt->setText(rec_cnt_str_);
     ui_->send_cnt->setText(send_cnt_str_);
+}
+
+QString ComTool::GetNowTrueComName() {
+    QStringList strList = ui_->COMCombo->currentText().split(" : ");
+    return strList[0];
 }
 
 void ComTool::GetConstructConfig() {

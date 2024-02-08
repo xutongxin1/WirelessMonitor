@@ -89,10 +89,10 @@ signals:
 
     void UpdateComSetting();
 
-    QStringList GetPortInfo();
+    QSet<QString> GetPortInfo();
     void ReflashComCombo();
     bool OpenSerial();
-    QStringList my_serialportinfo_ = {};
+    QSet<QString>  my_serialportinfo_ = {};
 
     QSerialPort *my_serialport_;
 
@@ -136,6 +136,7 @@ signals:
 
     void on_btnClear_clicked();
 
+    QString GetNowTrueComName();
 };
 
 //class ComToolSend : public QSerialPort{
