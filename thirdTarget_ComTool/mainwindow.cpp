@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
         ui_->stackedWidget->addWidget(tmp_widget));
     snackbar_->setBackgroundColor(QColor(173,216,230,127));
     snackbar_->setAutoHideDuration(300);
+    this->setWindowIcon(QIcon("./config/Icon.ico"));
 
 }
 
