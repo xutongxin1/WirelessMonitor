@@ -160,6 +160,9 @@ private:
     QString ComUUID = "666";
 
     bool isGetingConfig=false;
+
+    void ComToolHistoryTableInit();
+
 private slots:
     //    void InitConfig();          //初始化配置文件
     //    void SaveConfig();          //保存配置文件
