@@ -66,6 +66,7 @@ public:
 
     void LineLimit(const QString &text, const char type);
 
+    void UIInit();
 private:
     Ui::ComTool *ui_;
     QTimer *timer_read_; //定时读取串口数据

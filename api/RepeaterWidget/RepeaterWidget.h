@@ -11,6 +11,8 @@
 #include <QDebug>
 #include "structH.h"
 #include <QCheckBox>
+#include <QComboBox>
+
 namespace Ui {
     class Charts;
 }
@@ -59,6 +61,8 @@ class RepeaterWidget : public QWidget {
     TCPInfoHandle *tcp_info_handler_[4];
 
     void StopAllInfoTCP();
+
+    void (QComboBox::*fp)(int) = &QComboBox::currentIndexChanged;
 };
 
 #endif //MAIN_API_REPEATERWIDGET_REPEATERWIDGET_H_
