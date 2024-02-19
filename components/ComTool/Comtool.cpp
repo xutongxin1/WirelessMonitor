@@ -226,9 +226,20 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 
 	//    connect(this, &ComTool::UpdateCntTimer, this, &ComTool::TimerRefreshCntConncet);//绑定计数器界面刷新程序
 
-
-
 	connect(ui_->btnSave, &QPushButton::clicked, this, &ComTool::SaveData);
+
+	// connect(ui_->tabWidget, &QTabWidget::currentChanged, this, [&](int index) {
+	// 	if (index == 0)
+	// 	{
+	// 		ui_->LRSplitter->setStretchFactor(0, 20);
+	// 		ui_->LRSplitter->setStretchFactor(1, 1);
+	// 	}
+	// 	else
+	// 	{
+	// 		ui_->LRSplitter->setStretchFactor(0, 1);
+	// 		ui_->LRSplitter->setStretchFactor(1, 20);
+	// 	}
+	// });
 }
 
 void ComTool::UIInit() {
@@ -259,7 +270,6 @@ void ComTool::UIInit() {
 
 	ui_->BandCombo->
 			addItems(baud_list);
-
 
 
 	connect(ui_->BandCombo, fp, this, [&](
@@ -345,13 +355,13 @@ void ComTool::UIInit() {
 	//设置为第一页
 	ui_->tabWidget->setCurrentIndex(0);
 
-	//预设上下分割比例
-	ui_->SendSplitter->setStretchFactor(0, 3);
-	ui_->SendSplitter->setStretchFactor(1, 1);
+	//预设发送区和消息区的上下分割比例
+	// SizeSplitterWithFactor(ui_->SendSplitter,true,0.8,0.2);
 
 	//居中窗口
 	QuiHelper::SetFormInCenter(this);
 
+	//预设左右栏的割比例
 }
 
 /// TODO: 对显示行数进行限制
@@ -659,9 +669,16 @@ void ComTool::SendData() {
 }
 
 void ComTool::SaveData() {
-	RepeaterDialog *dialog = new ComToolAutoReplyDialog(this);
-	connect(dialog, &QDialog::accepted, this, [&] {
-	});
+	// RepeaterDialog *dialog = new ComToolAutoReplyDialog(this);
+	// connect(dialog, &QDialog::accepted, this, [&] {
+	// });
+	ui_->LRSplitter->setOpaqueResize(false);
+	QList<int> SplitterSize = ui_->LRSplitter->sizes();
+	SplitterSize[0] += 1;
+	SplitterSize[1] -= 1;
+	ui_->LRSplitter->setSizes(SplitterSize);
+	qDebug() << ui_->LRSplitter->sizes() << " " << SplitterSize;
+
 	// QString temp_data = ui_->txtMain->toPlainText();
 	// if (temp_data.isEmpty()) {
 	//     return;

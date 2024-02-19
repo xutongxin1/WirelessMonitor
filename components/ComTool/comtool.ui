@@ -22,12 +22,27 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
+     <property name="opaqueResize">
+      <bool>false</bool>
+     </property>
+     <property name="childrenCollapsible">
+      <bool>true</bool>
+     </property>
      <widget class="QWidget" name="horizontalLayoutWidget">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QSplitter" name="SendSplitter">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+         <property name="opaqueResize">
+          <bool>false</bool>
          </property>
          <widget class="QTextEdit" name="txtMain">
           <property name="enabled">
@@ -59,7 +74,7 @@
           </property>
          </widget>
          <widget class="QWidget" name="horizontalLayoutWidget_2">
-          <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="2,1">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_12">
              <item>
@@ -87,18 +102,18 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,1">
                <item>
                 <widget class="QPushButton" name="btnSend">
                  <property name="minimumSize">
                   <size>
-                   <width>80</width>
+                   <width>0</width>
                    <height>0</height>
                   </size>
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>16777215</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -362,7 +377,7 @@ QPushButton:disabled, ToolButton:disabled {
       </property>
       <property name="minimumSize">
        <size>
-        <width>180</width>
+        <width>0</width>
         <height>0</height>
        </size>
       </property>
@@ -409,7 +424,7 @@ QPushButton:disabled, ToolButton:disabled {
           <enum>QTabWidget::South</enum>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="RecieveSetting">
           <attribute name="title">
@@ -675,7 +690,7 @@ QPushButton:disabled, ToolButton:disabled {
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>20</height>
+                  <height>0</height>
                  </size>
                 </property>
                 <property name="maximumSize">

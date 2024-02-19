@@ -52,6 +52,12 @@ void ComTool::ComToolHistoryTableInit() {
 	});
 }
 
+void ComTool::resizeEvent(QResizeEvent *event) {
+	SizeSplitterWithFactor(ui_->SendSplitter,true,0.8,0.2);
+	RepeaterWidget::resizeEvent(event);
+
+}
+
 void ComTool::UpdateSendHistory() {
 	ui_->historyTable->setRowCount(0);
 	ui_->historyTable->clearContents();
