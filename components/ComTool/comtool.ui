@@ -16,8 +16,8 @@
     <verstretch>4</verstretch>
    </sizepolicy>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_6">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
     <widget class="QSplitter" name="splitter_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -387,7 +387,7 @@ QPushButton:disabled, ToolButton:disabled {
       <property name="styleSheet">
        <string notr="true"/>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -409,13 +409,28 @@ QPushButton:disabled, ToolButton:disabled {
           <enum>QTabWidget::South</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="RecieveSetting">
           <attribute name="title">
            <string>接收设置</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item>
             <widget class="QLabel" name="label_2">
              <property name="text">
@@ -891,6 +906,55 @@ QComboBox QScrollBar::handle:vertical {
           <attribute name="title">
            <string>自动应答</string>
           </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QTableWidget" name="historyTable_2">
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+             <column>
+              <property name="text">
+               <string>状态</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>触发条件</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>触发内容</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>发送内容</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>触发次数</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </widget>
        </item>

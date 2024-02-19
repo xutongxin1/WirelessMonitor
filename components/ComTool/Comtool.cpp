@@ -15,7 +15,9 @@
 #include "quihelperdata.h"
 #include "QTextEditWithKey.h"
 // #include "USBInfo.h"
+#include "ComToolAutoReplyDialog.h"
 #include "enumser.h"
+#include "RepeaterDialog.h"
 
 /*
  * TODO:shell语法高亮，使用正则表达式https://c.runoob.com_/front-end/
@@ -645,6 +647,11 @@ void ComTool::SendData() {
 }
 
 void ComTool::SaveData() {
+
+	RepeaterDialog *dialog = new ComToolAutoReplyDialog(this);
+	connect(dialog, &QDialog::accepted, this, [&] {
+
+	});
 	// QString temp_data = ui_->txtMain->toPlainText();
 	// if (temp_data.isEmpty()) {
 	//     return;

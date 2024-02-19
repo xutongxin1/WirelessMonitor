@@ -3,3 +3,19 @@
 //
 
 #include "RepeaterDialog.h"
+
+#include <qdialogbuttonbox.h>
+
+RepeaterDialog::RepeaterDialog(QWidget *parent): QDialog(parent) {
+	setModal(true);
+	setAttribute(Qt::WA_DeleteOnClose);
+	// connectResultSingal();
+	show();
+}
+
+void RepeaterDialog::connectResultSingal() {
+
+}
+
+void RepeaterDialog::GetData() {
+}
