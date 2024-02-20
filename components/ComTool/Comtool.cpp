@@ -231,18 +231,18 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 
 	connect(ui_->btnSave, &QPushButton::clicked, this, &ComTool::SaveData);
 
-	// connect(ui_->tabWidget, &QTabWidget::currentChanged, this, [&](int index) {
-	// 	if (index == 0)
-	// 	{
-	// 		ui_->LRSplitter->setStretchFactor(0, 20);
-	// 		ui_->LRSplitter->setStretchFactor(1, 1);
-	// 	}
-	// 	else
-	// 	{
-	// 		ui_->LRSplitter->setStretchFactor(0, 1);
-	// 		ui_->LRSplitter->setStretchFactor(1, 20);
-	// 	}
-	// });
+	connect(ui_->tabWidget, &QTabWidget::currentChanged, this, [&](int index) {
+		if (index == 0)
+		{
+			SizeSplitterWithFactor(ui_->LRSplitter, false, 0.7, 0.3);
+
+		}
+		else
+		{
+			SizeSplitterWithFactor(ui_->LRSplitter, false, 0.4, 0.6);
+
+		}
+	});
 }
 
 void ComTool::UIInit() {
