@@ -445,6 +445,9 @@ QPushButton:disabled, ToolButton:disabled {
           <number>0</number>
          </property>
          <widget class="QWidget" name="RecieveSetting">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgba(211, 219, 245,130);</string>
+          </property>
           <attribute name="title">
            <string>接收设置</string>
           </attribute>
@@ -547,7 +550,7 @@ QPushButton:disabled, ToolButton:disabled {
              <property name="styleSheet">
               <string notr="true">QPushButton, ToolButton {
     color: black;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(211, 245, 237, 0.7);
     border: 1px solid rgba(0, 0, 0, 0.073);
     border-bottom: 1px solid rgba(0, 0, 0, 0.183);
     border-radius: 5px;
@@ -595,7 +598,7 @@ QPushButton:disabled, ToolButton:disabled {
              <property name="styleSheet">
               <string notr="true">QPushButton, ToolButton {
     color: black;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(211, 245, 237, 0.7);
     border: 1px solid rgba(0, 0, 0, 0.073);
     border-bottom: 1px solid rgba(0, 0, 0, 0.183);
     border-radius: 5px;
@@ -643,7 +646,7 @@ QPushButton:disabled, ToolButton:disabled {
              <property name="styleSheet">
               <string notr="true">QPushButton, ToolButton {
     color: black;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(211, 245, 237, 0.7);
     border: 1px solid rgba(0, 0, 0, 0.073);
     border-bottom: 1px solid rgba(0, 0, 0, 0.183);
     border-radius: 5px;
@@ -689,7 +692,7 @@ QPushButton:disabled, ToolButton:disabled {
            <item>
             <widget class="QWidget" name="verticalWidget" native="true">
              <property name="styleSheet">
-              <string notr="true">background-color: rgba(255, 170, 0,50);</string>
+              <string notr="true"/>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_5" stretch="2,1,2,2,2,2,2,2,0">
               <item>
@@ -796,10 +799,10 @@ QPushButton:disabled, ToolButton:disabled {
                  <widget class="QComboBox" name="BandCombo">
                   <property name="styleSheet">
                    <string notr="true">QComboBox {
-    background-color: #fddfa3; /* 下拉框背景颜色设置为白色 */
+    background-color: #D3F1F5; /* 下拉框背景颜色设置为白色 */
 }
 QComboBox QScrollBar::handle:vertical {
-    background-color: #ffe4e1; /* 滚动条手柄背景颜色为#b2bdaf */
+    background-color: #95CBF5; /* 滚动条手柄背景颜色为#b2bdaf */
 }</string>
                   </property>
                   <property name="editable">

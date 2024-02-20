@@ -363,6 +363,8 @@ void ComTool::UIInit() {
 
 	//居中窗口
 	QuiHelper::SetFormInCenter(this);
+
+	// ui_->widgetRight->setStyleSheet("background-color: rgba(255, 170, 0,50)");
 }
 
 /// TODO: 对显示行数进行限制
