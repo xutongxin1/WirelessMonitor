@@ -70,6 +70,8 @@ public:
 	void (QComboBox::*fp)(int) = &QComboBox::currentIndexChanged;
 
 	static void SizeSplitterWithFactor(QSplitter *splitter, bool isHorizontal,float a, float b);
+
+	bool hasInit = true;//目前不代表所有窗体均需要调用该变量，因此默认值为true
 };
 
 #endif //MAIN_API_REPEATERWIDGET_REPEATERWIDGET_H_

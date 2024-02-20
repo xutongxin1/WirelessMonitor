@@ -51,18 +51,19 @@ void RepeaterWidget::SizeSplitterWithFactor(QSplitter *splitter, bool isHorizont
 		tmp = splitter->height() - splitter->handleWidth();
 		// tmp = splitter->sizeHint().height();
 		SplitterSize << static_cast<int>(static_cast<float>(tmp) * a);
-		SplitterSize << tmp - SplitterSize[0] - 1;
+		SplitterSize << tmp - SplitterSize[0];
 	} else
 	{
 		tmp = splitter->width() - splitter->handleWidth();
 		SplitterSize << static_cast<int>(static_cast<float>(tmp) * a);
-		SplitterSize << tmp - SplitterSize[0] - 1;
+		SplitterSize << tmp - SplitterSize[0];
 	}
 	qDebug() << splitter->sizes() << " " << SplitterSize;
 
 
 	splitter->setSizes(SplitterSize);
-	qDebug() << splitter->sizeHint().height() << " " << splitter->sizes();
+	qDebug() << splitter->height() << " " << splitter->sizes();
+	// qDebug()<< splitter->isCollapsible(0)<<" "<<splitter->isCollapsible(1);
 
 }
 

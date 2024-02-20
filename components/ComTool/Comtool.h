@@ -167,6 +167,8 @@ private:
 protected:
     void resizeEvent(QResizeEvent *event) override;
 
+    void showEvent(QShowEvent *event) override;
+
 private slots:
     //    void InitConfig();          //初始化配置文件
     //    void SaveConfig();          //保存配置文件

@@ -43,6 +43,9 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 
 	my_serialport_ = new QSerialPort(this);
 
+	//帮助showEvent重绘分割比例
+	hasInit = false;
+
 	//几个历史遗留
 	QuiHelper::InitAll();
 	AppData::ReadSendData();
@@ -360,8 +363,6 @@ void ComTool::UIInit() {
 
 	//居中窗口
 	QuiHelper::SetFormInCenter(this);
-
-	//预设左右栏的割比例
 }
 
 /// TODO: 对显示行数进行限制
@@ -707,6 +708,21 @@ void ComTool::on_btnClear_clicked() {
 	ui_->send_cnt->setText(send_cnt_str_);
 }
 
+void ComTool::resizeEvent(QResizeEvent *event) {
+	//根据测试，resizes时会等比例缩放
+	// SizeSplitterWithFactor(ui_->SendSplitter,true,0.6,0.4);
+	RepeaterWidget::resizeEvent(event);
+}
+
+void ComTool::showEvent(QShowEvent *event) {
+	if (!hasInit)
+	{
+		SizeSplitterWithFactor(ui_->SendSplitter, true, 0.6, 0.4);
+		SizeSplitterWithFactor(ui_->LRSplitter, false, 0.7, 0.3);
+		hasInit = true;
+	}
+	RepeaterWidget::showEvent(event);
+}
 
 void ComTool::GetConstructConfig() {
 	isGetingConfig = true;
