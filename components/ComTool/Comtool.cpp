@@ -15,7 +15,10 @@
 #include "quihelperdata.h"
 #include "QTextEditWithKey.h"
 // #include "USBInfo.h"
+#include "ComToolAutoReplyDialog.h"
 #include "enumser.h"
+#include "RepeaterDialog.h"
+
 
 /*
  * TODO:shell语法高亮，使用正则表达式https://c.runoob.com_/front-end/
@@ -41,19 +44,21 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 
 	my_serialport_ = new QSerialPort(this);
 
+	//帮助showEvent重绘分割比例
+	hasInit = false;
+
+	//几个历史遗留
 	QuiHelper::InitAll();
-
-
 	AppData::ReadSendData();
 	AppData::ReadDeviceData();
 
+	//初始化UI文件
 	ui_->setupUi(this);
-	ui_->HEXEdit->hide();
+	//初始化其他和逻辑无关的UI
+	UIInit();
 
 	receive_count_ = 0;
 	send_count_ = 0;
-	//    this->InitConfig();
-	QuiHelper::SetFormInCenter(this);
 
 	connect(ui_->btnSend, &QPushButton::clicked, this, [&] {
 		this->SendData();
@@ -104,6 +109,150 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 	});
 
 
+	//要等选项加载完才可以加载配置文件
+	//先刷新现在的串口
+	ReflashComCombo();
+	//然后比对配置文件里上次打开的串口现在还有没有，没有的话刚刚默认也加载了现有的所以没问题
+	ComHistoryGet();
+	//读取数据出来，如果没有就直接返回所以也没问题
+	ComboChange(0);
+	// ComTool::GetConstructConfig();
+
+	ui_->SendDataEdit->
+			setLineWrapMode(QTextEdit::NoWrap);
+
+	connect(timer_for_port_, &QTimer::timeout,
+	        this, &ComTool::ReflashComCombo);
+	//    ui_->COMCombo->addItem("COM39");
+	//扫描有效的端口
+	timer_for_port_->start(500);
+
+
+	connect(ui_
+	        ->StartTool, &QPushButton::clicked, this, &ComTool::ToolSwitch);
+
+	connect(my_serialport_, &QSerialPort::readyRead,
+	        this, &ComTool::GetData);
+
+	connect(ui_
+	        ->COMButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
+	connect(ui_
+	        ->TCPClientButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
+	connect(ui_
+	        ->TCPServerButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
+
+	//高亮转义字符
+	highlighter_send_ = new Highlighter(ui_->SendDataEdit->document());
+	highlighter_rec_ = new Highlighter(ui_->txtMain->document());
+
+	// 切换发送区控件
+	connect(ui_->ckHexSend, &QRadioButton::toggled, this, [&] {
+		if (ui_->ckHexSend->isChecked())
+		{
+			connect(ui_->HEXEdit, &QTextEditWithKey::released, this, [&] {
+				HEXCollation();
+			});
+			HEXCollation();
+
+			connect(ui_->SendDataEdit, &QTextEditWithKey::released, this, [&] {
+				StringEditToHEX();
+			});
+			ui_->SendDataEdit->setPlaceholderText("String区");
+			ui_->HEXEdit->show();
+		} else
+		{
+			disconnect(ui_->SendDataEdit, &QTextEditWithKey::released, nullptr, nullptr);
+			disconnect(ui_->HEXEdit, &QTextEditWithKey::released, nullptr, nullptr);
+			ui_->SendDataEdit->setPlainText(ui_->HEXEdit->toPlainText());
+			ui_->HEXEdit->hide();
+			ui_->HEXEdit->clear();
+			ui_->SendDataEdit->setPlaceholderText("发送区");
+		}
+	});
+
+	//绑定由于选择不同端口响应配置文件的修改
+	connect(ui_->COMCombo, fp, this, &ComTool::ComboChange);
+
+	//初始化历史发送记录
+	ComToolHistoryTableInit();
+
+	TimerRefreshCntConncet(); //绑定计数器刷新函数
+
+	connect(this, &ComTool::AddText, this, [&](const QString &text, const char type) {
+		//      if (type == 1) {
+		//          ui_->txtMain->setTextColor(QColor("dodgerblue"));
+		//      } else if (type == 2) {
+		//          ui_->txtMain->setTextColor(QColor("black"));
+		//      }
+		if (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum())
+		{
+			if (!recieve_tmp_pool_.isEmpty())
+			{
+				ui_->txtMain->append(recieve_tmp_pool_); //加上一点优化逻辑更好
+				recieve_tmp_pool_.clear();
+			}
+			ui_->txtMain->append(text);
+			is_under_ = true;
+		} else //现在不在底层
+		{
+			if (is_under_)
+			{
+				highlighter_rec_->is_work_ = true;
+				//              highlighter_rec_->rehighlight();//不能用该方法开启高亮，一定要文本的改变才能触发
+				ui_->txtMain->append(text);
+				is_under_ = false;
+				return;
+			}
+			recieve_tmp_pool_.append(text);
+			is_under_ = false;
+
+
+			//            ui_->txtMain->append(text);
+			//            ui_->txtMain->verticalScrollBar()->setSliderPosition(ui_->txtMain->verticalScrollBar()->maximum());
+		}
+
+
+		//      qDebug() << (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum());
+	});
+
+	//行数限制逻辑
+	connect(timer_line_max_, &QTimer::timeout, this, [&] {
+		//      qDebug() << ui_->txtMain->document()->lineCount();
+		if (is_under_)
+		{
+			ui_->txtMain->document()->setMaximumBlockCount(10000);
+			ui_->txtMain->document()->setMaximumBlockCount(0);
+		}
+	});
+
+	//高亮适配器绑定
+	connect(timer_line_max_, &QTimer::timeout, this, &ComTool::TimerForHightLight);
+
+	//    connect(this, &ComTool::UpdateCntTimer, this, &ComTool::TimerRefreshCntConncet);//绑定计数器界面刷新程序
+
+	connect(ui_->btnSave, &QPushButton::clicked, this, &ComTool::SaveData);
+
+	connect(ui_->tabWidget, &QTabWidget::currentChanged, this, [&](int index) {
+		if (index == 0)
+		{
+			SizeSplitterWithFactor(ui_->LRSplitter, false, 0.7, 0.3);
+
+		}
+		else
+		{
+			SizeSplitterWithFactor(ui_->LRSplitter, false, 0.4, 0.6);
+
+		}
+	});
+}
+
+void ComTool::UIInit() {
+	//默认不在HEX模式
+	ui_->HEXEdit->hide();
+
+	//未实现功能
+	ui_->btnLoadData->hide();
+
 	QStringList baud_list;
 	baud_list <<
 			QString::number(baud_rate_)
@@ -126,7 +275,6 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 	ui_->BandCombo->
 			addItems(baud_list);
 
-	void (QComboBox::*fp)(int) = &QComboBox::currentIndexChanged;
 
 	connect(ui_->BandCombo, fp, this, [&](
         int num
@@ -204,184 +352,20 @@ ComTool::ComTool(int device_num, int win_num, QSettings *cfg, ToNewWidget *paren
 		        UpdateComSetting();
 	        });
 
-	//要等选项加载完才可以加载配置文件
-	//先刷新现在的串口
-	ReflashComCombo();
-	//然后比对配置文件里上次打开的串口现在还有没有，没有的话刚刚默认也加载了现有的所以没问题
-	ComHistoryGet();
-	//读取数据出来，如果没有就直接返回所以也没问题
-	ComboChange(0);
-	// ComTool::GetConstructConfig();
-
-	ui_->SendDataEdit->
-			setLineWrapMode(QTextEdit::NoWrap);
-
-	connect(timer_for_port_, &QTimer::timeout,
-		this, &ComTool::ReflashComCombo);
-	//    ui_->COMCombo->addItem("COM39");
-	//扫描有效的端口
-	timer_for_port_->start(500);
-
-
-	connect(ui_
-	        ->StartTool, &QPushButton::clicked, this, &ComTool::ToolSwitch);
-
-	connect(my_serialport_, &QSerialPort::readyRead,
-	        this, &ComTool::GetData);
-
-	connect(ui_
-	        ->COMButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
-	connect(ui_
-	        ->TCPClientButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
-	connect(ui_
-	        ->TCPServerButton, &QRadioButton::toggled, this, &ComTool::ChangeMode);
-
-	//高亮转义字符
-	highlighter_send_ = new Highlighter(ui_->SendDataEdit->document());
-	highlighter_rec_ = new Highlighter(ui_->txtMain->document());
-
-	//ui美化项
+	//StartTool美化项
 	ui_->StartTool->setBackgroundColor(QColor(155, 199, 250, 100));
 	ui_->StartTool->setFontSize(15);
 
-	//表格自动拉宽
-	ui_->historyTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-	connect(ui_->clearHistorySend, &QPushButton::clicked, this, [&] {
-		ui_->historyTable->setRowCount(0);
-		ui_->historyTable->clearContents();
-		history_send_list_.clear();
-	}); //清空历史记录
-
-	connect(ui_->historyTable, &QTableWidget::cellClicked, this, [&](int row, int col) {
-		ui_->SendDataEdit->setText(ui_->historyTable->item(row, 0)->text());
-	}); //单击
-
-	connect(ui_->historyTable, &QTableWidget::cellDoubleClicked, this, [&](int row, int col) {
-		ui_->SendDataEdit->setText(ui_->historyTable->item(row, 0)->text());
-		this->SendData();
-	}); //双击
-
-	// 切换发送区控件
-	connect(ui_->ckHexSend, &QRadioButton::toggled, this, [&] {
-		if (ui_->ckHexSend->isChecked())
-		{
-			connect(ui_->HEXEdit, &QTextEditWithKey::released, this, [&] {
-				HEXCollation();
-			});
-			HEXCollation();
-
-			connect(ui_->SendDataEdit, &QTextEditWithKey::released, this, [&] {
-				StringEditToHEX();
-			});
-			ui_->SendDataEdit->setPlaceholderText("String区");
-			ui_->HEXEdit->show();
-		} else
-		{
-			disconnect(ui_->SendDataEdit, &QTextEditWithKey::released, nullptr, nullptr);
-			disconnect(ui_->HEXEdit, &QTextEditWithKey::released, nullptr, nullptr);
-			ui_->SendDataEdit->setPlainText(ui_->HEXEdit->toPlainText());
-			ui_->HEXEdit->hide();
-			ui_->HEXEdit->clear();
-			ui_->SendDataEdit->setPlaceholderText("发送区");
-		}
-	});
-
-	//绑定由于选择不同端口响应配置文件的修改
-	connect(ui_->COMCombo, fp, this, &ComTool::ComboChange);
-
-	//列宽
-	ui_->historyTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
-	ui_->historyTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-	ui_->historyTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Interactive);
-
-	//历史发送框的右键菜单
-	ui_->historyTable->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(ui_->historyTable, &QTableWidget::customContextMenuRequested, this, [&](const QPoint pos) {
-		//获得鼠标点击的x，y坐标点
-		int x = pos.x();
-		int y = pos.y();
-		QModelIndex index = ui_->historyTable->indexAt(QPoint(x, y));
-		if (index.isValid())
-		{
-			int row = index.row(); //获得QTableWidget列表点击的行数
-			QMenu *menu = new QMenu(ui_->historyTable);
-			//          QAction *pnew_1 = new QAction("复制并修改该项", ui_->historyTable);
-			QAction *pnew_2 = new QAction("删除该项", ui_->historyTable);
-			connect(pnew_2, &QAction::triggered, this, [&, row] {
-				history_send_list_.remove(ui_->historyTable->item(row, 0)->text());
-				ui_->historyTable->removeRow(row);
-			});
-
-			//          menu->addAction(pnew_1);
-			menu->addAction(pnew_2);
-			menu->move(cursor().pos());
-			menu->show();
-		}
-	});
+	//设置为第一页
 	ui_->tabWidget->setCurrentIndex(0);
 
-	//预设上下分割比例
-	ui_->splitter->setStretchFactor(0, 3);
-	ui_->splitter->setStretchFactor(1, 1);
+	//预设发送区和消息区的上下分割比例
+	// SizeSplitterWithFactor(ui_->SendSplitter,true,0.8,0.2);
 
-	TimerRefreshCntConncet(); //绑定计数器刷新函数
+	//居中窗口
+	QuiHelper::SetFormInCenter(this);
 
-	connect(this, &ComTool::AddText, this, [&](const QString &text, const char type) {
-		//      if (type == 1) {
-		//          ui_->txtMain->setTextColor(QColor("dodgerblue"));
-		//      } else if (type == 2) {
-		//          ui_->txtMain->setTextColor(QColor("black"));
-		//      }
-		if (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum())
-		{
-			if (!recieve_tmp_pool_.isEmpty())
-			{
-				ui_->txtMain->append(recieve_tmp_pool_); //加上一点优化逻辑更好
-				recieve_tmp_pool_.clear();
-			}
-			ui_->txtMain->append(text);
-			is_under_ = true;
-		} else //现在不在底层
-		{
-			if (is_under_)
-			{
-				highlighter_rec_->is_work_ = true;
-				//              highlighter_rec_->rehighlight();//不能用该方法开启高亮，一定要文本的改变才能触发
-				ui_->txtMain->append(text);
-				is_under_ = false;
-				return;
-			}
-			recieve_tmp_pool_.append(text);
-			is_under_ = false;
-
-
-			//            ui_->txtMain->append(text);
-			//            ui_->txtMain->verticalScrollBar()->setSliderPosition(ui_->txtMain->verticalScrollBar()->maximum());
-		}
-
-
-		//      qDebug() << (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum());
-	});
-
-	//行数限制逻辑
-	connect(timer_line_max_, &QTimer::timeout, this, [&] {
-		//      qDebug() << ui_->txtMain->document()->lineCount();
-		if (is_under_)
-		{
-			ui_->txtMain->document()->setMaximumBlockCount(10000);
-			ui_->txtMain->document()->setMaximumBlockCount(0);
-		}
-	});
-
-	//高亮适配器绑定
-	connect(timer_line_max_, &QTimer::timeout, this, &ComTool::TimerForHightLight);
-
-	//    connect(this, &ComTool::UpdateCntTimer, this, &ComTool::TimerRefreshCntConncet);//绑定计数器界面刷新程序
-
-	ui_->btnLoadData->hide();
-
-	connect(ui_->btnSave, &QPushButton::clicked, this, &ComTool::SaveData);
+	// ui_->widgetRight->setStyleSheet("background-color: rgba(255, 170, 0,50)");
 }
 
 /// TODO: 对显示行数进行限制
@@ -406,6 +390,7 @@ void ComTool::LineLimit(const QString &text, const char type) {
 	qDebug() << text;
 	//   qDebug() << (ui_->txtMain->verticalScrollBar()->sliderPosition() == ui_->txtMain->verticalScrollBar()->maximum());
 }
+
 
 void ComTool::TimerForHightLight() {
 	int tmp = ui_->txtMain->document()->lineCount();
@@ -688,6 +673,16 @@ void ComTool::SendData() {
 }
 
 void ComTool::SaveData() {
+	// RepeaterDialog *dialog = new ComToolAutoReplyDialog(this);
+	// connect(dialog, &QDialog::accepted, this, [&] {
+	// });
+	ui_->LRSplitter->setOpaqueResize(false);
+	QList<int> SplitterSize = ui_->LRSplitter->sizes();
+	SplitterSize[0] += 1;
+	SplitterSize[1] -= 1;
+	ui_->LRSplitter->setSizes(SplitterSize);
+	qDebug() << ui_->LRSplitter->sizes() << " " << SplitterSize;
+
 	// QString temp_data = ui_->txtMain->toPlainText();
 	// if (temp_data.isEmpty()) {
 	//     return;
@@ -716,6 +711,21 @@ void ComTool::on_btnClear_clicked() {
 	ui_->send_cnt->setText(send_cnt_str_);
 }
 
+void ComTool::resizeEvent(QResizeEvent *event) {
+	//根据测试，resizes时会等比例缩放
+	// SizeSplitterWithFactor(ui_->SendSplitter,true,0.6,0.4);
+	RepeaterWidget::resizeEvent(event);
+}
+
+void ComTool::showEvent(QShowEvent *event) {
+	if (!hasInit)
+	{
+		SizeSplitterWithFactor(ui_->SendSplitter, true, 0.6, 0.4);
+		SizeSplitterWithFactor(ui_->LRSplitter, false, 0.7, 0.3);
+		hasInit = true;
+	}
+	RepeaterWidget::showEvent(event);
+}
 
 void ComTool::GetConstructConfig() {
 	isGetingConfig = true;
@@ -751,6 +761,7 @@ void ComTool::SaveConstructConfig() {
 	cfg_->endGroup();
 }
 
+
 void ComTool::ReadErrorNet() {
 }
 
@@ -781,30 +792,6 @@ void ComTool::ChangeMode() {
 	ui_->DataBitLayout->setEnabled(tmp);
 	ui_->ParityBitLayout->setEnabled(tmp);
 	ui_->StopBitLayout->setEnabled(tmp);
-}
-
-void ComTool::UpdateSendHistory() {
-	ui_->historyTable->setRowCount(0);
-	ui_->historyTable->clearContents();
-	ui_->historyTable->setSortingEnabled(false);
-	int j = 0;
-	for (QHash<QString, HistorySend>::iterator i = history_send_list_.begin(); i != history_send_list_.end(); ++i)
-	{
-		ui_->historyTable->insertRow(j);
-		HistorySend tmp = i.value();
-		ui_->historyTable->setItem(j, 0, new QTableWidgetItem(tmp.data));
-		ui_->historyTable->setItem(j, 1, new QTableWidgetItem(tmp.time.toString("yyyy-MM-dd HH:mm:ss")));
-		ui_->historyTable->setItem(j, 2, new QTableWidgetItem(QString::number(tmp.send_num)));
-		if (tmp.is_Hex)
-		{
-			ui_->historyTable->setItem(j, 3, new QTableWidgetItem("hex"));
-		} else
-		{
-			ui_->historyTable->setItem(j, 3, new QTableWidgetItem("str"));
-		}
-		j++;
-	}
-	ui_->historyTable->setSortingEnabled(true);
 }
 
 

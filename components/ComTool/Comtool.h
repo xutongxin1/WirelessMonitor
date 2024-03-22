@@ -66,6 +66,7 @@ public:
 
     void LineLimit(const QString &text, const char type);
 
+    void UIInit();
 private:
     Ui::ComTool *ui_;
     QTimer *timer_read_; //定时读取串口数据
@@ -160,6 +161,14 @@ private:
     QString ComUUID = "666";
 
     bool isGetingConfig=false;
+
+    void ComToolHistoryTableInit();
+
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
+    void showEvent(QShowEvent *event) override;
+
 private slots:
     //    void InitConfig();          //初始化配置文件
     //    void SaveConfig();          //保存配置文件

@@ -16,18 +16,51 @@
     <verstretch>4</verstretch>
    </sizepolicy>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_6">
-   <item>
-    <widget class="QSplitter" name="splitter_2">
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QSplitter" name="LRSplitter">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
+     <property name="opaqueResize">
+      <bool>false</bool>
+     </property>
+     <property name="childrenCollapsible">
+      <bool>true</bool>
+     </property>
      <widget class="QWidget" name="horizontalLayoutWidget">
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <item>
-        <widget class="QSplitter" name="splitter">
+        <widget class="QSplitter" name="SendSplitter">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+         <property name="opaqueResize">
+          <bool>false</bool>
          </property>
          <widget class="QTextEdit" name="txtMain">
           <property name="enabled">
@@ -36,7 +69,7 @@
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>400</height>
+            <height>16777215</height>
            </size>
           </property>
           <property name="styleSheet">
@@ -59,7 +92,7 @@
           </property>
          </widget>
          <widget class="QWidget" name="horizontalLayoutWidget_2">
-          <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="2,1">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_12">
              <item>
@@ -87,18 +120,18 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,1">
                <item>
                 <widget class="QPushButton" name="btnSend">
                  <property name="minimumSize">
                   <size>
-                   <width>80</width>
+                   <width>0</width>
                    <height>0</height>
                   </size>
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>16777215</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -362,7 +395,7 @@ QPushButton:disabled, ToolButton:disabled {
       </property>
       <property name="minimumSize">
        <size>
-        <width>180</width>
+        <width>0</width>
         <height>0</height>
        </size>
       </property>
@@ -387,7 +420,7 @@ QPushButton:disabled, ToolButton:disabled {
       <property name="styleSheet">
        <string notr="true"/>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -412,10 +445,28 @@ QPushButton:disabled, ToolButton:disabled {
           <number>0</number>
          </property>
          <widget class="QWidget" name="RecieveSetting">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgba(211, 219, 245,130);</string>
+          </property>
           <attribute name="title">
            <string>接收设置</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item>
             <widget class="QLabel" name="label_2">
              <property name="text">
@@ -499,7 +550,7 @@ QPushButton:disabled, ToolButton:disabled {
              <property name="styleSheet">
               <string notr="true">QPushButton, ToolButton {
     color: black;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(211, 245, 237, 0.7);
     border: 1px solid rgba(0, 0, 0, 0.073);
     border-bottom: 1px solid rgba(0, 0, 0, 0.183);
     border-radius: 5px;
@@ -547,7 +598,7 @@ QPushButton:disabled, ToolButton:disabled {
              <property name="styleSheet">
               <string notr="true">QPushButton, ToolButton {
     color: black;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(211, 245, 237, 0.7);
     border: 1px solid rgba(0, 0, 0, 0.073);
     border-bottom: 1px solid rgba(0, 0, 0, 0.183);
     border-radius: 5px;
@@ -595,7 +646,7 @@ QPushButton:disabled, ToolButton:disabled {
              <property name="styleSheet">
               <string notr="true">QPushButton, ToolButton {
     color: black;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(211, 245, 237, 0.7);
     border: 1px solid rgba(0, 0, 0, 0.073);
     border-bottom: 1px solid rgba(0, 0, 0, 0.183);
     border-radius: 5px;
@@ -641,7 +692,7 @@ QPushButton:disabled, ToolButton:disabled {
            <item>
             <widget class="QWidget" name="verticalWidget" native="true">
              <property name="styleSheet">
-              <string notr="true">background-color: rgba(255, 170, 0,50);</string>
+              <string notr="true"/>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_5" stretch="2,1,2,2,2,2,2,2,0">
               <item>
@@ -660,7 +711,7 @@ QPushButton:disabled, ToolButton:disabled {
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>20</height>
+                  <height>0</height>
                  </size>
                 </property>
                 <property name="maximumSize">
@@ -748,10 +799,10 @@ QPushButton:disabled, ToolButton:disabled {
                  <widget class="QComboBox" name="BandCombo">
                   <property name="styleSheet">
                    <string notr="true">QComboBox {
-    background-color: #fddfa3; /* 下拉框背景颜色设置为白色 */
+    background-color: #D3F1F5; /* 下拉框背景颜色设置为白色 */
 }
 QComboBox QScrollBar::handle:vertical {
-    background-color: #ffe4e1; /* 滚动条手柄背景颜色为#b2bdaf */
+    background-color: #95CBF5; /* 滚动条手柄背景颜色为#b2bdaf */
 }</string>
                   </property>
                   <property name="editable">
@@ -891,6 +942,55 @@ QComboBox QScrollBar::handle:vertical {
           <attribute name="title">
            <string>自动应答</string>
           </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QTableWidget" name="historyTable_2">
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+             <column>
+              <property name="text">
+               <string>状态</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>触发条件</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>触发内容</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>发送内容</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>触发次数</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </widget>
        </item>

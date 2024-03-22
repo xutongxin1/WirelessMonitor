@@ -4,19 +4,22 @@ cmake_minimum_required(VERSION 3.24)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(
-  WirelessMonitor
-  VERSION 0.1
-  LANGUAGES CXX)
+        WirelessMonitor
+        VERSION 0.1
+        LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 20)
 
+#set(BOOST_INCLUDEDIR "C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/include/")
+#set(BOOST_LIBRARYDIR "C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/lib")
+#set(Boost_NO_SYSTEM_PATHS ON)
+#set(Boost_LIBRARY_DIR_DEBUG "C:/Users/xtx/.vcpkg-clion/vcpkg/installed/x64-windows/debug/lib")
 
 add_definitions(-DQCUSTOMPLOT_USE_OPENGL)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -43,6 +46,49 @@ find_package(Boost
         REQUIRED COMPONENTS python311)
 
 
+# get git hash
+macro(get_git_hash _git_hash)
+    find_package(Git QUIET)
+    if (GIT_FOUND)
+        execute_process(
+                COMMAND ${GIT_EXECUTABLE} log -1 --pretty=format:%h
+                OUTPUT_VARIABLE ${_git_hash}
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                ERROR_QUIET
+                WORKING_DIRECTORY
+                ${PROJECT_SOURCE_DIR}
+        )
+    endif ()
+endmacro()
+
+# get git branch
+macro(get_git_branch _git_branch)
+    find_package(Git QUIET)
+    if (GIT_FOUND)
+        execute_process(
+                COMMAND ${GIT_EXECUTABLE} symbolic-ref --short -q HEAD
+                OUTPUT_VARIABLE ${_git_branch}
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                ERROR_QUIET
+                WORKING_DIRECTORY
+                ${PROJECT_SOURCE_DIR}
+        )
+    endif ()
+endmacro()
+
+string(TIMESTAMP COMPILE_TIME %Y%m%d_%H%M%S)
+set(build_time ${COMPILE_TIME})
+
+#git号
+set(GIT_HASH "")
+get_git_hash(GIT_HASH)
+#git分支
+set(GIT_BRANCH "")
+get_git_branch(GIT_BRANCH)
+
+message(STATUS "${build_time} ${GIT_BRANCH} ${GIT_HASH}")
+
+
 file(GLOB HEADER "*.h")
 file(GLOB RSOURCE "*.cpp")
 file(GLOB UI "*.ui")
@@ -57,21 +103,25 @@ file(GLOB_RECURSE SOURCES ${SOURCES} "./config/*.ini")
 #endif()
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-    add_executable(${PROJECT_NAME} WIN32  ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
+    add_executable(${PROJECT_NAME} WIN32 ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
 else ()
-    add_executable(${PROJECT_NAME}  ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
+    add_executable(${PROJECT_NAME} ${HEADER} ${RSOURCE} ${UI} ${QRC} ${Resource})
 endif ()
 add_subdirectory(api)
 add_subdirectory(components)
 add_subdirectory(thirdLib)
 #add_library(whatever STATIC ${SOURCES})
-if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-    add_link_options(${PROJECT_NAME} PRIVATE -mwindows)
-endif ()
+#if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+#    add_link_options(${PROJECT_NAME} PRIVATE -mwindows)
+#endif ()
 target_include_directories(${PROJECT_NAME} PUBLIC ./components)
 target_include_directories(${PROJECT_NAME} PUBLIC ./config)
 MESSAGE(STATUS ${Boost_LIBRARY_DIR_DEBUG})
 target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}/python3.11)
+
+if (NOT DEFINED Boost_LIBRARY_DIR_DEBUG)
+    message(FATAL_ERROR "Boost_LIBRARY_DIR_DEBUG 未定义，请强制手动定义")
+endif ()
 
 if (EXISTS "${Boost_LIBRARY_DIR_DEBUG}/python311.lib")
     message(STATUS "python311.lib exists, is OK!?")
@@ -79,13 +129,13 @@ if (EXISTS "${Boost_LIBRARY_DIR_DEBUG}/python311.lib")
 else ()
     execute_process(COMMAND cp.exe -f ${Boost_LIBRARY_DIR_DEBUG}/python311_d.lib ${Boost_LIBRARY_DIR_DEBUG}/python311.lib
             WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/thirdPartyTool/cp)
-    message(STATUS "python311_d.lib OK")
+    message(STATUS "python311_d.lib copy OK")
 endif ()
 
 target_link_libraries(
         ${PROJECT_NAME} PUBLIC ${Boost_LIBRARY_DIR_DEBUG}/python311.lib PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::Core Qt6::PrintSupport Qt6::SerialPort
-        Qt6::Network qmetarialComponents Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent "${CMAKE_CURRENT_SOURCE_DIR}/api/OpenGL32.Lib"  ${Boost_LIBRARIES})
+        Qt6::Network qmetarialComponents Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent "${CMAKE_CURRENT_SOURCE_DIR}/api/OpenGL32.Lib" ${Boost_LIBRARIES})
 
 
 set_target_properties(
@@ -97,24 +147,27 @@ set_target_properties(
         MACOSX_BUNDLE TRUE)
 
 #add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-#        COMMAND cp -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/Debug
-#        )#给Clion等win环境使用
+#        COMMAND ${CMAKE_COMMAND} -E copy ${Boost_LIBRARY_DIR_DEBUG}/../bin/python311_d.dll ${CMAKE_CURRENT_BINARY_DIR}/
+#)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND cp.exe -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND cp -r ${Boost_LIBRARY_DIR_DEBUG}/../bin/{python311_d.dll,boost_python311-vc143-mt-gyd-x64-1_83.dll,zlibd1.dll} ${CMAKE_CURRENT_BINARY_DIR}/
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/thirdPartyTool/cp
-        )#QTCreator或者linux环境使用
+
+)
+add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+        COMMAND cp -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/thirdPartyTool/cp
+)
 
 
-
-
-if (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/Debug/resource")
-    message(STATUS "resource exists")
-
-else ()
-    message(STATUS "resource does not exist")
-    file(COPY ./thirdLib/qmetarial/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug/resource FOLLOW_SYMLINK_CHAIN)
-endif ()
+#if (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/Debug/resource")
+#    message(STATUS "resource exists")
+#
+#else ()
+#    message(STATUS "resource does not exist")
+#    file(COPY ./thirdLib/qmetarial/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug/resource FOLLOW_SYMLINK_CHAIN)
+#endif ()
 
 if (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/resource")
     message(STATUS "resource exists")
@@ -126,3 +179,8 @@ endif ()
 
 
 add_subdirectory(thirdTarget_ComTool)
+
+configure_file(
+        "${RepeaterWidgetPath}/VersionConfig.h.in"
+        "${RepeaterWidgetPath}/VersionConfig.h"
+)
