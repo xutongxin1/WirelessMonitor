@@ -7,7 +7,7 @@ add_subdirectory(QPushButtonWithMouse)
 add_subdirectory(QCustomPlotWithMouse)
 add_subdirectory(QTextEditWithKey)
 add_subdirectory(PythonWork)
-#add_subdirectory(USBHandle)
+add_subdirectory(USBHandle)
 
 #IF (WIN32)
 #    MESSAGE(STATUS "Now is windows")

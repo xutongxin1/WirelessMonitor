@@ -2,6 +2,7 @@
 
 #include "./ui_mainwindow.h"
 #include "Comtool.h"
+#include "VersionConfig.h"
 
 
 int record_DeviceNum = 0, record_WinNum = 0;
@@ -20,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
     snackbar_->setBackgroundColor(QColor(173,216,230,127));
     snackbar_->setAutoHideDuration(300);
     this->setWindowIcon(QIcon("./config/Icon.ico"));
+    this->setWindowTitle("ComTool串口助手"+QString(V_BUILD_TIME)+"_"+QString(V_GIT_INFO));
+
 }
 
 MainWindow::~MainWindow() {

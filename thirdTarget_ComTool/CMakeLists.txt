@@ -29,19 +29,16 @@ find_package(Qt6 REQUIRED COMPONENTS Gui)               # QT6
 find_package(Qt6 REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-    add_executable(${PROJECT_NAME} WIN32  ${HEADER} ${SOURCE} ${UI} ${QRC})
+    add_executable(${PROJECT_NAME} WIN32 ${HEADER} ${SOURCE} ${UI} ${QRC} ./info.rc)
 else ()
-    add_executable(${PROJECT_NAME}  ${HEADER} ${SOURCE} ${UI} ${QRC})
-endif ()
-if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-    add_link_options(${PROJECT_NAME} PRIVATE -mwindows)
+    add_executable(${PROJECT_NAME} ${HEADER} ${SOURCE} ${UI} ${QRC} ./info.rc)
 endif ()
 
 file(GLOB_RECURSE HEADER "../components/ComTool/*.h")
 file(GLOB_RECURSE SOURCE "../components/ComTool/*.cpp")
-file(GLOB_RECURSE  UI "../components/ComTool/*.ui")
-file(GLOB_RECURSE  QRC "../components/ComTool/*.qrc")
-target_sources(${PROJECT_NAME} PUBLIC ${HEADER} ${SOURCE} ${UI} ${QRC})
+file(GLOB_RECURSE UI "../components/ComTool/*.ui")
+file(GLOB_RECURSE QRC "../components/ComTool/*.qrc")
+target_sources(${PROJECT_NAME} PUBLIC ${HEADER} ${SOURCE} ${UI} ${QRC} )
 target_include_directories(${PROJECT_NAME} PUBLIC ../components/ComTool/)
 
 add_subdirectory(../api/Highlighter Highlighter)
@@ -65,10 +62,36 @@ target_link_libraries(
 #        ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
 #        MACOSX_BUNDLE TRUE)
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+#        COMMAND cp.exe -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}
+#        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../thirdPartyTool/cp
+#)
+add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
         COMMAND cp.exe -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../thirdPartyTool/cp
-)
+)#不是说不能用-E，但是不能覆写确实不好用
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND  ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/ComTool/
+    )
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND  ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/ComTool/
+    )
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND cp.exe -r -f ${CMAKE_CURRENT_BINARY_DIR}/{${PROJECT_NAME}.exe,config/,resource/} ${CMAKE_CURRENT_BINARY_DIR}/ComTool/
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../thirdPartyTool/cp
+
+    )
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND windeployqt.exe ${CMAKE_CURRENT_BINARY_DIR}/ComTool/${PROJECT_NAME}.exe
+            WORKING_DIRECTORY ${QT6_INSTALL_PREFIX}/bin
+    )
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/ComTool/${PROJECT_NAME}.exe ${CMAKE_CURRENT_BINARY_DIR}/ComTool/ComTool.exe
+    )
+endif ()
 
 if (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/resource")
     message(STATUS "resource exists")
