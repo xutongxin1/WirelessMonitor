@@ -22,6 +22,7 @@ file(GLOB HEADER "*.h")
 file(GLOB SOURCE "*.cpp")
 file(GLOB UI "*.ui")
 file(GLOB QRC "*.qrc")
+file(GLOB RC "*.rc")
 
 find_package(QT NAMES Qt6 REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent)
 find_package(Qt6 REQUIRED COMPONENTS Core5Compat)       # QT6
@@ -29,9 +30,9 @@ find_package(Qt6 REQUIRED COMPONENTS Gui)               # QT6
 find_package(Qt6 REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-    add_executable(${PROJECT_NAME} WIN32 ${HEADER} ${SOURCE} ${UI} ${QRC} ./info.rc)
+    add_executable(${PROJECT_NAME} WIN32 ${HEADER} ${SOURCE} ${UI} ${QRC} ${RC})
 else ()
-    add_executable(${PROJECT_NAME} ${HEADER} ${SOURCE} ${UI} ${QRC} ./info.rc)
+    add_executable(${PROJECT_NAME} ${HEADER} ${SOURCE} ${UI} ${QRC} ${RC})
 endif ()
 
 file(GLOB_RECURSE HEADER "../components/ComTool/*.h")

@@ -16,7 +16,7 @@ public:
     ~QTextEditWithKey();
 
 protected:
-    virtual void keyReleaseEvent(QKeyEvent *event);
+    // virtual void keyReleaseEvent(QKeyEvent *event);
 
 signals:
     void released(bool a);

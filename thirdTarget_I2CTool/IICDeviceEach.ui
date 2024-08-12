@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>IICDeviceEach</class>
+ <widget class="RepeaterWidget" name="IICDeviceEach">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1056</width>
+    <height>574</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>IICDeviceBasic</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QSplitter" name="LRSplitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>6</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>50</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>幼圆</family>
+             <pointsize>13</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>连接设备</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="FluComboBox" name="DeviceComboBox"/>
+         </item>
+         <item>
+          <widget class="FluToggleButton" name="ConnectCH">
+           <property name="text">
+            <string>连接设备</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>50</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>幼圆</family>
+             <pointsize>11</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>设备配置文件夹</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="DeviceFolder">
+           <property name="text">
+            <string>C:/GitProject/WirelessMonitor/thirdTarget_I2CTool/config/AHT10</string>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="FluPushButton" name="ChooseConfigFilePath">
+           <property name="text">
+            <string>选择文件夹</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_10">
+         <item>
+          <widget class="QLabel" name="label_8">
+           <property name="font">
+            <font>
+             <family>幼圆</family>
+             <pointsize>11</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>设备操作脚本</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="pythonFile">
+           <property name="text">
+            <string>C:/GitProject/WirelessMonitor/thirdTarget_I2CTool/config/AHT10/AHT10.py</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="FluPushButton" name="openPython">
+           <property name="text">
+            <string>打开</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="font">
+            <font>
+             <family>幼圆</family>
+             <pointsize>11</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>设备地址表单</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="xlsxFile">
+           <property name="font">
+            <font>
+             <family>Microsoft JhengHei UI</family>
+             <pointsize>9</pointsize>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>C:/GitProject/WirelessMonitor/thirdTarget_I2CTool/config/AHT10/AHT10.xlsx</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="FluPushButton" name="openXlsx">
+           <property name="text">
+            <string>打开</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>50</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>幼圆</family>
+             <pointsize>13</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>写地址 0x</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="FluLineEdit" name="ADDR_W">
+           <property name="text">
+            <string>70</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="font">
+            <font>
+             <family>幼圆</family>
+             <pointsize>13</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>读地址 0x</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="FluLineEdit" name="ADDR_R">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>71</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="FluCheckBox" name="isRW1">
+           <property name="font">
+            <font>
+             <family>幼圆</family>
+             <pointsize>13</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>末尾读写位</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>50</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>幼圆</family>
+             <pointsize>13</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>通信速率</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="FluComboBox" name="SpeedChooseCombo">
+           <property name="currentIndex">
+            <number>1</number>
+           </property>
+           <item>
+            <property name="text">
+             <string>20KHz</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>100KHz</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>400KHz</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>750KHz</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="FluPushButton" name="applyI2C">
+           <property name="text">
+            <string>应用参数</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QTableWidget" name="tableWidget">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <attribute name="horizontalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QLabel" name="AutoScanStaus">
+           <property name="text">
+            <string>自动刷新：启动</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="FluPushButton" name="ConfigAutoScan">
+           <property name="text">
+            <string>地址探针</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>RepeaterWidget</class>
+   <extends>QWidget</extends>
+   <header>repeaterwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FluPushButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">FluPushButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FluComboBox</class>
+   <extends>QComboBox</extends>
+   <header location="global">FluComboBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FluToggleButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">FluToggleButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FluLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">FluLineEdit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FluCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header location="global">FluCheckBox.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -229,12 +229,12 @@ to maintain a single distribution point for the source code.
 
 */
 
-
 ///////////////////////// Includes ////////////////////////////////////////////
 
 #include "stdafx.h"
 #include "enumser.h"
 
+#include <iostream>
 
 ///////////////////////// Macros / Defines ////////////////////////////////////
 
@@ -254,7 +254,6 @@ to maintain a single distribution point for the source code.
 #if !defined(NO_CENUMERATESERIAL_USING_SETUPAPI1) || !defined(NO_CENUMERATESERIAL_USING_SETUPAPI2) || !defined(NO_CENUMERATESERIAL_USING_REGISTRY)
 #pragma comment(lib, "advapi32.lib")
 #endif //#if !defined(NO_CENUMERATESERIAL_USING_SETUPAPI1) || !defined(NO_CENUMERATESERIAL_USING_SETUPAPI2) || !defined(NO_CENUMERATESERIAL_USING_REGISTRY)
-
 
 
 #ifndef NO_CENUMERATESERIAL_USING_WMI
@@ -285,7 +284,6 @@ to maintain a single distribution point for the source code.
 #pragma comment(lib, "msports.lib")
 #endif //#ifndef NO_CENUMERATESERIAL_USING_COMDB
 
-
 ///////////////////////// Implementation //////////////////////////////////////
 
 #ifndef NO_CENUMERATESERIAL_USING_CREATEFILE
@@ -309,7 +307,7 @@ _Return_type_success_(return != false) bool CEnumerateSerial::UsingCreateFile(_I
 
             //Check to see if the error was because some other app had the port open or a general failure
             if ((dwError == ERROR_ACCESS_DENIED) || (dwError == ERROR_GEN_FAILURE) || (
-                    dwError == ERROR_SHARING_VIOLATION) || (dwError == ERROR_SEM_TIMEOUT))
+                dwError == ERROR_SHARING_VIOLATION) || (dwError == ERROR_SEM_TIMEOUT))
                 bSuccess = true;
         } else {
             //The port was opened successfully
@@ -471,6 +469,15 @@ _Return_type_success_(return != false) bool CEnumerateSerial::QueryUsingSetupAPI
                                                         KEY_QUERY_VALUE);
             deviceKey.Attach(SetupDiOpenDevRegKey(hDevInfoSet, &devInfo, DICS_FLAG_GLOBAL, 0, DIREG_DEV,
                                                   KEY_QUERY_VALUE));
+
+            //HARDWAREID获取
+            // TCHAR deviceID[1024];
+            // DWORD dataSize;
+            // if (SetupDiGetDeviceRegistryProperty(hDevInfoSet, &devInfo, SPDRP_HARDWAREID, NULL, (PBYTE)deviceID, sizeof(deviceID), &dataSize))
+            // {
+            //     std::wcout << L"Device ID: " << deviceID << std::endl;
+            // }
+
             if (deviceKey != INVALID_HANDLE_VALUE) {
                 int nPort{0};
 #pragma warning(suppress: 26486)
@@ -489,9 +496,18 @@ _Return_type_success_(return != false) bool CEnumerateSerial::QueryUsingSetupAPI
                 //                     ports.push_back(pair);
 
                 //请求SymbolicName参数
-                String sPortName;
-                if (RegQueryValueString(deviceKey, _T("SymbolicName"), sPortName)) {
-                    pair.second = sPortName;
+                // String sPortName;
+                //
+                // if (RegQueryValueString(deviceKey, _T("SymbolicName"), sPortName)) {
+                //     pair.second = sPortName;
+                //     ports.push_back(pair);
+                // }
+
+                //请求Device ID 参数（也叫deviceInstanceID）
+                TCHAR deviceInstanceID[1024];
+                if (SetupDiGetDeviceInstanceId(hDevInfoSet, &devInfo, deviceInstanceID, 1024, NULL)) {
+                    // std::wcout << L"Device Instance ID [" << nIndex << L"]: " << deviceInstanceID << std::endl;
+                    pair.second = deviceInstanceID;
                     ports.push_back(pair);
                 }
             }
@@ -530,7 +546,6 @@ _Return_type_success_(return != false) bool CEnumerateSerial::QueryDeviceDescrip
     return true;
 }
 #endif //#if !defined(NO_CENUMERATESERIAL_USING_SETUPAPI1) || !defined(NO_CENUMERATESERIAL_USING_SETUPAPI2)
-
 
 #pragma warning(suppress: 26429)
 _Return_type_success_(return != false) bool CEnumerateSerial::IsNumeric(
@@ -780,7 +795,7 @@ HRESULT CEnumerateSerial::UsingWMI(_Inout_ CPortAndNamesArray &ports) {
                         ATL::CComVariant varProperty2;
 #pragma warning(suppress: 26446 26482)
                         if (SUCCEEDED(apObj[n]->Get(L"Name", 0, &varProperty2, nullptr, nullptr)) && (varProperty2.vt ==
-                                VT_BSTR)) {
+                            VT_BSTR)) {
 #ifdef _UNICODE
 #pragma warning(suppress: 26486)
                             std::wstring szName{varProperty2.bstrVal};

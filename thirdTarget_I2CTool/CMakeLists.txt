@@ -1,0 +1,127 @@
+
+project(
+        thirdTarget_I2CTool
+        VERSION 0.1
+        LANGUAGES CXX)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_CXX_STANDARD 20)
+
+
+add_definitions(-DQCUSTOMPLOT_USE_OPENGL)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_PROJECT_VERSION 1.1)
+
+file(GLOB HEADER "*.h")
+file(GLOB SOURCE "*.cpp")
+file(GLOB UI "*.ui")
+file(GLOB QRC "*.qrc")
+file(GLOB RC "*.rc")
+
+find_package(QT NAMES Qt6 REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent)
+find_package(Qt6 REQUIRED COMPONENTS Core5Compat)       # QT6
+find_package(Qt6 REQUIRED COMPONENTS Gui)               # QT6
+find_package(Qt6 REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent HttpServer)
+
+find_package(Python
+        REQUIRED COMPONENTS Development)
+find_package(Boost
+        REQUIRED COMPONENTS python311)
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    add_executable(${PROJECT_NAME} WIN32 ${HEADER} ${SOURCE} ${UI} ${QRC} ${RC})
+else ()
+    add_executable(${PROJECT_NAME} ${HEADER} ${SOURCE} ${UI} ${QRC} ${RC})
+endif ()
+
+#file(GLOB_RECURSE HEADER "../components/IICDeviceBasic/*.h")
+#file(GLOB_RECURSE SOURCE "../components/IICDeviceBasic/*.cpp")
+#file(GLOB_RECURSE UI "../components/IICDeviceBasic/*.ui")
+#file(GLOB_RECURSE QRC "../components/IICDeviceBasic/*.qrc")
+target_sources(${PROJECT_NAME} PUBLIC ${HEADER} ${SOURCE} ${UI} ${QRC} )
+target_include_directories(${PROJECT_NAME} PUBLIC ../thirdLib/CppQtFluentUi888/FluControls/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}/python3.11)
+
+add_subdirectory(../api/Highlighter Highlighter)
+add_subdirectory(../api/RepeaterWidget RepeaterWidget)
+add_subdirectory(../api/TCPHandle TCPHandle)
+add_subdirectory(../api/ConfigClass ConfigClass)
+add_subdirectory(../api/QTextEditWithKey QTextEditWithKey)
+add_subdirectory(../api/PythonWork PythonWork)
+add_subdirectory(../api/USBHandle USBHandle)
+add_subdirectory(../api/CH339DLL CH339DLL)
+add_subdirectory(../thirdLib/QXlsx/QXlsx QXlsx)
+target_link_libraries(
+        ${PROJECT_NAME} PRIVATE ${Boost_LIBRARY_DIR_DEBUG}/python311_d.lib
+        Qt6::Core Qt6::PrintSupport Qt6::SerialPort Qt6::Widgets FluControls QXlsx::QXlsx Qt6::HttpServer
+        Qt6::Network qmetarialComponents Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent ${CMAKE_CURRENT_SOURCE_DIR}/../api/USBHandle/ATL/lib/atls.lib ${Boost_LIBRARIES})
+
+#set_target_properties(
+#        ${PROJECT_NAME}
+#        PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
+#        MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+#        MACOSX_BUNDLE_SHORT_VERSION_STRING
+#        ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+#        MACOSX_BUNDLE TRUE)
+
+#add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+#        COMMAND cp.exe -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}
+#        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../thirdPartyTool/cp
+#)
+add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+        COMMAND cp.exe -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../thirdPartyTool/cp
+)#不是说不能用-E，但是不能覆写确实不好用
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND  ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/ComTool/
+    )
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND  ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/ComTool/
+    )
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND cp.exe -r -f ${CMAKE_CURRENT_BINARY_DIR}/{${PROJECT_NAME}.exe,config/,resource/} ${CMAKE_CURRENT_BINARY_DIR}/ComTool/
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../thirdPartyTool/cp
+
+    )
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND windeployqt.exe ${CMAKE_CURRENT_BINARY_DIR}/ComTool/${PROJECT_NAME}.exe
+            WORKING_DIRECTORY ${QT6_INSTALL_PREFIX}/bin
+    )
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/ComTool/${PROJECT_NAME}.exe ${CMAKE_CURRENT_BINARY_DIR}/ComTool/ComTool.exe
+    )
+endif ()
+
+if (EXISTS "${CMAKE_CURRENT_BINARY_DIR}/resource")
+    message(STATUS "resource exists")
+
+else ()
+    message(STATUS "resource does not exist")
+    file(COPY ../thirdLib/qmetarial/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/resource FOLLOW_SYMLINK_CHAIN)
+endif ()
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND cp -r ${Boost_LIBRARY_DIR_DEBUG}/../bin/{python311_d.dll,boost_python311-vc142-mt-gd-x64-1_85.dll,zlibd1.dll} ${CMAKE_CURRENT_BINARY_DIR}/
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../thirdPartyTool/cp
+)
+
+add_custom_target(resource_copy_I2C
+        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/../thirdLib/CppQtFluentUi888/res
+        ${PROJECT_BINARY_DIR}/res
+        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/../thirdLib/CppQtFluentUi888/StyleSheet
+        ${PROJECT_BINARY_DIR}/StyleSheet
+        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/../thirdLib/CppQtFluentUi888/code
+        ${PROJECT_BINARY_DIR}/code
+)

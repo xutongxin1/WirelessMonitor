@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui_(new Ui::MainW
         ui_->stackedWidget->addWidget(tmp_widget));
     snackbar_->setBackgroundColor(QColor(173,216,230,127));
     snackbar_->setAutoHideDuration(300);
+    snackbar_->setTextColor(QColor(0,0,0));
     this->setWindowIcon(QIcon("./config/Icon.ico"));
     this->setWindowTitle("ComTool串口助手"+QString(V_BUILD_TIME)+"_"+QString(V_GIT_INFO));
 

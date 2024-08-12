@@ -17,9 +17,9 @@ class IICDeviceEach : public RepeaterWidget {
  public:
     explicit IICDeviceEach(QWidget *parent = nullptr);
     ~IICDeviceEach() override;
-
- private:
     Ui::IICDeviceEach *ui_;
+ private:
+
     PythonWork *python_work_;
 };
 

@@ -1,0 +1,6 @@
+[submodule "thirdLib/CppQtFluentUi888"]
+	path = thirdLib/CppQtFluentUi888
+	url = https://github.com/mowangshuying/CppQtFluentUi888.git
+[submodule "thirdLib/QXlsx"]
+	path = thirdLib/QXlsx
+	url = https://github.com/QtExcel/QXlsx.git

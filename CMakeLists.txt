@@ -34,10 +34,10 @@ set(Boost_NO_WARN_NEW_VERSIONS 1)
 
 #include(C:/Users/xtx/.vcpkg-clion/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
-find_package(QT NAMES Qt6 REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent)
+find_package(QT NAMES Qt6 REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent Svg)
 find_package(Qt6 REQUIRED COMPONENTS Core5Compat)       # QT6
 find_package(Qt6 REQUIRED COMPONENTS Gui)               # QT6
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED PrintSupport COMPONENTS Network SerialPort Widgets OpenGL Concurrent Svg)
 
 
 find_package(Python
@@ -125,16 +125,18 @@ endif ()
 
 if (EXISTS "${Boost_LIBRARY_DIR_DEBUG}/python311.lib")
     message(STATUS "python311.lib exists, is OK!?")
+    message(STATUS ${Boost_LIBRARY_DIR_DEBUG}/python311_d.lib)
 
 else ()
     execute_process(COMMAND cp.exe -f ${Boost_LIBRARY_DIR_DEBUG}/python311_d.lib ${Boost_LIBRARY_DIR_DEBUG}/python311.lib
             WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/thirdPartyTool/cp)
     message(STATUS "python311_d.lib copy OK")
+    message(STATUS ${Boost_LIBRARY_DIR_DEBUG}/python311_d.lib)
 endif ()
 
 target_link_libraries(
         ${PROJECT_NAME} PUBLIC ${Boost_LIBRARY_DIR_DEBUG}/python311.lib PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-        Qt${QT_VERSION_MAJOR}::Core Qt6::PrintSupport Qt6::SerialPort
+        Qt${QT_VERSION_MAJOR}::Core Qt6::PrintSupport Qt6::SerialPort Qt6::Svg
         Qt6::Network qmetarialComponents Qt6::Core5Compat Qt6::Gui Qt6::OpenGL Qt6::Concurrent "${CMAKE_CURRENT_SOURCE_DIR}/api/OpenGL32.Lib" ${Boost_LIBRARIES})
 
 
@@ -151,10 +153,10 @@ set_target_properties(
 #)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND cp -r ${Boost_LIBRARY_DIR_DEBUG}/../bin/{python311_d.dll,boost_python311-vc143-mt-gyd-x64-1_83.dll,zlibd1.dll} ${CMAKE_CURRENT_BINARY_DIR}/
+        COMMAND cp -r ${Boost_LIBRARY_DIR_DEBUG}/../bin/{python311_d.dll,boost_python311-vc143-mt-gyd-x64-1_85.dll,zlibd1.dll} ${CMAKE_CURRENT_BINARY_DIR}/
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/thirdPartyTool/cp
-
 )
+
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
         COMMAND cp -r -f ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/thirdPartyTool/cp
@@ -179,6 +181,7 @@ endif ()
 
 
 add_subdirectory(thirdTarget_ComTool)
+add_subdirectory(thirdTarget_I2CTool)
 
 configure_file(
         "${RepeaterWidgetPath}/VersionConfig.h.in"
