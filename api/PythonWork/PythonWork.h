@@ -12,7 +12,7 @@
 #include <Python.h>
 #pragma pop_macro("slots")
 
-#include <FluPushButton.h>
+// #include <FluPushButton.h>
 #include <QApplication>
 #include <QHttpServer>
 using namespace boost::python;
@@ -22,7 +22,6 @@ class PythonWork {
  public:
     PythonWork();
     ~PythonWork();
-    void LoadButoon(FluPushButton *runButton);
     bool PythonExec(const QString &val_name);
     object class_object_;
     object main_namespace_;

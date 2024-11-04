@@ -1,0 +1,128 @@
+name: Windows-Qt6.5.1-BuildUpdate-I2CTool
+on:
+  push:
+    paths:
+      - 'api/**'
+      - 'components/IICDeviceBasic/**'
+      - 'thirdLib/**'
+      - 'thirdTarget_I2CTool/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest ]
+        include:
+          - qt_ver: 6.5.3
+            qt_arch: win64_msvc2019_64
+            msvc_arch: x64
+            qt_arch_install: msvc2019_64
+    env:
+      targetName: I2CTool.exe
+      fileName: I2CTool
+    steps:
+      #准备仓库
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 50
+          fetch-tags: true
+
+      #准备编译链
+      - name: Setup ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
+        with:
+          version: 1.10.2
+      #准备Qt
+      - name: Install qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ matrix.qt_ver }}
+          arch: ${{ matrix.qt_arch }}
+          cache: ${{steps.cache-qt.outputs.cache-hit}}
+          modules: 'qt5compat qtmultimedia qtshadertools qtimageformats qtspeech qt3d qtscxml qtserialport qthttpserver qtwebsockets qtscxml'
+      #准备boost
+      - name: vcpkg build
+        uses: johnwason/vcpkg-action@v6
+        id: vcpkg
+        with:
+          pkgs: boost-python
+          triplet: x64-windows-release
+          token: ${{ github.token }}
+          github-binarycache: true
+      #编译与打包
+      - name: Msvc build & Package
+        id: build
+        shell: cmd
+        run: |
+          call "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvarsall.bat" ${{ matrix.msvc_arch }}
+          ninja --version
+          mkdir build
+          cd build
+          cmake -DCMAKE_MESSAGE_LOG_LEVEL=STATUS -DBoost_NO_SYSTEM_PATHS=ON -DBoost_LIBRARY_DIR_RELEASE=D:/a/WirelessMonitor/WirelessMonitor/vcpkg/installed/x64-windows/lib -DCMAKE_PREFIX_PATH=D:/a/WirelessMonitor/Qt/${{ matrix.qt_ver }}/msvc2019_64/lib/cmake/;D:/a/WirelessMonitor/WirelessMonitor/vcpkg/installed/x64-windows-release/share/ -DCMAKE_TOOLCHAIN_FILE=D:/a/WirelessMonitor/WirelessMonitor/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DUPDATE=1 -DCMAKE_BUILD_TYPE=Release -GNinja ..                
+          
+          setlocal enabledelayedexpansion
+          set /p bat_version=<bat_version
+          echo bat_version is %bat_version%
+           echo bat_version=%bat_version% >> $GITHUB_ENV
+          echo "::set-output name=bat_version::$bat_version"
+          
+          cmake --build . --target all --config Release --parallel
+          cmake --build . --target package
+          echo winSdkDir=%WindowsSdkDir% >> %GITHUB_ENV%
+          echo winSdkVer=%WindowsSdkVersion% >> %GITHUB_ENV%
+          echo vcToolsInstallDir=%VCToolsInstallDir% >> %GITHUB_ENV%
+          echo vcToolsRedistDir=%VCToolsRedistDir% >> %GITHUB_ENV%
+      #编译失败时打开调试接口
+      - name: Setup tmate session if failed
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: false
+          timeout-minutes: 300
+
+      #上传I2CTool安装包
+      - uses: ryand56/r2-upload-action@latest # Can be any release
+        id: cloudflare_r2_I2CTool
+        with:
+          r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
+          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
+          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          r2-bucket: xtxtools
+          source-dir: ./build/xtxTools-updatePackage-I2CTool.zip
+          destination-dir: ./ # Can be anything as long as it is an actual path
+          output-file-url: 'true' # defaults to true
+          multipart-size: 100 # If the file size is greater than the value provided here, then use multipart upload
+          max-retries: 5 # The maximum number of retries it takes to upload a multipart chunk until it moves on to the next part
+          multipart-concurrent: true # Whether to concurrently upload a multipart chunk
+          keep-file-fresh: 'true' # defaults to false
+
+
+      - name: Fetch cached git commit else store it
+        uses: icyleaf/cloudflare-workers-kv-action@main
+        id: KV
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        with:
+          namespace_id: 'bc1b5fa218be404e9b3ccdb9bdc4fd53'
+          key: 'I2CTool_version'
+          value:  ${{env.bat_version}}
+          overwrite: "true"
+
+      #保存链接
+      - name: KV_SaveVersion
+        uses: icyleaf/cloudflare-workers-kv-action@main
+        id: KV_SaveVersion
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        with:
+          namespace_id: 'bc1b5fa218be404e9b3ccdb9bdc4fd53'
+          key: 'I2CTool_url'
+          value:  ${{ steps.cloudflare_r2_I2CTool.outputs.file-urls }}
+          overwrite: "true"

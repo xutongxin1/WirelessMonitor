@@ -1,3 +1,5 @@
 //VersionConfig.h.in
+#define V_BIG_VERSION "@big_version@"
+#define V_BAT_VERSION "@bat_version@"
 #define V_BUILD_TIME "@build_time@"
 #define V_GIT_INFO "@GIT_BRANCH@_@GIT_HASH@"
